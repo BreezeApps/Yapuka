@@ -1,0 +1,27 @@
+{
+  "name": "Gelita",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron-is-dev": "^3.0.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.5.0",
+    "autoprefixer": "^10.4.20",
+    "postcss-loader": "^8.1.1",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "tailwindcss": "^3.4.13",
+    "electron-prebuilt-compile": "32.2.0"
+  }
+}

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0;
+  padding: 20px;
+  height: 100vh;
+}
+
+.theme-switch:checked {
+  @apply transition-transform transform translate-x-7 duration-500;
+}
+
+.theme-switch:checked + .theme-switch-label {
+  @apply bg-blue-300;
+}
