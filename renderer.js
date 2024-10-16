@@ -1,4 +1,5 @@
 const { ipcRenderer } = require('electron');
+require('./theme.js')
 
 // Charger les listes et les tâches au démarrage
 window.onload = async () => {
@@ -10,6 +11,7 @@ window.onload = async () => {
         addNewTask(listElement, task.name, task.id);
       });
     });
+    translate()
   };
 
 // Ajouter une nouvelle liste
@@ -176,21 +178,17 @@ document.getElementById('close-description-modal-foot').addEventListener('click'
     taskContainer.appendChild(newTask);
   }
 
-  const toggleSwitch = document.querySelector('input[type="checkbox"].theme-switch');
+  // const config = await ipcRenderer.invoke('get-config');
 
-  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
-      document.documentElement.classList.add('dark');
-      toggleSwitch.checked = true;
-  } else {
-      document.documentElement.classList.remove('dark')
-  }
-  function switchTheme(e) {
-      if (e.target.checked) {
-          localStorage.setItem('theme', 'dark');
-          document.documentElement.classList.add('dark');
-      } else {
-          localStorage.setItem('theme', 'light');
-          document.documentElement.classList.remove('dark')
-      }
-  }
-  toggleSwitch.addEventListener('change', switchTheme, false);
+  // const test = document.getElementById('test')
+  // test.innerHTML = config.get('database.host')
+
+//   function switchDatabase(e) {
+//     if (e.target.checked) {
+//         localStorage.setItem('theme', 'dark');
+//         document.documentElement.classList.add('dark');
+//     } else {
+//         localStorage.setItem('theme', 'light');
+//         document.documentElement.classList.remove('dark')
+//     }
+// }

@@ -1,27 +1,27 @@
-// main.js
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const configjs = require('./config.js');
+const config = require('electron-json-config')
 const db = require('./database.js');
 
 let win;
 
 function createWindow () {
-  win = new BrowserWindow({
-    width: 1200,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false
-    }
-  });
-
-  win.loadFile('index.html');
+    win = new BrowserWindow({
+      width: 1200,
+      height: 600,
+      icon: __dirname + '/logo.svg',
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        nodeIntegration: true,
+        contextIsolation: false
+      }
+    });
+    win.loadFile('index.html');
 }
 
 app.whenReady().then(() => {
   createWindow();
-  
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
@@ -29,6 +29,27 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+ipcMain.handle('get-config-variable', (event, key) => {
+  return config.factory('config.json').get(key)
+});
+
+// ipcMain.handle('get-i18n', (event) => {
+//   var i18n = new(require('./translation/i18n.js'))
+//   return i18n
+// });
+
+ipcMain.handle('set-config-variable', (event, key, value) => {
+  return config.factory('config.json').set(key, value)
+});
+
+ipcMain.handle('remove-config-variable', (event, key) => {
+  return config.factory('config.json').delete(key)
+});
+
+ipcMain.handle('has-config-variable', (event, key) => {
+  return config.factory('config.json').has(key)
 });
 
 // Gestion des événements IPC pour la base de données
