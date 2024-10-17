@@ -55,6 +55,7 @@ db.serialize(() => {
         name TEXT NOT NULL,
         description TEXT NULL DEFAULT NULL,
         position INTEGER NOT NULL DEFAULT 0,
+        date DATETIME NULL,
         FOREIGN KEY (list_id) REFERENCES lists(id)
       )
     `);

@@ -65,6 +65,18 @@ ipcMain.handle('get-lists', (event) => {
   });
 });
 
+ipcMain.handle('get-list', (event, listId) => {
+  return new Promise((resolve, reject) => {
+    db.all('SELECT * FROM lists WHERE id = ?', [listId], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+});
+
 ipcMain.handle('get-tasks', (event, listId) => {
   return new Promise((resolve, reject) => {
     db.all('SELECT * FROM tasks WHERE list_id = ? ORDER BY position', [listId], (err, rows) => {
@@ -101,14 +113,26 @@ ipcMain.handle('add-list', (event, listName, color) => {
   });
 });
 
-ipcMain.handle('add-task', (event, listId, description, taskName) => {
+ipcMain.handle('update-list', (event, id, listName, color) => {
+  return new Promise((resolve, reject) => {
+    db.run('UPDATE lists SET name = ?, color = ? WHERE id = ?', [listName, color, id], function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ id: this.lastID });
+      }
+    });
+  });
+});
+
+ipcMain.handle('add-task', (event, listId, description, date, taskName) => {
   return new Promise((resolve, reject) => {
     db.get('SELECT COUNT(*) AS count FROM tasks WHERE list_id = ?', [listId], (err, row) => {
       if (err) {
         reject(err);
       } else {
         const position = row.count;
-        db.run('INSERT INTO tasks (list_id, name, description, position) VALUES (?, ?, ?, ?)', [listId, taskName, description, position], function(err) {
+        db.run('INSERT INTO tasks (list_id, name, description, position, date) VALUES (?, ?, ?, ?, ?)', [listId, taskName, description, position, date], function(err) {
           if (err) {
             reject(err);
           } else {
