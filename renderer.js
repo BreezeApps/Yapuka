@@ -3,7 +3,6 @@ const { ipcRenderer } = require("electron");
 // require("./theme.js");
 const { updateContent , getTranslation} = require("./i18n.js")
 
-
 // Charger les listes et les tâches au démarrage
 window.onload = async () => {
   const lists = await ipcRenderer.invoke("get-lists");
