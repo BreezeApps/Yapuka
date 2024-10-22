@@ -1,7 +1,7 @@
 const { ipcRenderer } = require("electron");
 // const { Menu, MenuItem } = remote;
 // require("./theme.js");
-require("./i18n.js")
+const updateContent = require("./i18n.js")
 
 
 // Charger les listes et les tâches au démarrage
@@ -48,6 +48,7 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
 
     const createListModal = document.getElementById("create-liste-modal");
     createListModal.classList.add("hidden");
+    updateContent()
   });
 
   document.getElementById("submit-modify-liste").addEventListener("submit", async function (event) {
@@ -162,7 +163,8 @@ function addNewList(name, color, id) {
   btnList.className = "overflow-hidden";
 
   const deleteListBtn = document.createElement("button");
-  deleteListBtn.innerText = "Supprimer la liste";
+  deleteListBtn.setAttribute("data-i18n", "Delete_list")
+  // deleteListBtn.innerText = "Supprimer la liste";
   deleteListBtn.className =
     "w-1/2 h-16 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l float-left inline";
   deleteListBtn.addEventListener("click", async () => {
@@ -174,7 +176,8 @@ function addNewList(name, color, id) {
   btnList.appendChild(deleteListBtn);
 
   const addTaskBtn = document.createElement("button");
-  addTaskBtn.innerText = "Ajouter une tâche";
+  addTaskBtn.setAttribute("data-i18n", "Add_a_Task")
+  // addTaskBtn.innerText = "Ajouter une tâche";
   addTaskBtn.className =
     "w-1/2 h-16 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r float-left inline";
   addTaskBtn.addEventListener("click", async () => {
@@ -215,7 +218,6 @@ function addNewList(name, color, id) {
   });
 
   newList.id = "list-" + id; // Stocker l'ID de la liste dans l'élément DOM
-
   return newList;
 }
 
