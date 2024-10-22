@@ -75,7 +75,7 @@ db.serialize(() => {
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "db_port", "The port of mysql database", "3306"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [3, "db_user", "The user credentials of mysql database", "root"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [4, "db_password", "The password credentials of mysql database", ""])
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [5, "theme", "The theme", "system"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [5, "languages", "Languages of th app", "system"])
   });
 
 module.exports = db;

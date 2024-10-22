@@ -1,6 +1,6 @@
 const { ipcRenderer } = require("electron");
-require("./theme.js");
-require("./i18n.js")
+// require("./theme.js");
+const { getLanguages, changesLanguage } = require("./i18n.js")
 
 function enable_text(status) {
   status = status ? false : true;
@@ -37,6 +37,15 @@ async function load() {
     "db_password"
   );
   document.getElementById("db_password").value = password.value;
+
+  var options = "<option value='system' id='options-system-lang'>System</option>"
+  const languages = getLanguages()
+  languages.forEach(element => {
+    options += "<option value='" + element.short + "' id='options-" + element.short + "' >";
+    options += element.full;
+    options += "</option>";
+  });
+  document.getElementById("language").innerHTML = options
 
   themeSetup();
 }

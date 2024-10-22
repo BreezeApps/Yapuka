@@ -1,7 +1,7 @@
 const { ipcRenderer } = require("electron");
 // const { Menu, MenuItem } = remote;
 // require("./theme.js");
-const updateContent = require("./i18n.js")
+const { updateContent , getTranslation} = require("./i18n.js")
 
 
 // Charger les listes et les tâches au démarrage
@@ -168,7 +168,7 @@ function addNewList(name, color, id) {
   deleteListBtn.className =
     "w-1/2 h-16 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l float-left inline";
   deleteListBtn.addEventListener("click", async () => {
-    if (confirm("Are you sure !") == true) {
+    if (confirm(getTranslation("Are_Sure")) == true) {
       await ipcRenderer.invoke("delete-list", id);
       newList.remove();
     }
@@ -258,7 +258,7 @@ function addNewTask(listElement, taskName, taskId) {
     "ml-auto grid place-items-center justify-self-end rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
   deleteTaskBtn.appendChild(deleteTaskIconSvg);
   deleteTaskBtn.addEventListener("click", async () => {
-    if (confirm("Are you sure !") == true) {
+    if (confirm(getTranslation("Are_Sure")) == true) {
       await ipcRenderer.invoke("delete-task", taskId);
       newTask.remove();
     }
