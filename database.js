@@ -59,6 +59,23 @@ db.serialize(() => {
         FOREIGN KEY (list_id) REFERENCES lists(id)
       )
     `);
+
+    db.run(`
+      CREATE TABLE IF NOT EXISTS configs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT NULL DEFAULT NULL,
+        value TEXT NULL,
+        UNIQUE (name)
+      )
+    `);
+
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [0, "mysql_db", "Using of mysql database", "false"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [1, "db_host", "The host of mysql database", "127.0.0.1"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "db_port", "The port of mysql database", "3306"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [3, "db_user", "The user credentials of mysql database", "root"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [4, "db_password", "The password credentials of mysql database", ""])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [5, "theme", "The theme", "system"])
   });
 
 module.exports = db;

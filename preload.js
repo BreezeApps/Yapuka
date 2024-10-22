@@ -1,8 +1,28 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge } = require("electron");
+const i18next = require("i18next");
+const Backend = require("i18next-fs-backend");
+const LanguageDetector = require("i18next-browser-languagedetector");
+const path = require("path");
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  addList: (listName, color) => ipcRenderer.invoke('add-list', listName, color),
-  deleteList: (listId) => ipcRenderer.invoke('delete-list', listId),
-  addTask: (listId, taskName, taskDescription, dueDate) => ipcRenderer.invoke('add-task', listId, taskName, taskDescription, dueDate),
-  updateTaskOrder: (taskId, newListId, newPosition) => ipcRenderer.invoke('update-task-order', taskId, newListId, newPosition),
-});
+// i18next
+//   .use(Backend)
+//   .use(LanguageDetector)
+//   .init({
+//     fallbackLng: "en",
+//     backend: {
+//       loadPath: path.join(__dirname, "locales/{{lng}}.json"),
+//     },
+//   });
+
+// window.myAPI = {
+//   i18n: () =>
+//     i18next
+//       .use(Backend)
+//       .use(LanguageDetector)
+//       .init({
+//         fallbackLng: "en",
+//         backend: {
+//           loadPath: path.join(__dirname, "locales/{{lng}}.json"),
+//         },
+//       }),
+// };

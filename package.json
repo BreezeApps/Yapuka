@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron-json-config": "2.0.0-beta",
-    "i18next": "^23.16.0",
+    "i18next": "^23.16.2",
+    "i18next-browser-languagedetector": "^8.0.0",
+    "i18next-fs-backend": "^2.3.2",
     "mysql2": "^3.11.3",
-    "react-i18next": "^9.0.10",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

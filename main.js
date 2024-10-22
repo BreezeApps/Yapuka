@@ -1,7 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const configjs = require('./config.js');
-const config = require('electron-json-config')
 const db = require('./database.js');
 
 let win;
@@ -14,6 +12,7 @@ function createWindow () {
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: true,
+        nodeIntegrationInWorker: true,
         contextIsolation: false
       }
     });
@@ -28,28 +27,53 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit()
+  } else {
+    i18nextBackend.clearMainBindings(ipcMain);
+  };
 });
 
-ipcMain.handle('get-config-variable', (event, key) => {
-  return config.factory('config.json').get(key)
+ipcMain.handle('get-config-variable', async (event, name) => {
+  const response_db = await new Promise((resolve, reject) => {
+    db.all('SELECT * FROM configs WHERE name = ?', [name], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+  const response = {
+    name: response_db[0].name,
+    description: response_db[0].description,
+    value: response_db[0].value
+  }
+  return response
 });
 
-// ipcMain.handle('get-i18n', (event) => {
-//   var i18n = new(require('./translation/i18n.js'))
-//   return i18n
-// });
-
-ipcMain.handle('set-config-variable', (event, key, value) => {
-  return config.factory('config.json').set(key, value)
+ipcMain.handle('set-config-variable', (event, name, value) => {
+  return new Promise((resolve, reject) => {
+    db.run('UPDATE config SET value = ? WHERE name = ?', [value, name], function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ id: this.lastID });
+      }
+    });
+  });
 });
 
-ipcMain.handle('remove-config-variable', (event, key) => {
-  return config.factory('config.json').delete(key)
-});
-
-ipcMain.handle('has-config-variable', (event, key) => {
-  return config.factory('config.json').has(key)
+ipcMain.handle('remove-config-variable', (event, name) => {
+  return new Promise((resolve, reject) => {
+    db.run('DELETE FROM configs WHERE name = ?', [name], function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ id: this.lastID })
+      }
+    });
+  });
 });
 
 // Gestion des événements IPC pour la base de données

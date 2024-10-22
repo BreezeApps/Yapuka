@@ -1,6 +1,8 @@
 const { ipcRenderer } = require("electron");
 // const { Menu, MenuItem } = remote;
-require("./theme.js");
+// require("./theme.js");
+require("./i18n.js")
+
 
 // Charger les listes et les tâches au démarrage
 window.onload = async () => {

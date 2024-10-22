@@ -1,5 +1,6 @@
 const { ipcRenderer } = require("electron");
 require("./theme.js");
+require("./i18n.js")
 
 function enable_text(status) {
   status = status ? false : true;
@@ -12,25 +13,30 @@ function enable_text(status) {
 async function load() {
   const mysql = await ipcRenderer.invoke(
     "get-config-variable",
-    "mysql_database",
+    "mysql_db"
   );
-  document.getElementById("db_enable").checked = mysql;
+  if(mysql.value === "false") {
+    mysql.value = false
+  } else {
+    mysql.value = true
+  }
+  document.getElementById("db_enable").checked = mysql.value;
   enable_text(mysql);
 
-  const host = await ipcRenderer.invoke("get-config-variable", "database.host");
-  document.getElementById("db_host").value = host;
+  const host = await ipcRenderer.invoke("get-config-variable", "db_host");
+  document.getElementById("db_host").value = host.value;
 
-  const port = await ipcRenderer.invoke("get-config-variable", "database.port");
-  document.getElementById("db_port").value = port;
+  const port = await ipcRenderer.invoke("get-config-variable", "db_port");
+  document.getElementById("db_port").value = port.value;
 
-  const user = await ipcRenderer.invoke("get-config-variable", "database.user");
-  document.getElementById("db_user").value = user;
+  const user = await ipcRenderer.invoke("get-config-variable", "db_user");
+  document.getElementById("db_user").value = user.value;
 
   const password = await ipcRenderer.invoke(
     "get-config-variable",
-    "database.password",
+    "db_password"
   );
-  document.getElementById("db_password").value = password;
+  document.getElementById("db_password").value = password.value;
 
   themeSetup();
 }
@@ -43,8 +49,13 @@ function themeChange(value) {
     document.documentElement.classList.add("light");
     document.documentElement.classList.remove("dark");
   } else {
-    document.documentElement.classList.remove("dark");
-    document.documentElement.classList.remove("light");
+    if(window.matchMedia('(prefers-color-scheme: light)').matches) {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    }
   }
 }
 function themeSetup() {
