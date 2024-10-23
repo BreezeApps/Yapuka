@@ -5,12 +5,20 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "style": "pnpx tailwindcss -i ./input.css -o style.css --watch"
+    "style": "pnpx tailwindcss -i ./input.css -o style.css --watch",
+    "dev": "pnpm run build:css && pnpm start",
+    "build:css": "pnpx tailwindcss -i ./input.css -o style.css"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@editorjs/checklist": "^1.6.0",
+    "@editorjs/editorjs": "^2.30.6",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/link": "^2.6.2",
+    "@editorjs/simple-image": "^1.6.0",
+    "electron-context-menu": "^4.0.4",
     "i18next": "^23.16.2",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-fs-backend": "^2.3.2",

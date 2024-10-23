@@ -19,7 +19,7 @@
   "Add_a_Task": "Add a task",
   "Delete_list": "Delete list",
   "app_config": "Application Configuration",
-  "enable_db": "Enable Mysql Database",
+  "db_enable": "Enable Mysql Database",
   "db_host": "Database Host",
   "db_port": "Database Port",
   "db_user": "Database User",

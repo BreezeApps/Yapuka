@@ -1,7 +1,12 @@
-const { ipcRenderer } = require("electron");
+const { ipcRenderer } = require('electron')
 // const { Menu, MenuItem } = remote;
 // require("./theme.js");
 const { updateContent , getTranslation} = require("./i18n.js")
+// const EditorJS = require("@editorjs/editorjs")
+// const Header = require("@editorjs/header")
+// const LinkTool = require("@editorjs/link")
+// const SimpleImage = require("@editorjs/simple-image")
+// const Checklist = require("@editorjs/checklist")
 
 // Charger les listes et les tâches au démarrage
 window.onload = async () => {
@@ -15,23 +20,66 @@ window.onload = async () => {
   });
 };
 
+
+// let url = document.getElementById('url');
+// url.addEventListener('click', async (event) => {
+//   const print = await ipcRenderer.invoke("print", "Test")
+//   console.log(print)
+// });
+
+// Ajout d'un event listener pour afficher le menu contextuel
+const contextMenu = document.getElementById('context-menu');
+const editButton = document.getElementById('edit-button');
+let targetDiv = null;
+
+// Cacher le menu contextuel lors d'un clic en dehors
+document.addEventListener('click', (event) => {
+  if (!contextMenu.contains(event.target)) {
+    contextMenu.classList.add('hidden');
+  }
+});
+
+// Action lors du clic sur le bouton Modifier
+editButton.addEventListener('click', async () => {
+  if (targetDiv && targetDiv.id.split("-")[0] === "list_header") {
+    editButton.classList.remove("hidden")
+    const id = targetDiv.id
+    const list = await ipcRenderer.invoke("get-list", id.split("-")[1])
+
+    document.getElementById("id-modify-list").value = list[0].id
+    document.getElementById("name-modify-list").value = list[0].name
+    document.getElementById("color-modify-list").value = list[0].color
+    const modifyListModal = document.getElementById("modify-liste-modal");
+    modifyListModal.classList.remove("hidden");
+    document.getElementById("blur").classList.remove("hidden")
+    contextMenu.classList.add("hidden")
+  } else {
+    editButton.classList.add("hidden")
+  }
+});
+
 // Ajouter une nouvelle liste
 document.getElementById("add-list-btn").addEventListener("click", async () => {
   const createListModal = document.getElementById("create-liste-modal");
+  document.getElementById("blur").classList.remove("hidden")
   createListModal.classList.remove("hidden");
+  document.getElementById("name-list").focus()
 });
 document.getElementById("close-create-list-modal").addEventListener("click", async () => {
     const createListModal = document.getElementById("create-liste-modal");
+    document.getElementById("blur").classList.add("hidden")
     createListModal.classList.add("hidden");
   });
 
   document.getElementById("close-modify-list-modal").addEventListener("click", async () => {
     const modifyListModal = document.getElementById("modify-liste-modal");
+    document.getElementById("blur").classList.add("hidden")
     modifyListModal.classList.add("hidden");
   });
 
 document.getElementById("close-create-task-modal").addEventListener("click", async () => {
     const createListModal = document.getElementById("create-task-modal");
+    document.getElementById("blur").classList.add("hidden")
     createListModal.classList.add("hidden");
   });
 
@@ -46,6 +94,7 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
     document.getElementById("submit-create-liste").reset();
 
     const createListModal = document.getElementById("create-liste-modal");
+    document.getElementById("blur").classList.add("hidden")
     createListModal.classList.add("hidden");
     updateContent()
   });
@@ -68,6 +117,7 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
     });
 
     const createListModal = document.getElementById("modify-liste-modal");
+    document.getElementById("blur").classList.add("hidden")
     createListModal.classList.add("hidden");
   });
 
@@ -93,15 +143,18 @@ document.getElementById("submit-create-task").addEventListener("submit", async f
     document.getElementById("submit-create-task").reset();
 
     const createTaskModal = document.getElementById("create-task-modal");
+    document.getElementById("blur").classList.add("hidden")
     createTaskModal.classList.add("hidden");
   });
 
 document.getElementById("close-description-modal").addEventListener("click", async () => {
     const descriptionModal = document.getElementById("description-modal");
+    document.getElementById("blur").classList.add("hidden")
     descriptionModal.classList.add("hidden");
   });
 document.getElementById("close-description-modal-foot").addEventListener("click", async () => {
     const descriptionModal = document.getElementById("description-modal");
+    document.getElementById("blur").classList.add("hidden")
     descriptionModal.classList.add("hidden");
   });
 
@@ -147,6 +200,8 @@ function addNewList(name, color, id) {
       document.getElementById("name-modify-list").value = list[0].name
       document.getElementById("color-modify-list").value = list[0].color
       const modifyListModal = document.getElementById("modify-liste-modal");
+      document.getElementById("blur").classList.remove("hidden")
+      document.getElementById("name-modify-list").focus()
       modifyListModal.classList.remove("hidden");
       // await ipcRenderer.invoke("modify-list", listid);
     });
@@ -156,6 +211,16 @@ function addNewList(name, color, id) {
   listHeader.appendChild(modifyListBtn)
   listHeader.className = "rounded capitalize text-center";
   listHeader.style.background = color;
+  listHeader.id = "list_header-" + id
+  listHeader.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    const contextMenu = document.getElementById('context-menu');
+    targetDiv = event.target;
+
+    contextMenu.style.top = `${event.pageY}px`;
+    contextMenu.style.left = `${event.pageX}px`;
+    contextMenu.classList.remove('hidden');
+  });
   newList.appendChild(listHeader);
 
   const btnList = document.createElement("div");
@@ -182,7 +247,21 @@ function addNewList(name, color, id) {
   addTaskBtn.addEventListener("click", async () => {
     document.getElementById("list-id-task").value = id;
     const createTaskModal = document.getElementById("create-task-modal");
+    // const editor = new EditorJS({
+    //   holder : '#editorjs',
+    //   tools: {
+    //     header: Header,
+    //     linkTool: LinkTool,
+    //     image: SimpleImage,
+    //     checklist: Checklist
+    //   },
+    //   onReady: () => {
+    //     console.log('Editor.js is ready to work!')
+    //  }
+    // })
+    document.getElementById("blur").classList.remove("hidden")
     createTaskModal.classList.remove("hidden");
+    document.getElementById("name-task").focus()
   });
   btnList.appendChild(addTaskBtn);
 
@@ -193,11 +272,6 @@ function addNewList(name, color, id) {
   newList.appendChild(taskContainer);
 
   listContainer.appendChild(newList);
-
-  // newList.addEventListener("click", async function (event) {
-  //   const createListModal = document.getElementById("create-liste-modal");
-  //   createListModal.classList.remove("hidden");
-  // });
 
   Sortable.create(taskContainer, {
     group: "shared",
@@ -277,6 +351,7 @@ function addNewTask(listElement, taskName, taskId) {
 
     descriptionTextModalElement.innerText = task[0].description;
     descriptionTitleModalElement.innerText = task[0].name;
+    document.getElementById("blur").classList.remove("hidden")
     descriptionModal.classList.remove("hidden");
   });
 

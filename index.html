@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
+    <div id="blur" class="hidden w-full h-full backdrop-blur-md z-[150] absolute"></div>
+    <!-- <button id="url">Print Google.com Homepage</button> -->
+    <div id="context-menu" class="z-[100] hidden absolute bg-white border shadow-md">
+      <button id="edit-button" class="px-4 py-2 w-full text-left hover:bg-gray-200">Modifier</button>
+    </div>
     <!-- <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
       <div class="z-30 flex items-center mt-auto">
           <svg
@@ -93,7 +98,7 @@
       id="create-liste-modal"
       tabindex="-1"
       aria-hidden="true"
-      class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
+      class="fixed left-0 right-0 top-0 z-[155] hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
     >
       <div class="relative max-h-full w-full max-w-md p-4">
         <!-- Modal content -->
@@ -187,7 +192,7 @@
       id="create-task-modal"
       tabindex="-1"
       aria-hidden="true"
-      class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
+      class="fixed left-0 right-0 top-0 z-[155] hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
     >
       <div class="relative max-h-full w-full max-w-md p-4">
         <!-- Modal content -->
@@ -266,6 +271,7 @@
                   data-i18n="Task_Description"
                   ></label
                 >
+                <!-- <div id="editorjs"></div> -->
                 <textarea
                   id="description-task"
                   rows="4"
@@ -300,7 +306,7 @@
       id="modify-liste-modal"
       tabindex="-1"
       aria-hidden="true"
-      class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
+      class="fixed left-0 right-0 top-0 z-[155] hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
     >
       <div class="relative max-h-full w-full max-w-md p-4">
         <!-- Modal content -->
@@ -397,7 +403,7 @@
       </div>
     </div>
 
-    <div id="description-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id="description-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-[155] justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div class="relative p-4 w-full max-w-2xl max-h-full">
           <!-- Modal content -->
           <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">

@@ -16,10 +16,9 @@ fond où se trouvent les listes), l\'une à côté de l\'autre. On peut
 
 ### Améliorations :
 
-Il serait préférable que le nom de chaque liste soit situé dans un
-bandeau propre à chaque tâche au lieu d\'être écrit en dessous.
+~~Il serait préférable que le nom de chaque liste soit situé dans un bandeau propre à chaque tâche au lieu d\'être écrit en dessous.~~
 
-Inutile d\'afficher autre chose sur le tableau.
+~~Inutile d\'afficher autre chose sur le tableau.~~
 
 **Plus tard :** on peut imaginer un deuxième (troisième, \...n<sup>ième</sup>)
 tableau de listes accessible par onglet en haut de la fenêtre.
@@ -28,7 +27,7 @@ tableau de listes accessible par onglet en haut de la fenêtre.
 
 Interface via la souris 
 
-**Référence complémentair**e : fonctionnement du Deck de Nextcloud pour
+**Référence complémentaire** : fonctionnement du Deck de Nextcloud pour
 les \"glisser-déposer\" et la création de tâches.
 
 - ~~**Bouton** de création de nouvelle liste \"Nouvelle liste\"~~ (ou clic droit sur le fond du tableau)
