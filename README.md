@@ -1,6 +1,6 @@
-# <center>Gestionnaire de listes de tâches</center>
+# <p align="center">Gestionnaire de listes de tâches</p>
 
-# <center>Yapuka</center>
+# <p align="center">Yapuka</p>
 
 # Interface
 
