@@ -1,8 +1,12 @@
-const { contextBridge } = require("electron");
-const i18next = require("i18next");
-const Backend = require("i18next-fs-backend");
-const LanguageDetector = require("i18next-browser-languagedetector");
-const path = require("path");
+const { ipcRenderer } = require('electron')
+
+process.once('loaded', () => {
+    window.addEventListener('message', evt => {
+      if (evt.data.type === 'select-dirs') {
+        ipcRenderer.send('select-dirs')
+      }
+    })
+  })
 
 // i18next
 //   .use(Backend)

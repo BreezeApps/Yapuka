@@ -1,8 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const shell = require("electron").shell;
 const path = require("path");
 const db = require("./database.js");
-const fs = require("fs")
+const fs = require("fs");
 
 let win;
 
@@ -204,6 +204,22 @@ ipcMain.handle("add-task", (event, listId, description, date, taskName) => {
   });
 });
 
+ipcMain.handle("update-task", (event, taskId, description, date, taskName) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "UPDATE tasks SET description = ?, date = ?, name = ? WHERE id = ?",
+      [description, date, taskName, taskId],
+      function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ id: this.lastID });
+        }
+      },
+    );
+  });
+});
+
 // Suppression de liste
 ipcMain.handle("delete-list", (event, listId) => {
   return new Promise((resolve, reject) => {
@@ -260,6 +276,30 @@ ipcMain.handle(
   },
 );
 
+ipcMain.handle("update-blur", (event, blur) => {
+  return new Promise((resolve, reject) => {
+    db.run("UPDATE configs SET value = ? WHERE id = 2", [blur], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+});
+
+ipcMain.handle("get-blur", (event) => {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT value FROM configs WHERE id = 2", [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+});
+
 ipcMain.handle(
   "print",
   (event, arg, link = path.join(__dirname, "/printme.html")) => {
@@ -277,23 +317,91 @@ ipcMain.handle(
           printBackground: false,
           color: false,
           margin: {
-              marginType: 'printableArea'
+            marginType: "printableArea",
           },
           landscape: false,
           pagesPerSheet: 1,
           collate: false,
           copies: 1,
-          header: 'Header of the Page',
-          footer: 'Footer of the Page'
+          header: "Header of the Page",
+          footer: "Footer of the Page",
         };
 
         win.webContents.print(options, (success, failureReason) => {
           if (!success) console.log(failureReason);
-          console.log('Print Initiated');
-      });
+          console.log("Print Initiated");
+        });
       });
     });
 
     event.returnValue = true;
   },
 );
+
+ipcMain.handle("config-window", (event) => {
+  let win2;
+  win2 = new BrowserWindow({
+    width: 660,
+    height: 600,
+    icon: __dirname + "/logo.svg",
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      contextIsolation: false,
+    },
+  });
+  ipcMain.on("select-dirs", async (event, arg) => {
+    const result = await dialog.showOpenDialog(win2, {
+      properties: ["openDirectory"],
+    });
+    if (result.canceled) {
+      return null;
+    } else {
+      const dir = path.join(result.filePaths[0], "Yapuka_Data");
+      fs.writeFileSync("./db.json", JSON.stringify({ link: dir }))
+    }
+  });
+  win2.on("closed", function () {
+    win2 = null;
+    win.webContents.reload();
+  });
+  win2.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith("file://")) {
+      return { action: "allow" };
+    }
+    // open url in a browser and prevent default
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+  win2.loadFile("config.html");
+});
+
+ipcMain.handle("get-theme", (event) => {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT value FROM configs WHERE id = 1", [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+});
+
+ipcMain.handle("update-theme", (event, theme) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "UPDATE configs SET value = ? WHERE id = 1",
+      [theme],
+      function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      },
+    );
+  });
+});

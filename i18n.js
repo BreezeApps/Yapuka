@@ -28,6 +28,9 @@ function updateContent() {
 function getTranslation(key) {
   return i18next.t(key)
 }
+function getTranslationWithVar(key, variable) {
+  return i18next.t(key, variable)
+}
 
 function getLanguages() {
   const languages = i18next.languages
@@ -55,7 +58,7 @@ function changesLanguage(language) {
   });
 }
 
-module.exports = { updateContent, getLanguages, changesLanguage, getTranslation}
+module.exports = { updateContent, getLanguages, changesLanguage, getTranslation, getTranslationWithVar}
 
 // Changement de langue au clic
 // document.getElementById("switch-lang").addEventListener("click", () => {

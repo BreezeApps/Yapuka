@@ -1,7 +1,7 @@
 const { ipcRenderer } = require('electron')
 // const { Menu, MenuItem } = remote;
 // require("./theme.js");
-const { updateContent , getTranslation} = require("./i18n.js")
+const { updateContent , getTranslation, getTranslationWithVar} = require("./i18n.js")
 // const EditorJS = require("@editorjs/editorjs")
 // const Header = require("@editorjs/header")
 // const LinkTool = require("@editorjs/link")
@@ -11,6 +11,12 @@ const { updateContent , getTranslation} = require("./i18n.js")
 // Charger les listes et les tâches au démarrage
 window.onload = async () => {
   const lists = await ipcRenderer.invoke("get-lists");
+  const blur = await ipcRenderer.invoke("get-blur");
+  if(blur[0].value === "1") {
+    document.getElementById("blur").classList.add("backdrop-blur-md")
+  } else {
+    document.getElementById("blur").classList.add("backdrop-blur-none")
+  }
   lists.forEach(async (list) => {
     const listElement = addNewList(list.name, list.color, list.id);
     const tasks = await ipcRenderer.invoke("get-tasks", list.id);
@@ -18,8 +24,25 @@ window.onload = async () => {
       addNewTask(listElement, task.name, task.id);
     });
   });
+  let theme = await ipcRenderer.invoke("get-theme")
+  theme = theme[0].value
+  localStorage.setItem("theme", theme);
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+    document.documentElement.classList.remove("light");
+  } else if (theme === "light") {
+    document.documentElement.classList.add("light");
+    document.documentElement.classList.remove("dark");
+  } else {
+    if(window.matchMedia('(prefers-color-scheme: light)').matches) {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    }
+  }
 };
-
 
 // let url = document.getElementById('url');
 // url.addEventListener('click', async (event) => {
@@ -82,6 +105,11 @@ document.getElementById("close-create-task-modal").addEventListener("click", asy
     document.getElementById("blur").classList.add("hidden")
     createListModal.classList.add("hidden");
   });
+  document.getElementById("close-modify-task-modal").addEventListener("click", async () => {
+    const modifyListModal = document.getElementById("modify-task-modal");
+    document.getElementById("blur").classList.add("hidden")
+    modifyListModal.classList.add("hidden");
+  });
 
 document.getElementById("submit-create-liste").addEventListener("submit", async function (event) {
     event.preventDefault();
@@ -90,8 +118,6 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
 
     const result = await ipcRenderer.invoke("add-list", name, color);
     addNewList(name, color, result.id);
-
-    document.getElementById("submit-create-liste").reset();
 
     const createListModal = document.getElementById("create-liste-modal");
     document.getElementById("blur").classList.add("hidden")
@@ -106,19 +132,18 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
     const color = document.getElementById("color-modify-list").value;
 
     const result = await ipcRenderer.invoke("update-list", id, name, color);
-    
-    document.getElementById("submit-modify-liste").reset();
-    
-    document.getElementById("list-" + id).remove();
-    const listElement = addNewList(name, color, id);
-    const tasks = await ipcRenderer.invoke("get-tasks", id);
-    tasks.forEach((task) => {
-      addNewTask(listElement, task.name, task.id);
-    });
+
+    // document.getElementById("list-" + id).remove();
+    // const listElement = addNewList(name, color, id);
+    // const tasks = await ipcRenderer.invoke("get-tasks", id);
+    // tasks.forEach((task) => {
+    //   addNewTask(listElement, task.name, task.id);
+    // });
 
     const createListModal = document.getElementById("modify-liste-modal");
     document.getElementById("blur").classList.add("hidden")
     createListModal.classList.add("hidden");
+    window.location.reload()
   });
 
 document.getElementById("submit-create-task").addEventListener("submit", async function (event) {
@@ -126,7 +151,6 @@ document.getElementById("submit-create-task").addEventListener("submit", async f
     const name = document.getElementById("name-task").value;
     const description = document.getElementById("description-task").value;
     const date = document.getElementById("date-task").value
-    console.log(date)
     const listId = document.getElementById("list-id-task").value;
 
     const result = await ipcRenderer.invoke(
@@ -140,11 +164,30 @@ document.getElementById("submit-create-task").addEventListener("submit", async f
     const listElement = document.getElementById("list-" + listId);
     addNewTask(listElement, name, result.id);
 
-    document.getElementById("submit-create-task").reset();
-
     const createTaskModal = document.getElementById("create-task-modal");
     document.getElementById("blur").classList.add("hidden")
     createTaskModal.classList.add("hidden");
+  });
+  document.getElementById("submit-modify-task").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const name = document.getElementById("name-modify-task").value;
+    const description = document.getElementById("description-modify-task").value;
+    const date = document.getElementById("date-modify-task").value
+    const listId = document.getElementById("list-id-modify-task").value;
+    const taskId = document.getElementById("task-id-modify-task").value;
+
+    const result = await ipcRenderer.invoke(
+      "update-task",
+      taskId,
+      description,
+      date,
+      name,
+    );
+
+    const updateTaskModal = document.getElementById("modify-task-modal");
+    document.getElementById("blur").classList.add("hidden")
+    updateTaskModal.classList.add("hidden");
+    window.location.reload()
   });
 
 document.getElementById("close-description-modal").addEventListener("click", async () => {
@@ -191,7 +234,7 @@ function addNewList(name, color, id) {
   
     const modifyListBtn = document.createElement("button");
     modifyListBtn.className =
-      "inline-block ml-auto place-items-center justify-self-end rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+      "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
     modifyListBtn.appendChild(modifyListIconSvg);
     modifyListBtn.addEventListener("click", async () => {
       const list = await ipcRenderer.invoke("get-list", id)
@@ -206,24 +249,7 @@ function addNewList(name, color, id) {
       // await ipcRenderer.invoke("modify-list", listid);
     });
 
-    const listHeader = document.createElement("h3");
-  listHeader.innerText = name;
-  listHeader.appendChild(modifyListBtn)
-  listHeader.className = "rounded capitalize text-center";
-  listHeader.style.background = color;
-  listHeader.id = "list_header-" + id
-  listHeader.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-    const contextMenu = document.getElementById('context-menu');
-    targetDiv = event.target;
-
-    contextMenu.style.top = `${event.pageY}px`;
-    contextMenu.style.left = `${event.pageX}px`;
-    contextMenu.classList.remove('hidden');
-  });
-  newList.appendChild(listHeader);
-
-  const btnList = document.createElement("div");
+    const btnList = document.createElement("div");
   btnList.className = "overflow-hidden";
 
   const deleteListBtn = document.createElement("button");
@@ -232,7 +258,7 @@ function addNewList(name, color, id) {
   deleteListBtn.className =
     "w-1/2 h-16 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l float-left inline";
   deleteListBtn.addEventListener("click", async () => {
-    if (confirm(getTranslation("Are_Sure")) == true) {
+    if (confirm(getTranslationWithVar("Are_Sure", { title: name.toUpperCase() })) == true) {
       await ipcRenderer.invoke("delete-list", id);
       newList.remove();
     }
@@ -265,7 +291,24 @@ function addNewList(name, color, id) {
   });
   btnList.appendChild(addTaskBtn);
 
-  newList.appendChild(btnList);
+
+    const listHeader = document.createElement("h3");
+  listHeader.innerText = name;
+  listHeader.appendChild(modifyListBtn)
+  listHeader.className = "rounded capitalize text-center p-2";
+  listHeader.style.background = color;
+  listHeader.id = "list_header-" + id
+  listHeader.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    const contextMenu = document.getElementById('context-menu');
+    targetDiv = event.target;
+
+    contextMenu.style.top = `${event.pageY}px`;
+    contextMenu.style.left = `${event.pageX}px`;
+    contextMenu.classList.remove('hidden');
+  });
+  listHeader.appendChild(btnList);
+  newList.appendChild(listHeader);
 
   const taskContainer = document.createElement("div");
   taskContainer.className = "task-container";
@@ -304,6 +347,49 @@ function addNewTask(listElement, taskName, taskId) {
   newTask.id = "task-" + taskId;
   newTask.innerText = taskName;
 
+  const modifyTaskIconSvg = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg",
+  );
+  modifyTaskIconSvg.setAttribute("fill", "none");
+  modifyTaskIconSvg.setAttribute("viewbox", "0 0 24 24");
+  modifyTaskIconSvg.setAttribute("stroke-width", "1.5");
+  modifyTaskIconSvg.setAttribute("stroke", "currentcolor");
+  modifyTaskIconSvg.classList.add("w-6");
+  modifyTaskIconSvg.classList.add("h-6");
+
+  const modifyTaskIconPath = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path",
+  );
+  modifyTaskIconPath.setAttribute(
+    "d",
+    "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
+  );
+  modifyTaskIconPath.setAttribute("stroke-linecap", "round")
+  modifyTaskIconPath.setAttribute("stroke-linejoin", "round")
+
+  modifyTaskIconSvg.appendChild(modifyTaskIconPath);
+
+  const modifyTaskBtn = document.createElement("button");
+  modifyTaskBtn.className =
+    "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+  modifyTaskBtn.appendChild(modifyTaskIconSvg);
+  modifyTaskBtn.addEventListener("click", async () => {
+    const task = await ipcRenderer.invoke("get-tasks-withId", taskId)
+
+    document.getElementById("task-id-modify-task").value = taskId
+    document.getElementById("name-modify-task").value = task[0].name
+    document.getElementById("date-modify-task").value = task[0].date
+    document.getElementById("description-modify-task").value = task[0].description
+    document.getElementById("list-id-modify-task").value = listElement.id.split("-")[1]
+    const modifyTaskModal = document.getElementById("modify-task-modal");
+    document.getElementById("blur").classList.remove("hidden")
+    document.getElementById("name-modify-task").focus()
+    modifyTaskModal.classList.remove("hidden");
+    document.getElementById("description-modal").classList.add("hidden");
+  });
+
   const deleteTaskIconSvg = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "svg",
@@ -331,12 +417,14 @@ function addNewTask(listElement, taskName, taskId) {
     "ml-auto grid place-items-center justify-self-end rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
   deleteTaskBtn.appendChild(deleteTaskIconSvg);
   deleteTaskBtn.addEventListener("click", async () => {
-    if (confirm(getTranslation("Are_Sure")) == true) {
+    if (confirm(getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase() })) == true) {
       await ipcRenderer.invoke("delete-task", taskId);
       newTask.remove();
     }
+    document.getElementById("description-modal").classList.add("hidden");
   });
 
+  newTask.appendChild(modifyTaskBtn);
   newTask.appendChild(deleteTaskBtn);
 
   newTask.addEventListener("click", async function (event) {
@@ -356,6 +444,10 @@ function addNewTask(listElement, taskName, taskId) {
   });
 
   taskContainer.appendChild(newTask);
+}
+
+async function go_config_window() {
+  const list = await ipcRenderer.invoke("config-window")
 }
 
 // window.addEventListener(

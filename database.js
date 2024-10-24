@@ -27,11 +27,24 @@
 //   });
 // }
 
+const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 // Chemin du fichier de base de données
-const dbPath = path.resolve(__dirname, 'tasks.db');
+// const dbPath = path.resolve(__dirname, 'tasks.db');
+if (!fs.existsSync("db.json")) {
+  fs.writeFileSync("db.json", JSON.stringify({ link: "tasks.db" }))
+}
+const file = JSON.parse(fs.readFileSync("db.json", 'utf8'))
+if (!fs.existsSync(path.join(file.link, "Database.db"))) {
+  try {
+    fs.mkdirSync(file.link)
+  } catch (error) {
+    file.path = "Database.db"
+  }
+}
+const dbPath = path.join(file.link, "Database.db");
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Erreur lors de l\'ouverture de la base de données', err);
@@ -43,7 +56,7 @@ db.serialize(() => {
     db.run(`
       CREATE TABLE IF NOT EXISTS lists (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
+        name VARCHAR(255) NOT NULL,
         color TEXT NOT NULL DEFAULT '#FFFFFF'
       )
     `);
@@ -52,7 +65,7 @@ db.serialize(() => {
       CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         list_id INTEGER NOT NULL,
-        name TEXT NOT NULL,
+        name VARCHAR(255) NOT NULL,
         description TEXT NULL DEFAULT NULL,
         position INTEGER NOT NULL DEFAULT 0,
         date DATETIME NULL,
@@ -70,12 +83,9 @@ db.serialize(() => {
       )
     `);
 
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [0, "mysql_db", "Using of mysql database", "false"])
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [1, "db_host", "The host of mysql database", "127.0.0.1"])
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "db_port", "The port of mysql database", "3306"])
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [3, "db_user", "The user credentials of mysql database", "root"])
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [4, "db_password", "The password credentials of mysql database", ""])
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [5, "languages", "Languages of th app", "system"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [0, "languages", "Languages of the app", "system"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [1, "theme", "Theme of the app", "system"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "blur", "Blur of the app", "true"])
   });
 
 module.exports = db;
