@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const shell = require("electron").shell;
 const path = require("path");
-const db = require("./database.js");
+const { db } = require("./database.js");
 const fs = require("fs");
 
 let win;

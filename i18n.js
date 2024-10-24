@@ -19,9 +19,20 @@ i18next.use(Backend).init(
 );
 // Fonction pour mettre à jour tout le contenu de la page en fonction des traductions
 function updateContent() {
+  // window.location.reload()
+  let finalVal = {}
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
-    el.innerHTML = i18next.t(key); // Remplace le texte de l'élément par la traduction
+    const v = el.getAttribute("data-i18n-var")
+    if (v !== null) {
+      let value = v.split("/")
+      for (let i = 0; i < value.length; i++) {
+        finalVal[i] = value[i];
+      }
+      el.innerHTML = i18next.t(key, finalVal); // Remplace le texte de l'élément par la traduction
+    } else {
+      el.innerHTML = i18next.t(key); // Remplace le texte de l'élément par la traduction
+    }
   });
 }
 

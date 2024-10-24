@@ -10,7 +10,7 @@
     "build:css": "pnpx tailwindcss -i ./input.css -o style.css"
   },
   "keywords": [],
-  "author": "",
+  "author": "Marcel Demange",
   "license": "ISC",
   "dependencies": {
     "@editorjs/checklist": "^1.6.0",

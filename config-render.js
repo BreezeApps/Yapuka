@@ -1,12 +1,19 @@
 const { ipcRenderer } = require("electron");
 // require("./theme.js");
-const { getLanguages, changesLanguage } = require("./i18n.js")
+const { getLanguages, changesLanguage, updateContent } = require("./i18n.js")
+const { make_backup, get_latest_backup } = require("./database.js")
 
 document.getElementById('DB_file').addEventListener('click', (e) => {
   e.preventDefault
   window.postMessage({
     type: 'select-dirs'
   })
+})
+
+document.getElementById("backup-button").addEventListener("click", (e) => {
+  e.preventDefault
+  const file = make_backup()
+  window.location.reload()
 })
 
 // function test() {
@@ -28,6 +35,11 @@ async function load() {
     document.getElementById("blur").checked = true
   } else {
     document.getElementById("blur").checked = false
+  }
+
+  const back = get_latest_backup(true)
+  if(back !== false) {
+    document.getElementById("backup-dir").appendChild(back)
   }
 
   themeSetup();
@@ -60,21 +72,6 @@ async function themeChange(value) {
 async function blurChange(value) {
   const blur = await ipcRenderer.invoke("update-blur", value);
 }
-// if (theme === "dark") {
-//   document.documentElement.classList.add("dark");
-//   document.documentElement.classList.remove("light");
-// } else if (theme === "light") {
-//   document.documentElement.classList.add("light");
-//   document.documentElement.classList.remove("dark");
-// } else {
-//   if(window.matchMedia('(prefers-color-scheme: light)').matches) {
-//     document.documentElement.classList.add("light");
-//     document.documentElement.classList.remove("dark");
-//   } else {
-//     document.documentElement.classList.add("dark");
-//     document.documentElement.classList.remove("light");
-//   }
-// }
 
 function themeSetup() {
   if (localStorage.theme === "dark") {
@@ -96,12 +93,3 @@ function themeSetup() {
     }
   }
 }
-
-// async function configh1() {
-//     const host = await ipcRenderer.invoke('get-config-variable', 'database.host');
-
-//     const test = document.getElementById('test')
-//     test.innerHTML = host
-//   }
-
-// configh1()

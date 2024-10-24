@@ -1,12 +1,42 @@
 const { ipcRenderer } = require('electron')
-// const { Menu, MenuItem } = remote;
-// require("./theme.js");
-const { updateContent , getTranslation, getTranslationWithVar} = require("./i18n.js")
-// const EditorJS = require("@editorjs/editorjs")
-// const Header = require("@editorjs/header")
-// const LinkTool = require("@editorjs/link")
-// const SimpleImage = require("@editorjs/simple-image")
-// const Checklist = require("@editorjs/checklist")
+const { updateContent, getTranslationWithVar} = require("./i18n.js")
+
+function activeButton(id) {
+  const button = document.getElementById(id)
+  button.removeAttribute("disabled");
+
+  button.classList.remove("bg-indigo-100")
+  button.classList.remove("text-indigo-700")
+  button.classList.remove("hover:bg-indigo-200")
+
+  button.classList.add("bg-blue-700")
+  button.classList.add("hover:bg-blue-800")
+  button.classList.add("text-white")
+}
+function deactiveButton(id) {
+  const button = document.getElementById(id)
+  button.setAttribute("disabled", "disabled");
+
+  button.classList.add("bg-indigo-100")
+  button.classList.add("text-indigo-700")
+  button.classList.add("hover:bg-indigo-200")
+
+  button.classList.remove("bg-blue-700")
+  button.classList.remove("hover:bg-blue-800")
+  button.classList.remove("text-white")
+}
+
+function onmodif(element) {
+  const elementType = element.id.split("-")[2]
+  const elementMod = element.id.split("-")[1]
+  if (elementMod === "modify") {
+    if(elementType === "task") {
+      activeButton("button-submit-modify-task")
+    } else if (elementType === "list") {
+      activeButton("button-submit-modify-list")
+    }
+  }
+}
 
 // Charger les listes et les tâches au démarrage
 window.onload = async () => {
@@ -42,6 +72,9 @@ window.onload = async () => {
       document.documentElement.classList.remove("light");
     }
   }
+  setTimeout(function() {
+    updateContent()
+  }, 3000);
 };
 
 // let url = document.getElementById('url');
@@ -130,6 +163,7 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
     const id = document.getElementById("id-modify-list").value;
     const name = document.getElementById("name-modify-list").value;
     const color = document.getElementById("color-modify-list").value;
+    deactiveButton("button-submit-modify-list")
 
     const result = await ipcRenderer.invoke("update-list", id, name, color);
 
@@ -175,6 +209,7 @@ document.getElementById("submit-create-task").addEventListener("submit", async f
     const date = document.getElementById("date-modify-task").value
     const listId = document.getElementById("list-id-modify-task").value;
     const taskId = document.getElementById("task-id-modify-task").value;
+    deactiveButton("button-submit-modify-task")
 
     const result = await ipcRenderer.invoke(
       "update-task",

@@ -31,20 +31,28 @@ const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
+function get_link() {
+  const file = JSON.parse(fs.readFileSync("db.json", 'utf8'))
+  if (file.link === "Yapuka_Data") {
+    file.link = path.join(__dirname, "Yapuka_Data")
+  }
+  return file.link
+}
+
 // Chemin du fichier de base de données
 // const dbPath = path.resolve(__dirname, 'tasks.db');
 if (!fs.existsSync("db.json")) {
-  fs.writeFileSync("db.json", JSON.stringify({ link: "tasks.db" }))
+  fs.writeFileSync("db.json", JSON.stringify({ link: "Yapuka_Data" }))
 }
-const file = JSON.parse(fs.readFileSync("db.json", 'utf8'))
-if (!fs.existsSync(path.join(file.link, "Database.db"))) {
+const file = get_link()
+if (!fs.existsSync(path.join(file, "Database.db"))) {
   try {
-    fs.mkdirSync(file.link)
+    fs.mkdirSync(file)
   } catch (error) {
     file.path = "Database.db"
   }
 }
-const dbPath = path.join(file.link, "Database.db");
+const dbPath = path.join(file, "Database.db");
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Erreur lors de l\'ouverture de la base de données', err);
@@ -85,7 +93,114 @@ db.serialize(() => {
 
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [0, "languages", "Languages of the app", "system"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [1, "theme", "Theme of the app", "system"])
-    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "blur", "Blur of the app", "true"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "blur", "Blur of the app", "1"])
   });
 
-module.exports = db;
+/**
+ * The function `make_backup` creates a backup of a database file with the current date appended to the
+ * backup file name.
+ */
+function make_backup(returnElement) {
+  const file = path.join(get_link(), "Database.db")
+
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var yyyy = today.getFullYear();
+  today = dd + '-' + mm + '-' + yyyy;
+
+  const name = "database_backup_" + today + ".db"
+
+  const dest = path.join(get_link(), name)
+  fs.copyFileSync(file, dest)
+
+  if (returnElement === true) {
+    const element = document.createElement("a")
+    element.href = "file://" + dest
+    element.setAttribute("target", "_blank");
+    element.download = name
+    element.classList.add("rounded-lg", "bg-blue-700", "px-5", "py-2.5", "text-center", "text-sm", "font-medium", "text-white", "hover:bg-blue-800", "focus:outline-none", "focus:ring-4", "focus:ring-blue-300", "dark:bg-blue-600", "dark:hover:bg-blue-700", "dark:focus:ring-blue-800")
+    element.setAttribute("data-i18n", "Download_Backup")
+    return element
+  }
+  return dest
+}
+
+function getDays(milli){
+  let minutes = Math.floor(milli / 60000);
+  let hours = Math.round(minutes / 60);
+  let days = Math.round(hours / 24);
+
+  return days
+};
+
+function get_latest_backup(returnElement) {
+  // const file = path.join(get_link(), "Database.db")
+  let files = Array()
+  let filenames = fs.readdirSync(get_link());
+  filenames.forEach((file) => {
+      if (file.split("_")[0] === "database" && file.split("_")[1] === "backup") {
+        files.push(file)
+      }
+  });
+  if (files === Array(0)) {
+    return false
+  }
+  const today = new Date()
+
+  let lastFile;
+  files.forEach((backup) => {
+    let date = backup.split("_")[2].split(".")[0]
+    date = date.split("-")[2] + "-" + date.split("-")[1] + "-" + date.split("-")[0]
+    const fileDate = new Date(date)
+    const diff = today.getTime() - fileDate.getTime()
+    if(lastFile !== undefined){
+      if(lastFile.diff > diff) {
+        lastFile = { diff: diff, date: fileDate, name: backup}
+      }
+    } else {
+      lastFile = { diff: diff, date: fileDate, name: backup}
+    }
+  })
+
+  const diff = getDays(lastFile.diff)
+
+  if (returnElement === true) {
+    const element = document.createElement("a")
+    element.href = "file://" + path.join(get_link(), lastFile.name)
+    element.setAttribute("target", "_blank");
+    element.download = lastFile.name
+    element.classList.add("rounded-lg", "bg-blue-700", "px-5", "py-2.5", "text-center", "text-sm", "font-medium", "text-white", "hover:bg-blue-800", "focus:outline-none", "focus:ring-4", "focus:ring-blue-300", "dark:bg-blue-600", "dark:hover:bg-blue-700", "dark:focus:ring-blue-800")
+    element.setAttribute("data-i18n", "Download_Backup")
+    element.setAttribute("data-i18n-var", diff)
+    element.innerText = ""
+    return element
+  }
+  return lastFile
+
+
+
+  // var today = new Date();
+  // var dd = String(today.getDate()).padStart(2, '0');
+  // var mm = String(today.getMonth() + 1).padStart(2, '0');
+  // var yyyy = today.getFullYear();
+  // today = dd + '-' + mm + '-' + yyyy;
+
+  // const name = "database_backup_" + today + ".db"
+
+  // const dest = path.join(get_link(), name)
+  // fs.copyFileSync(file, dest)
+
+  // if (returnElement === true) {
+  //   const element = document.createElement("a")
+  //   element.href = "file://" + dest
+  //   element.setAttribute("target", "_blank");
+  //   element.download = name
+  //   element.classList.add("rounded-lg", "bg-blue-700", "px-5", "py-2.5", "text-center", "text-sm", "font-medium", "text-white", "hover:bg-blue-800", "focus:outline-none", "focus:ring-4", "focus:ring-blue-300", "dark:bg-blue-600", "dark:hover:bg-blue-700", "dark:focus:ring-blue-800")
+  //   element.setAttribute("data-i18n", "Download_Backup")
+  //   return element
+  // }
+  // return dest
+}
+
+module.exports = { db, make_backup, get_link, get_latest_backup };
