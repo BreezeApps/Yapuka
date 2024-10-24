@@ -1,3 +1,5 @@
 node_modules
 pnpm-lock.yaml
+Database.db
 tasks.db
+db.json
