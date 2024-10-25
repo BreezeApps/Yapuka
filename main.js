@@ -375,6 +375,7 @@ ipcMain.handle("config-window", (event) => {
       contextIsolation: false,
     },
   });
+  let reload = true
   ipcMain.on("select-dirs", async (event, arg) => {
     const result = await dialog.showOpenDialog(win2, {
       properties: ["openDirectory"],
@@ -384,11 +385,16 @@ ipcMain.handle("config-window", (event) => {
     } else {
       const dir = path.join(result.filePaths[0], "Yapuka_Data");
       fs.writeFileSync(path.join(__dirname, "Yapuka_Data", "db.json"), JSON.stringify({ link: dir }))
+      reload = false
+      app.relaunch()
+      app.exit()
     }
   });
   win2.on("closed", function () {
     win2 = null;
-    win.webContents.reload();
+    if (reload === true) {
+      win.webContents.reload();
+    }
   });
   win2.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("file://")) {
