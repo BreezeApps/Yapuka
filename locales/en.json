@@ -11,7 +11,7 @@
   "Color": "Color",
   "Name": "Name",
   "Date": "Date",
-  "db_file": "Database File",
+  "data_file": "Data directory",
   "Create_a_Task": "Create new task",
   "Modify_Task": "Modify the task",
   "Create_the_Task": "Create task",

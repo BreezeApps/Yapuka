@@ -1,7 +1,9 @@
 const { ipcRenderer } = require("electron");
 // require("./theme.js");
 const { getLanguages, changesLanguage, updateContent } = require("./i18n.js")
-const { make_backup, get_latest_backup } = require("./database.js")
+const { make_backup, get_latest_backup, get_link } = require("./database.js")
+
+document.getElementById('data_link').value = get_link()
 
 document.getElementById('DB_file').addEventListener('click', (e) => {
   e.preventDefault

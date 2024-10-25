@@ -11,7 +11,7 @@
   "Color": "Couleur",
   "Name": "Nom",
   "Date": "Date",
-  "db_file": "Fichier base de donnees",
+  "data_file": "Dossier de data",
   "Create_a_Task": "Créer une nouvelle tâche",
   "Modify_Task": "Modifier la tâche",
   "Create_the_Task": "Créer la tâche",

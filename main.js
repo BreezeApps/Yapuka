@@ -343,7 +343,9 @@ ipcMain.handle("config-window", (event) => {
   win2 = new BrowserWindow({
     width: 660,
     height: 600,
-    icon: __dirname + "/logo.svg",
+    minimizable: false,
+    resizable: false,
+    icon: path.join(__dirname, 'build/icon.ico'),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),

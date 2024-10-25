@@ -74,7 +74,7 @@ window.onload = async () => {
   }
   setTimeout(function () {
     updateContent();
-  }, 2000);
+  }, 500);
 };
 
 // let url = document.getElementById('url');
@@ -263,7 +263,7 @@ function addNewList(name, color, id) {
 
   const newList = document.createElement("div");
   newList.className =
-    "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline m-2";
+    "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline m-3";
 
   const modifyListIconSvg = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -398,8 +398,8 @@ function addNewTask(listElement, taskName, taskId) {
   const taskContainer = listElement.querySelector(".task-container");
 
   const newTask = document.createElement("div");
-  newTask.className =
-    "text-slate-800 flex w-full items-center rounded-md p-2 pl-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100";
+  newTask.className = // p-2 pl-3
+    "text-slate-800 flex w-full items-center rounded-md transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100";
   newTask.role = "button";
   newTask.id = "task-" + taskId;
   newTask.innerText = taskName;
@@ -429,8 +429,8 @@ function addNewTask(listElement, taskName, taskId) {
   modifyTaskIconSvg.appendChild(modifyTaskIconPath);
 
   const modifyTaskBtn = document.createElement("button");
-  modifyTaskBtn.className = // place-self-end
-    "inline-block ml-auto place-items-center rounded-md border border-transparent p-[0.1px] text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+  modifyTaskBtn.className = // p-[0.1px]
+    "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
   modifyTaskBtn.appendChild(modifyTaskIconSvg);
   modifyTaskBtn.addEventListener("click", async () => {
     document.getElementById("description-modal").classList.add("hidden");

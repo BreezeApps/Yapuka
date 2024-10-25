@@ -52,7 +52,7 @@
   },
   "keywords": [],
   "author": {
-    "name":"Marcel Demange",
+    "name": "Marcel Demange",
     "email": "dem9ngemarcel@laposte.net",
     "url": "https://github.com/Marvideo2009"
   },
@@ -63,12 +63,13 @@
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-fs-backend": "^2.3.2",
     "mysql2": "^3.11.3",
+    "os": "^0.1.2",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "electron-builder": "^25.1.8",
     "autoprefixer": "^10.4.20",
     "electron": "^32.2.0",
+    "electron-builder": "^25.1.8",
     "postcss-loader": "^8.1.1",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
@@ -81,6 +82,15 @@
         "deb",
         "AppImage"
       ]
-    }
+    },
+    "extraFiles": [
+      {
+        "from": "Yapuka_Data",
+        "to": "Yapuka_Data",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   }
 }

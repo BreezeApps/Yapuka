@@ -6,7 +6,7 @@
     <title>Task Manager</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
-  <body onload="load()">
+  <body onload="load()" class="overflow-y-hidden">
     <!-- <nav class="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="index.html" class="flex items-center space-x-3 rtl:space-x-reverse">
@@ -168,9 +168,16 @@
               <button
                 id="DB_file"
                 name="DB_file"
-                data-i18n="db_file"
+                data-i18n="data_file"
                 class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
               ></button>
+              <input 
+              type="text"
+              disabled
+              name="data-link"
+              id="data_link"
+              class="text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
             </div>
             <div class="flex items-center justify-between">
               <span
@@ -192,7 +199,6 @@
                 id="backup-button"
                 class="rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 transition-colors duration-300 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 data-i18n="Make_Backup"
-                data-i18n-var='test/azerty'
               ></button>
             </div>
           </div>
@@ -219,13 +225,6 @@
               <span>64px</span>
             </div>
           </div> -->
-        </div>
-        <div class="flex justify-end space-x-4">
-          <button
-            type="button"
-            class="rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 transition-colors duration-300 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            data-i18n="Reset"
-          ></button>
         </div>
       </form>
     </div>

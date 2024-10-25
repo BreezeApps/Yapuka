@@ -32,7 +32,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 function get_link() {
-  const file = JSON.parse(fs.readFileSync("db.json", 'utf8'))
+  const file = JSON.parse(fs.readFileSync("Yapuka_Data/db.json", 'utf8'))
   if (file.link === "Yapuka_Data") {
     file.link = path.join(__dirname, "Yapuka_Data")
   }
@@ -41,8 +41,11 @@ function get_link() {
 
 // Chemin du fichier de base de données
 // const dbPath = path.resolve(__dirname, 'tasks.db');
-if (!fs.existsSync("db.json")) {
-  fs.writeFileSync("db.json", JSON.stringify({ link: "Yapuka_Data" }))
+if (!fs.existsSync("Yapuka_Data/db.json")) {
+  if(!fs.existsSync("Yapuka_Data")) {
+    fs.mkdirSync("Yapuka_Data")
+  }
+  fs.writeFileSync("Yapuka_Data/db.json", JSON.stringify({ link: "Yapuka_Data" }))
 }
 const file = get_link()
 if (!fs.existsSync(path.join(file, "Database.db"))) {
@@ -143,7 +146,7 @@ function get_latest_backup(returnElement) {
         files.push(file)
       }
   });
-  if (files === Array(0)) {
+  if (files.length === 0) {
     return false
   }
   const today = new Date()
@@ -203,4 +206,4 @@ function get_latest_backup(returnElement) {
   // return dest
 }
 
-module.exports = { db, make_backup, get_link, get_latest_backup };
+module.exports = { db, make_backup, get_link, get_latest_backup, get_link };
