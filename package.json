@@ -1,6 +1,43 @@
 {
   "name": "Yapuka",
   "version": "1.0.0",
+  "icons": [
+    {
+      "src": "build/icons/16x16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "build/icons/32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "build/icons/64x64.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    },
+    {
+      "src": "build/icons/128x128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "build/icons/256x256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "build/icons/512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "build/icons/1024x1024.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
+    }
+  ],
   "description": "Application de gestion de taches et listes",
   "main": "main.js",
   "scripts": {
@@ -8,7 +45,7 @@
     "style": "pnpx tailwindcss -i ./input.css -o style.css --watch",
     "dev": "pnpm run build:css && pnpm start",
     "build:css": "pnpx tailwindcss -i ./input.css -o style.css",
-    "build:all": "electron-builder",
+    "build:all": "electron-builder -mwl",
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
     "build:mac": "electron-builder --mac"
