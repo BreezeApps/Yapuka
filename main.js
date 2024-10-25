@@ -48,6 +48,7 @@ app.on("window-all-closed", () => {
 });
 
 app.once('ready-to-show', () => {
+  autoUpdater.autoDownload = false
   autoUpdater.checkForUpdatesAndNotify();
 });
 
@@ -57,6 +58,10 @@ autoUpdater.on('update-available', () => {
 autoUpdater.on('update-downloaded', () => {
   mainWindow.webContents.send('update_downloaded');
 });
+
+ipcMain.handle("download_update", (event) => {
+  autoUpdater.downloadUpdate()
+})
 
 ipcMain.on('restart_app', () => {
   autoUpdater.quitAndInstall();
