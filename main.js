@@ -28,7 +28,7 @@ async function createWindow() {
     return { action: "deny" };
   });
   win.loadFile("index.html");
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
