@@ -9,10 +9,13 @@
   <body>
     <div id="notification" class="hidden">
       <p id="message"></p>
-      <button id="close-button" onClick="closeNotification()">
+      <button id="close-button" onClick="closeNotification()" class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
         Close
       </button>
-      <button id="restart-button" onClick="restartApp()" class="hidden">
+      <button id="download-button" onClick="downloadUpdate()" class="hidden" class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
+        Downloading Now
+      </button>
+      <button id="restart-button" onClick="restartApp()" class="hidden" class="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
         Restart
       </button>
     </div>

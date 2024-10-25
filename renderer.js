@@ -1,20 +1,22 @@
 const { ipcRenderer } = require("electron");
 const { updateContent, getTranslationWithVar } = require("./i18n.js");
 
-
-
 const notification = document.getElementById('notification');
 const message = document.getElementById('message');
-const restartButton = document.getElementById('restart-button');ipcRenderer.on('update_available', () => {
-ipcRenderer.removeAllListeners('update_available');
-  message.innerText = 'A new update is available. Downloading now...';
+const restartButton = document.getElementById('restart-button');
+const downloadButton = document.getElementById('download-button');
+ipcRenderer.on('update_available', () => {
+  ipcRenderer.removeAllListeners('update_available');
+  message.innerText = 'A new update is available.';
   notification.classList.remove('hidden');
+  downloadButton.classList.remove('hidden')
 });
 ipcRenderer.on('update_downloaded', () => {
   ipcRenderer.removeAllListeners('update_downloaded');
   message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
   restartButton.classList.remove('hidden');
   notification.classList.remove('hidden');
+  downloadButton.classList.add('hidden')
 });
 
 function closeNotification() {
@@ -22,6 +24,9 @@ function closeNotification() {
 }
 function restartApp() {
   ipcRenderer.send('restart_app');
+}
+function downloadUpdate() {
+  ipcRenderer.send("download_update")
 }
 
 function activeButton(id) {
