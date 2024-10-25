@@ -1,39 +1,39 @@
-const { ipcRenderer } = require('electron')
-const { updateContent, getTranslationWithVar} = require("./i18n.js")
+const { ipcRenderer } = require("electron");
+const { updateContent, getTranslationWithVar } = require("./i18n.js");
 
 function activeButton(id) {
-  const button = document.getElementById(id)
+  const button = document.getElementById(id);
   button.removeAttribute("disabled");
 
-  button.classList.remove("bg-indigo-100")
-  button.classList.remove("text-indigo-700")
-  button.classList.remove("hover:bg-indigo-200")
+  button.classList.remove("bg-indigo-100");
+  button.classList.remove("text-indigo-700");
+  button.classList.remove("hover:bg-indigo-200");
 
-  button.classList.add("bg-blue-700")
-  button.classList.add("hover:bg-blue-800")
-  button.classList.add("text-white")
+  button.classList.add("bg-blue-700");
+  button.classList.add("hover:bg-blue-800");
+  button.classList.add("text-white");
 }
 function deactiveButton(id) {
-  const button = document.getElementById(id)
+  const button = document.getElementById(id);
   button.setAttribute("disabled", "disabled");
 
-  button.classList.add("bg-indigo-100")
-  button.classList.add("text-indigo-700")
-  button.classList.add("hover:bg-indigo-200")
+  button.classList.add("bg-indigo-100");
+  button.classList.add("text-indigo-700");
+  button.classList.add("hover:bg-indigo-200");
 
-  button.classList.remove("bg-blue-700")
-  button.classList.remove("hover:bg-blue-800")
-  button.classList.remove("text-white")
+  button.classList.remove("bg-blue-700");
+  button.classList.remove("hover:bg-blue-800");
+  button.classList.remove("text-white");
 }
 
 function onmodif(element) {
-  const elementType = element.id.split("-")[2]
-  const elementMod = element.id.split("-")[1]
+  const elementType = element.id.split("-")[2];
+  const elementMod = element.id.split("-")[1];
   if (elementMod === "modify") {
-    if(elementType === "task") {
-      activeButton("button-submit-modify-task")
+    if (elementType === "task") {
+      activeButton("button-submit-modify-task");
     } else if (elementType === "list") {
-      activeButton("button-submit-modify-list")
+      activeButton("button-submit-modify-list");
     }
   }
 }
@@ -42,10 +42,10 @@ function onmodif(element) {
 window.onload = async () => {
   const lists = await ipcRenderer.invoke("get-lists");
   const blur = await ipcRenderer.invoke("get-blur");
-  if(blur[0].value === "1") {
-    document.getElementById("blur").classList.add("backdrop-blur-md")
+  if (blur[0].value === "1") {
+    document.getElementById("blur").classList.add("backdrop-blur-md");
   } else {
-    document.getElementById("blur").classList.add("backdrop-blur-none")
+    document.getElementById("blur").classList.add("backdrop-blur-none");
   }
   lists.forEach(async (list) => {
     const listElement = addNewList(list.name, list.color, list.id);
@@ -54,8 +54,8 @@ window.onload = async () => {
       addNewTask(listElement, task.name, task.id);
     });
   });
-  let theme = await ipcRenderer.invoke("get-theme")
-  theme = theme[0].value
+  let theme = await ipcRenderer.invoke("get-theme");
+  theme = theme[0].value;
   localStorage.setItem("theme", theme);
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
@@ -64,7 +64,7 @@ window.onload = async () => {
     document.documentElement.classList.add("light");
     document.documentElement.classList.remove("dark");
   } else {
-    if(window.matchMedia('(prefers-color-scheme: light)').matches) {
+    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
       document.documentElement.classList.add("light");
       document.documentElement.classList.remove("dark");
     } else {
@@ -72,9 +72,9 @@ window.onload = async () => {
       document.documentElement.classList.remove("light");
     }
   }
-  setTimeout(function() {
-    updateContent()
-  }, 3000);
+  setTimeout(function () {
+    updateContent();
+  }, 2000);
 };
 
 // let url = document.getElementById('url');
@@ -84,67 +84,77 @@ window.onload = async () => {
 // });
 
 // Ajout d'un event listener pour afficher le menu contextuel
-const contextMenu = document.getElementById('context-menu');
-const editButton = document.getElementById('edit-button');
+const contextMenu = document.getElementById("context-menu");
+const editButton = document.getElementById("edit-button");
 let targetDiv = null;
 
 // Cacher le menu contextuel lors d'un clic en dehors
-document.addEventListener('click', (event) => {
+document.addEventListener("click", (event) => {
   if (!contextMenu.contains(event.target)) {
-    contextMenu.classList.add('hidden');
+    contextMenu.classList.add("hidden");
   }
 });
 
 // Action lors du clic sur le bouton Modifier
-editButton.addEventListener('click', async () => {
+editButton.addEventListener("click", async () => {
   if (targetDiv && targetDiv.id.split("-")[0] === "list_header") {
-    editButton.classList.remove("hidden")
-    const id = targetDiv.id
-    const list = await ipcRenderer.invoke("get-list", id.split("-")[1])
+    editButton.classList.remove("hidden");
+    const id = targetDiv.id;
+    const list = await ipcRenderer.invoke("get-list", id.split("-")[1]);
 
-    document.getElementById("id-modify-list").value = list[0].id
-    document.getElementById("name-modify-list").value = list[0].name
-    document.getElementById("color-modify-list").value = list[0].color
+    document.getElementById("id-modify-list").value = list[0].id;
+    document.getElementById("name-modify-list").value = list[0].name;
+    document.getElementById("color-modify-list").value = list[0].color;
     const modifyListModal = document.getElementById("modify-liste-modal");
     modifyListModal.classList.remove("hidden");
-    document.getElementById("blur").classList.remove("hidden")
-    contextMenu.classList.add("hidden")
+    document.getElementById("blur").classList.remove("hidden");
+    contextMenu.classList.add("hidden");
   } else {
-    editButton.classList.add("hidden")
+    editButton.classList.add("hidden");
   }
 });
 
 // Ajouter une nouvelle liste
 document.getElementById("add-list-btn").addEventListener("click", async () => {
   const createListModal = document.getElementById("create-liste-modal");
-  document.getElementById("blur").classList.remove("hidden")
+  document.getElementById("blur").classList.remove("hidden");
   createListModal.classList.remove("hidden");
-  document.getElementById("name-list").focus()
+  document.getElementById("name-list").focus();
 });
-document.getElementById("close-create-list-modal").addEventListener("click", async () => {
+document
+  .getElementById("close-create-list-modal")
+  .addEventListener("click", async () => {
     const createListModal = document.getElementById("create-liste-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     createListModal.classList.add("hidden");
   });
 
-  document.getElementById("close-modify-list-modal").addEventListener("click", async () => {
+document
+  .getElementById("close-modify-list-modal")
+  .addEventListener("click", async () => {
     const modifyListModal = document.getElementById("modify-liste-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     modifyListModal.classList.add("hidden");
   });
 
-document.getElementById("close-create-task-modal").addEventListener("click", async () => {
+document
+  .getElementById("close-create-task-modal")
+  .addEventListener("click", async () => {
     const createListModal = document.getElementById("create-task-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     createListModal.classList.add("hidden");
   });
-  document.getElementById("close-modify-task-modal").addEventListener("click", async () => {
+document
+  .getElementById("close-modify-task-modal")
+  .addEventListener("click", async () => {
     const modifyListModal = document.getElementById("modify-task-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     modifyListModal.classList.add("hidden");
   });
 
-document.getElementById("submit-create-liste").addEventListener("submit", async function (event) {
+document
+  .getElementById("submit-create-liste")
+  .addEventListener("submit", async function (event) {
     event.preventDefault();
     const name = document.getElementById("name-list").value;
     const color = document.getElementById("color-list").value;
@@ -153,17 +163,19 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
     addNewList(name, color, result.id);
 
     const createListModal = document.getElementById("create-liste-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     createListModal.classList.add("hidden");
-    updateContent()
+    updateContent();
   });
 
-  document.getElementById("submit-modify-liste").addEventListener("submit", async function (event) {
+document
+  .getElementById("submit-modify-liste")
+  .addEventListener("submit", async function (event) {
     event.preventDefault();
     const id = document.getElementById("id-modify-list").value;
     const name = document.getElementById("name-modify-list").value;
     const color = document.getElementById("color-modify-list").value;
-    deactiveButton("button-submit-modify-list")
+    deactiveButton("button-submit-modify-list");
 
     const result = await ipcRenderer.invoke("update-list", id, name, color);
 
@@ -175,16 +187,18 @@ document.getElementById("submit-create-liste").addEventListener("submit", async 
     // });
 
     const createListModal = document.getElementById("modify-liste-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     createListModal.classList.add("hidden");
-    window.location.reload()
+    window.location.reload();
   });
 
-document.getElementById("submit-create-task").addEventListener("submit", async function (event) {
+document
+  .getElementById("submit-create-task")
+  .addEventListener("submit", async function (event) {
     event.preventDefault();
     const name = document.getElementById("name-task").value;
     const description = document.getElementById("description-task").value;
-    const date = document.getElementById("date-task").value
+    const date = document.getElementById("date-task").value;
     const listId = document.getElementById("list-id-task").value;
 
     const result = await ipcRenderer.invoke(
@@ -199,17 +213,21 @@ document.getElementById("submit-create-task").addEventListener("submit", async f
     addNewTask(listElement, name, result.id);
 
     const createTaskModal = document.getElementById("create-task-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     createTaskModal.classList.add("hidden");
   });
-  document.getElementById("submit-modify-task").addEventListener("submit", async function (event) {
+document
+  .getElementById("submit-modify-task")
+  .addEventListener("submit", async function (event) {
     event.preventDefault();
     const name = document.getElementById("name-modify-task").value;
-    const description = document.getElementById("description-modify-task").value;
-    const date = document.getElementById("date-modify-task").value
+    const description = document.getElementById(
+      "description-modify-task",
+    ).value;
+    const date = document.getElementById("date-modify-task").value;
     const listId = document.getElementById("list-id-modify-task").value;
     const taskId = document.getElementById("task-id-modify-task").value;
-    deactiveButton("button-submit-modify-task")
+    deactiveButton("button-submit-modify-task");
 
     const result = await ipcRenderer.invoke(
       "update-task",
@@ -220,19 +238,23 @@ document.getElementById("submit-create-task").addEventListener("submit", async f
     );
 
     const updateTaskModal = document.getElementById("modify-task-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     updateTaskModal.classList.add("hidden");
-    window.location.reload()
+    window.location.reload();
   });
 
-document.getElementById("close-description-modal").addEventListener("click", async () => {
+document
+  .getElementById("close-description-modal")
+  .addEventListener("click", async () => {
     const descriptionModal = document.getElementById("description-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     descriptionModal.classList.add("hidden");
   });
-document.getElementById("close-description-modal-foot").addEventListener("click", async () => {
+document
+  .getElementById("close-description-modal-foot")
+  .addEventListener("click", async () => {
     const descriptionModal = document.getElementById("description-modal");
-    document.getElementById("blur").classList.add("hidden")
+    document.getElementById("blur").classList.add("hidden");
     descriptionModal.classList.add("hidden");
   });
 
@@ -241,59 +263,61 @@ function addNewList(name, color, id) {
 
   const newList = document.createElement("div");
   newList.className =
-    "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline";
+    "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline m-2";
 
-    const modifyListIconSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg",
-    );
-    modifyListIconSvg.setAttribute("fill", "none");
-    modifyListIconSvg.setAttribute("viewbox", "0 0 24 24");
-    modifyListIconSvg.setAttribute("stroke-width", "1.5");
-    modifyListIconSvg.setAttribute("stroke", "currentcolor");
-    modifyListIconSvg.classList.add("w-6");
-    modifyListIconSvg.classList.add("h-6");
-  
-    const modifyListIconPath = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path",
-    );
-    modifyListIconPath.setAttribute(
-      "d",
-      "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
-    );
-    modifyListIconPath.setAttribute("stroke-linecap", "round")
-    modifyListIconPath.setAttribute("stroke-linejoin", "round")
-  
-    modifyListIconSvg.appendChild(modifyListIconPath);
-  
-    const modifyListBtn = document.createElement("button");
-    modifyListBtn.className =
-      "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
-    modifyListBtn.appendChild(modifyListIconSvg);
-    modifyListBtn.addEventListener("click", async () => {
-      const list = await ipcRenderer.invoke("get-list", id)
+  const modifyListIconSvg = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg",
+  );
+  modifyListIconSvg.setAttribute("fill", "none");
+  modifyListIconSvg.setAttribute("viewbox", "0 0 24 24");
+  modifyListIconSvg.setAttribute("stroke-width", "1.5");
+  modifyListIconSvg.setAttribute("stroke", "currentcolor");
+  modifyListIconSvg.classList.add("w-6");
+  modifyListIconSvg.classList.add("h-6");
 
-      document.getElementById("id-modify-list").value = list[0].id
-      document.getElementById("name-modify-list").value = list[0].name
-      document.getElementById("color-modify-list").value = list[0].color
-      const modifyListModal = document.getElementById("modify-liste-modal");
-      document.getElementById("blur").classList.remove("hidden")
-      document.getElementById("name-modify-list").focus()
-      modifyListModal.classList.remove("hidden");
-      // await ipcRenderer.invoke("modify-list", listid);
-    });
+  const modifyListIconPath = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "path",
+  );
+  modifyListIconPath.setAttribute(
+    "d",
+    "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
+  );
+  modifyListIconPath.setAttribute("stroke-linecap", "round");
+  modifyListIconPath.setAttribute("stroke-linejoin", "round");
 
-    const btnList = document.createElement("div");
+  modifyListIconSvg.appendChild(modifyListIconPath);
+
+  const modifyListBtn = document.createElement("button");
+  modifyListBtn.className =
+    "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+  modifyListBtn.appendChild(modifyListIconSvg);
+  modifyListBtn.addEventListener("click", async () => {
+    const list = await ipcRenderer.invoke("get-list", id);
+
+    document.getElementById("id-modify-list").value = list[0].id;
+    document.getElementById("name-modify-list").value = list[0].name;
+    document.getElementById("color-modify-list").value = list[0].color;
+    const modifyListModal = document.getElementById("modify-liste-modal");
+    document.getElementById("blur").classList.remove("hidden");
+    document.getElementById("name-modify-list").focus();
+    modifyListModal.classList.remove("hidden");
+  });
+
+  const btnList = document.createElement("div");
   btnList.className = "overflow-hidden";
 
   const deleteListBtn = document.createElement("button");
-  deleteListBtn.setAttribute("data-i18n", "Delete_list")
-  // deleteListBtn.innerText = "Supprimer la liste";
+  deleteListBtn.setAttribute("data-i18n", "Delete_list");
   deleteListBtn.className =
-    "w-1/2 h-16 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l float-left inline";
+    "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-l float-left inline";
   deleteListBtn.addEventListener("click", async () => {
-    if (confirm(getTranslationWithVar("Are_Sure", { title: name.toUpperCase() })) == true) {
+    if (
+      confirm(
+        getTranslationWithVar("Are_Sure", { title: name.toUpperCase() }),
+      ) == true
+    ) {
       await ipcRenderer.invoke("delete-list", id);
       newList.remove();
     }
@@ -301,10 +325,9 @@ function addNewList(name, color, id) {
   btnList.appendChild(deleteListBtn);
 
   const addTaskBtn = document.createElement("button");
-  addTaskBtn.setAttribute("data-i18n", "Add_a_Task")
-  // addTaskBtn.innerText = "Ajouter une tâche";
+  addTaskBtn.setAttribute("data-i18n", "Add_a_Task");
   addTaskBtn.className =
-    "w-1/2 h-16 bg-gray-200 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r float-left inline";
+    "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-r float-left inline";
   addTaskBtn.addEventListener("click", async () => {
     document.getElementById("list-id-task").value = id;
     const createTaskModal = document.getElementById("create-task-modal");
@@ -320,27 +343,26 @@ function addNewList(name, color, id) {
     //     console.log('Editor.js is ready to work!')
     //  }
     // })
-    document.getElementById("blur").classList.remove("hidden")
+    document.getElementById("blur").classList.remove("hidden");
     createTaskModal.classList.remove("hidden");
-    document.getElementById("name-task").focus()
+    document.getElementById("name-task").focus();
   });
   btnList.appendChild(addTaskBtn);
 
-
-    const listHeader = document.createElement("h3");
+  const listHeader = document.createElement("h3");
   listHeader.innerText = name;
-  listHeader.appendChild(modifyListBtn)
-  listHeader.className = "rounded capitalize text-center p-2";
+  listHeader.appendChild(modifyListBtn);
+  listHeader.className = "rounded capitalize text-center p-2 font-bold";
   listHeader.style.background = color;
-  listHeader.id = "list_header-" + id
-  listHeader.addEventListener('contextmenu', (event) => {
+  listHeader.id = "list_header-" + id;
+  listHeader.addEventListener("contextmenu", (event) => {
     event.preventDefault();
-    const contextMenu = document.getElementById('context-menu');
+    const contextMenu = document.getElementById("context-menu");
     targetDiv = event.target;
 
     contextMenu.style.top = `${event.pageY}px`;
     contextMenu.style.left = `${event.pageX}px`;
-    contextMenu.classList.remove('hidden');
+    contextMenu.classList.remove("hidden");
   });
   listHeader.appendChild(btnList);
   newList.appendChild(listHeader);
@@ -401,28 +423,30 @@ function addNewTask(listElement, taskName, taskId) {
     "d",
     "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
   );
-  modifyTaskIconPath.setAttribute("stroke-linecap", "round")
-  modifyTaskIconPath.setAttribute("stroke-linejoin", "round")
+  modifyTaskIconPath.setAttribute("stroke-linecap", "round");
+  modifyTaskIconPath.setAttribute("stroke-linejoin", "round");
 
   modifyTaskIconSvg.appendChild(modifyTaskIconPath);
 
   const modifyTaskBtn = document.createElement("button");
-  modifyTaskBtn.className =
-    "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+  modifyTaskBtn.className = // place-self-end
+    "inline-block ml-auto place-items-center rounded-md border border-transparent p-[0.1px] text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
   modifyTaskBtn.appendChild(modifyTaskIconSvg);
   modifyTaskBtn.addEventListener("click", async () => {
-    const task = await ipcRenderer.invoke("get-tasks-withId", taskId)
-
-    document.getElementById("task-id-modify-task").value = taskId
-    document.getElementById("name-modify-task").value = task[0].name
-    document.getElementById("date-modify-task").value = task[0].date
-    document.getElementById("description-modify-task").value = task[0].description
-    document.getElementById("list-id-modify-task").value = listElement.id.split("-")[1]
-    const modifyTaskModal = document.getElementById("modify-task-modal");
-    document.getElementById("blur").classList.remove("hidden")
-    document.getElementById("name-modify-task").focus()
-    modifyTaskModal.classList.remove("hidden");
     document.getElementById("description-modal").classList.add("hidden");
+    const task = await ipcRenderer.invoke("get-tasks-withId", taskId);
+
+    document.getElementById("task-id-modify-task").value = taskId;
+    document.getElementById("name-modify-task").value = task[0].name;
+    document.getElementById("date-modify-task").value = task[0].date;
+    document.getElementById("description-modify-task").value =
+      task[0].description;
+    document.getElementById("list-id-modify-task").value =
+      listElement.id.split("-")[1];
+    const modifyTaskModal = document.getElementById("modify-task-modal");
+    document.getElementById("blur").classList.remove("hidden");
+    document.getElementById("name-modify-task").focus();
+    modifyTaskModal.classList.remove("hidden");
   });
 
   const deleteTaskIconSvg = document.createElementNS(
@@ -449,40 +473,58 @@ function addNewTask(listElement, taskName, taskId) {
 
   const deleteTaskBtn = document.createElement("button");
   deleteTaskBtn.className =
-    "ml-auto grid place-items-center justify-self-end rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+    "ml-auto grid place-items-center justify-self-end rounded-md border border-transparent p-[0.1px] text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
   deleteTaskBtn.appendChild(deleteTaskIconSvg);
   deleteTaskBtn.addEventListener("click", async () => {
-    if (confirm(getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase() })) == true) {
+    document.getElementById("description-modal").classList.add("hidden");
+    if (
+      confirm(
+        getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase() }),
+      ) == true
+    ) {
       await ipcRenderer.invoke("delete-task", taskId);
       newTask.remove();
     }
-    document.getElementById("description-modal").classList.add("hidden");
   });
 
   newTask.appendChild(modifyTaskBtn);
   newTask.appendChild(deleteTaskBtn);
 
   newTask.addEventListener("click", async function (event) {
-    const descriptionModal = document.getElementById("description-modal");
-    const descriptionTextModalElement = document.getElementById(
-      "description-text-modal",
-    );
-    const descriptionTitleModalElement = document.getElementById(
-      "description-title-modal",
-    );
-    const task = await ipcRenderer.invoke("get-tasks-withId", taskId);
+    setTimeout(async () => {
+      if (
+        document
+          .getElementById("description-modal")
+          .classList.contains("hidden")
+      ) {
+        if (
+          document
+            .getElementById("modify-task-modal")
+            .classList.contains("hidden")
+        ) {
+          const descriptionModal = document.getElementById("description-modal");
+          const descriptionTextModalElement = document.getElementById(
+            "description-text-modal",
+          );
+          const descriptionTitleModalElement = document.getElementById(
+            "description-title-modal",
+          );
+          const task = await ipcRenderer.invoke("get-tasks-withId", taskId);
 
-    descriptionTextModalElement.innerText = task[0].description;
-    descriptionTitleModalElement.innerText = task[0].name;
-    document.getElementById("blur").classList.remove("hidden")
-    descriptionModal.classList.remove("hidden");
+          descriptionTextModalElement.innerText = task[0].description;
+          descriptionTitleModalElement.innerText = task[0].name;
+          document.getElementById("blur").classList.remove("hidden");
+          descriptionModal.classList.remove("hidden");
+        }
+      }
+    }, 500);
   });
 
   taskContainer.appendChild(newTask);
 }
 
 async function go_config_window() {
-  const list = await ipcRenderer.invoke("config-window")
+  const list = await ipcRenderer.invoke("config-window");
 }
 
 // window.addEventListener(

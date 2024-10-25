@@ -660,6 +660,10 @@ video {
   float: left;
 }
 
+.m-2 {
+  margin: 0.5rem;
+}
+
 .mx-1 {
   margin-left: 0.25rem;
   margin-right: 0.25rem;
@@ -1112,6 +1116,10 @@ video {
 
 .p-6 {
   padding: 1.5rem;
+}
+
+.p-\[0\.1px\] {
+  padding: 0.1px;
 }
 
 .px-3 {
