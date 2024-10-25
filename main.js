@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { autoUpdater } = require("electron-updater")
 const shell = require("electron").shell;
 const path = require("path");
 const { db } = require("./database.js");
@@ -44,6 +45,21 @@ app.on("window-all-closed", () => {
   } else {
     i18nextBackend.clearMainBindings(ipcMain);
   }
+});
+
+app.once('ready-to-show', () => {
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
+autoUpdater.on('update-available', () => {
+  mainWindow.webContents.send('update_available');
+});
+autoUpdater.on('update-downloaded', () => {
+  mainWindow.webContents.send('update_downloaded');
+});
+
+ipcMain.on('restart_app', () => {
+  autoUpdater.quitAndInstall();
 });
 
 ipcMain.handle("get-config-variable", async (event, name) => {
@@ -406,4 +422,8 @@ ipcMain.handle("update-theme", (event, theme) => {
       },
     );
   });
+});
+
+ipcMain.handle('app_version', (event) => {
+  event.sender.send('app_version', { version: app.getVersion() });
 });

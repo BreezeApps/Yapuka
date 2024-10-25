@@ -7,6 +7,15 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
+    <div id="notification" class="hidden">
+      <p id="message"></p>
+      <button id="close-button" onClick="closeNotification()">
+        Close
+      </button>
+      <button id="restart-button" onClick="restartApp()" class="hidden">
+        Restart
+      </button>
+    </div>
     <div id="blur" class="absolute z-[150] hidden h-full w-full"></div>
     <!-- <button id="url">Print Google.com Homepage</button> -->
     <div

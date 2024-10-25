@@ -40,6 +40,10 @@
   ],
   "description": "Application de gestion de taches et listes",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marvideo2009/Yapuka.git"
+  },
   "scripts": {
     "start": "electron .",
     "style": "pnpx tailwindcss -i ./input.css -o style.css --watch",
@@ -48,7 +52,11 @@
     "build:all": "electron-builder -mwl",
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
-    "build:mac": "electron-builder --mac"
+    "build:mac": "electron-builder --mac",
+    "deploy:all": "electron-builder -mwl --publish always",
+    "deploy:win": "electron-builder --win --publish always",
+    "deploy:linux": "electron-builder --linux --publish always",
+    "deploy:mac": "electron-builder --mac --publish always"
   },
   "keywords": [],
   "author": {
@@ -59,6 +67,7 @@
   "license": "ISC",
   "dependencies": {
     "electron-context-menu": "^4.0.4",
+    "electron-updater": "^6.3.9",
     "i18next": "^23.16.2",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-fs-backend": "^2.3.2",
@@ -78,6 +87,7 @@
   "build": {
     "appId": "fr.marvideo.yapuka",
     "linux": {
+      "category": "Utility",
       "target": [
         "deb",
         "AppImage"
