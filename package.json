@@ -1,23 +1,26 @@
 {
-  "name": "Gelita",
+  "name": "Yapuka",
   "version": "1.0.0",
-  "description": "",
+  "description": "Application de gestion de taches et listes",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "style": "pnpx tailwindcss -i ./input.css -o style.css --watch",
     "dev": "pnpm run build:css && pnpm start",
-    "build:css": "pnpx tailwindcss -i ./input.css -o style.css"
+    "build:css": "pnpx tailwindcss -i ./input.css -o style.css",
+    "build:all": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac"
   },
   "keywords": [],
-  "author": "Marcel Demange",
+  "author": {
+    "name":"Marcel Demange",
+    "email": "dem9ngemarcel@laposte.net",
+    "url": "https://github.com/Marvideo2009"
+  },
   "license": "ISC",
   "dependencies": {
-    "@editorjs/checklist": "^1.6.0",
-    "@editorjs/editorjs": "^2.30.6",
-    "@editorjs/header": "^2.8.8",
-    "@editorjs/link": "^2.6.2",
-    "@editorjs/simple-image": "^1.6.0",
     "electron-context-menu": "^4.0.4",
     "i18next": "^23.16.2",
     "i18next-browser-languagedetector": "^8.0.0",
@@ -26,11 +29,21 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "electron-builder": "^25.1.8",
     "autoprefixer": "^10.4.20",
     "electron": "^32.2.0",
     "postcss-loader": "^8.1.1",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.13"
+  },
+  "build": {
+    "appId": "fr.marvideo.yapuka",
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ]
+    }
   }
 }

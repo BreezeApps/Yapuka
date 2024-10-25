@@ -763,10 +763,6 @@ video {
   height: 2.5rem;
 }
 
-.h-16 {
-  height: 4rem;
-}
-
 .h-3 {
   height: 0.75rem;
 }
@@ -797,10 +793,6 @@ video {
 
 .max-h-full {
   max-height: 100%;
-}
-
-.w-1\/2 {
-  width: 50%;
 }
 
 .w-10 {
