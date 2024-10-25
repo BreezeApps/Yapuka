@@ -383,7 +383,7 @@ ipcMain.handle("config-window", (event) => {
       return null;
     } else {
       const dir = path.join(result.filePaths[0], "Yapuka_Data");
-      fs.writeFileSync("./db.json", JSON.stringify({ link: dir }))
+      fs.writeFileSync(path.join(__dirname, "Yapuka_Data", "db.json"), JSON.stringify({ link: dir }))
     }
   });
   win2.on("closed", function () {

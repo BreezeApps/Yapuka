@@ -229,6 +229,8 @@ document
     const date = document.getElementById("date-task").value;
     const listId = document.getElementById("list-id-task").value;
 
+    document.getElementById("submit-create-task").reset()
+
     const result = await ipcRenderer.invoke(
       "add-task",
       listId,
