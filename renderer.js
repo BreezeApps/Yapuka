@@ -407,9 +407,9 @@ function addNewList(name, color, id) {
     group: "shared",
     animation: 150,
     onEnd: async (evt) => {
-      const taskId = evt.item.id;
+      const taskId = evt.item.id.split("-")[1];
       const newPosition = evt.newIndex;
-      const newListId = evt.to.closest(".list").id; // Identifier la nouvelle liste
+      const newListId = evt.to.closest(".list").id.split("-")[1]; // Identifier la nouvelle liste
       // Mettre à jour la position et la liste dans la base de données
       await ipcRenderer.invoke(
         "update-task-list-and-position",
