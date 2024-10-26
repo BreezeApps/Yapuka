@@ -50,11 +50,11 @@
     "dev": "pnpm run build:css && pnpm start",
     "build:css": "pnpx tailwindcss -i ./input.css -o style.css",
     "build:all": "electron-builder -mwl",
-    "build:Windows": "electron-builder --win",
+    "build": "electron-builder --win",
     "build:Linux": "electron-builder --linux",
     "build:macOS": "electron-builder --mac",
     "deploy:all": "electron-builder -mwl --publish always",
-    "deploy:Windows": "electron-builder --win --publish always",
+    "deploy": "electron-builder --win --publish always",
     "deploy:Linux": "electron-builder --linux --publish always",
     "deploy:macOS": "electron-builder --mac --publish always"
   },
