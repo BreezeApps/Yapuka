@@ -35,6 +35,7 @@
   "Are_Sure": "Are you sure to delete {{title}}?",
   "Make_Backup": "Make a Backup",
   "Download_Backup": "Download the latest Backup ({{0}} day(s) ago)",
+  "Required_field": "This field is required.",
   "Edit": "Edit",
   "Undo": "Undo",
   "Redo": "Redo",

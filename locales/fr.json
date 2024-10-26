@@ -35,6 +35,7 @@
   "Are_Sure": "Etes vous sûr de supprimer la liste {{title}} ?",
   "Make_Backup": "Faire une sauvegarde",
   "Download_BackUp": "Telecharger la derniere sauvegarde (Il y a {{0}} jour(s))",
+  "Required_field": "Ce champs est requis",
   "Edit": "Modifier",
   "Undo": "Défaire",
   "Redo": "Refaire",

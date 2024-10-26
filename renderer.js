@@ -186,14 +186,20 @@ document
     event.preventDefault();
     const name = document.getElementById("name-list").value;
     const color = document.getElementById("color-list").value;
+    console.log(name)
+    if (name !== null) {
+      const result = await ipcRenderer.invoke("add-list", name, color);
+      addNewList(name, color, result.id);
 
-    const result = await ipcRenderer.invoke("add-list", name, color);
-    addNewList(name, color, result.id);
-
-    const createListModal = document.getElementById("create-liste-modal");
-    document.getElementById("blur").classList.add("hidden");
-    createListModal.classList.add("hidden");
-    updateContent();
+      const createListModal = document.getElementById("create-liste-modal");
+      document.getElementById("blur").classList.add("hidden");
+      createListModal.classList.add("hidden");
+      updateContent();
+      document.getElementById("name-list").classList.remove("border-rose-500")
+      document.getElementById("name-list-required").classList.add("hidden")
+    }
+    document.getElementById("name-list").classList.add("border-rose-500")
+    document.getElementById("name-list-required").classList.remove("hidden")
   });
 
 document
@@ -203,21 +209,19 @@ document
     const id = document.getElementById("id-modify-list").value;
     const name = document.getElementById("name-modify-list").value;
     const color = document.getElementById("color-modify-list").value;
-    deactiveButton("button-submit-modify-list");
 
-    const result = await ipcRenderer.invoke("update-list", id, name, color);
-
-    // document.getElementById("list-" + id).remove();
-    // const listElement = addNewList(name, color, id);
-    // const tasks = await ipcRenderer.invoke("get-tasks", id);
-    // tasks.forEach((task) => {
-    //   addNewTask(listElement, task.name, task.id);
-    // });
-
-    const createListModal = document.getElementById("modify-liste-modal");
-    document.getElementById("blur").classList.add("hidden");
-    createListModal.classList.add("hidden");
-    window.location.reload();
+    if (name !== null) {
+      deactiveButton("button-submit-modify-list");
+      const result = await ipcRenderer.invoke("update-list", id, name, color);
+      const createListModal = document.getElementById("modify-liste-modal");
+      document.getElementById("blur").classList.add("hidden");
+      createListModal.classList.add("hidden");
+      document.getElementById("name-modify-list").classList.remove("border-rose-500")
+      document.getElementById("name-modify-list-required").classList.add("hidden")
+      window.location.reload();
+    }
+    document.getElementById("name-modify-list").classList.add("border-rose-500")
+    document.getElementById("name-modify-list-required").classList.remove("hidden")
   });
 
 document
@@ -229,22 +233,25 @@ document
     const date = document.getElementById("date-task").value;
     const listId = document.getElementById("list-id-task").value;
 
-    document.getElementById("submit-create-task").reset()
-
-    const result = await ipcRenderer.invoke(
-      "add-task",
-      listId,
-      description,
-      date,
-      name,
-    );
-
-    const listElement = document.getElementById("list-" + listId);
-    addNewTask(listElement, name, result.id);
-
-    const createTaskModal = document.getElementById("create-task-modal");
-    document.getElementById("blur").classList.add("hidden");
-    createTaskModal.classList.add("hidden");
+    if (name !== null) {
+      document.getElementById("submit-create-task").reset()
+      const result = await ipcRenderer.invoke(
+        "add-task",
+        listId,
+        description,
+        date,
+        name,
+      );
+      const listElement = document.getElementById("list-" + listId);
+      addNewTask(listElement, name, result.id);
+      const createTaskModal = document.getElementById("create-task-modal");
+      document.getElementById("blur").classList.add("hidden");
+      createTaskModal.classList.add("hidden");
+      document.getElementById("name-task").classList.remove("border-rose-500")
+      document.getElementById("name-task-required").classList.add("hidden")
+    }
+    document.getElementById("name-task").classList.add("border-rose-500")
+    document.getElementById("name-task-required").classList.remove("hidden")
   });
 document
   .getElementById("submit-modify-task")
@@ -257,20 +264,24 @@ document
     const date = document.getElementById("date-modify-task").value;
     const listId = document.getElementById("list-id-modify-task").value;
     const taskId = document.getElementById("task-id-modify-task").value;
-    deactiveButton("button-submit-modify-task");
-
-    const result = await ipcRenderer.invoke(
-      "update-task",
-      taskId,
-      description,
-      date,
-      name,
-    );
-
-    const updateTaskModal = document.getElementById("modify-task-modal");
-    document.getElementById("blur").classList.add("hidden");
-    updateTaskModal.classList.add("hidden");
-    window.location.reload();
+    if (name !== null) {
+      deactiveButton("button-submit-modify-task");
+      const result = await ipcRenderer.invoke(
+        "update-task",
+        taskId,
+        description,
+        date,
+        name,
+      );
+      const updateTaskModal = document.getElementById("modify-task-modal");
+      document.getElementById("blur").classList.add("hidden");
+      updateTaskModal.classList.add("hidden");
+      document.getElementById("name-modify-task").classList.remove("border-rose-500")
+      document.getElementById("name-modify-task-required").classList.add("hidden")
+      window.location.reload();
+    }
+    document.getElementById("name-modify-task").classList.add("border-rose-500")
+    document.getElementById("name-modify-task-required").classList.remove("hidden")
   });
 
 document
