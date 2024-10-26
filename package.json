@@ -50,13 +50,13 @@
     "dev": "pnpm run build:css && pnpm start",
     "build:css": "pnpx tailwindcss -i ./input.css -o style.css",
     "build:all": "electron-builder -mwl",
-    "build:win": "electron-builder --win",
-    "build:linux": "electron-builder --linux",
-    "build:mac": "electron-builder --mac",
+    "build:Windows": "electron-builder --win",
+    "build:Linux": "electron-builder --linux",
+    "build:macOs": "electron-builder --mac",
     "deploy:all": "electron-builder -mwl --publish always",
-    "deploy:win": "electron-builder --win --publish always",
-    "deploy:linux": "electron-builder --linux --publish always",
-    "deploy:mac": "electron-builder --mac --publish always"
+    "deploy:Windows": "electron-builder --win --publish always",
+    "deploy:Linux": "electron-builder --linux --publish always",
+    "deploy:macOs": "electron-builder --mac --publish always"
   },
   "keywords": [],
   "author": {
@@ -67,6 +67,7 @@
   "license": "ISC",
   "dependencies": {
     "electron-context-menu": "^4.0.4",
+    "electron-tabs": "^1.0.4",
     "electron-updater": "^6.3.9",
     "i18next": "^23.16.2",
     "i18next-browser-languagedetector": "^8.0.0",

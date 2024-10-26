@@ -1,32 +1,33 @@
 const { ipcRenderer } = require("electron");
 const { updateContent, getTranslationWithVar } = require("./i18n.js");
 
-const notification = document.getElementById('notification');
-const message = document.getElementById('message');
-const restartButton = document.getElementById('restart-button');
-const downloadButton = document.getElementById('download-button');
-ipcRenderer.on('update_available', () => {
-  ipcRenderer.removeAllListeners('update_available');
-  message.innerText = 'A new update is available.';
-  notification.classList.remove('hidden');
-  downloadButton.classList.remove('hidden')
+const notification = document.getElementById("notification");
+const message = document.getElementById("message");
+const restartButton = document.getElementById("restart-button");
+const downloadButton = document.getElementById("download-button");
+ipcRenderer.on("update_available", () => {
+  ipcRenderer.removeAllListeners("update_available");
+  message.innerText = "A new update is available.";
+  notification.classList.remove("hidden");
+  downloadButton.classList.remove("hidden");
 });
-ipcRenderer.on('update_downloaded', () => {
-  ipcRenderer.removeAllListeners('update_downloaded');
-  message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
-  restartButton.classList.remove('hidden');
-  notification.classList.remove('hidden');
-  downloadButton.classList.add('hidden')
+ipcRenderer.on("update_downloaded", () => {
+  ipcRenderer.removeAllListeners("update_downloaded");
+  message.innerText =
+    "Update Downloaded. It will be installed on restart. Restart now?";
+  restartButton.classList.remove("hidden");
+  notification.classList.remove("hidden");
+  downloadButton.classList.add("hidden");
 });
 
 function closeNotification() {
-  notification.classList.add('hidden');
+  notification.classList.add("hidden");
 }
 function restartApp() {
-  ipcRenderer.send('restart_app');
+  ipcRenderer.send("restart_app");
 }
 function downloadUpdate() {
-  ipcRenderer.send("download_update")
+  ipcRenderer.send("download_update");
 }
 
 function activeButton(id) {
@@ -66,9 +67,43 @@ function onmodif(element) {
   }
 }
 
-// Charger les listes et les tâches au démarrage
+function changeTab(tabid) {
+  window.location.replace("index.html?tab=" + tabid);
+}
+
 window.onload = async () => {
-  const lists = await ipcRenderer.invoke("get-lists");
+  const tabs = await ipcRenderer.invoke("get-tabs");
+  if (getURLParameter("tab") === null) {
+    document.body.id = tabs[0].id;
+  } else {
+    document.body.id = getURLParameter("tab");
+  }
+  let list_tabs = document.createElement("select");
+  list_tabs.setAttribute("onchange", "changeTab(this.value)");
+  list_tabs.classList.add(
+    "mt-1",
+    "block",
+    "w-full",
+    "rounded-md",
+    "border-2",
+    "border-gray-300",
+    "shadow-sm",
+    "focus:border-indigo-300",
+    "focus:ring",
+    "focus:ring-indigo-200",
+    "focus:ring-opacity-50",
+  );
+  tabs.forEach((tab) => {
+    let list_tab = document.createElement("option");
+    if (document.body.id == tab.id) {
+      list_tab.setAttribute("selected", "true");
+    }
+    list_tab.value = tab.id;
+    list_tab.innerText = tab.name;
+    list_tabs.appendChild(list_tab);
+  });
+  document.getElementById("tabs").appendChild(list_tabs);
+  const lists = await ipcRenderer.invoke("get-lists", document.body.id);
   const blur = await ipcRenderer.invoke("get-blur");
   if (blur[0].value === "1") {
     document.getElementById("blur").classList.add("backdrop-blur-md");
@@ -105,6 +140,17 @@ window.onload = async () => {
   }, 500);
 };
 
+function getURLParameter(sParam) {
+  const sPageURL = window.location.search.substring(1);
+  const sURLVariables = sPageURL.split("&");
+  for (let i = 0; i < sURLVariables.length; i++) {
+    const sParameterName = sURLVariables[i].split("=");
+    if (sParameterName[0] === sParam) {
+      return decodeURIComponent(sParameterName[1] || "");
+    }
+  }
+  return null;
+}
 // let url = document.getElementById('url');
 // url.addEventListener('click', async (event) => {
 //   const print = await ipcRenderer.invoke("print", "Test")
@@ -149,6 +195,22 @@ document.getElementById("add-list-btn").addEventListener("click", async () => {
   createListModal.classList.remove("hidden");
   document.getElementById("name-list").focus();
 });
+
+document.getElementById("add-tab-btn").addEventListener("click", async () => {
+  const createTabModal = document.getElementById("create-tab-modal");
+  document.getElementById("blur").classList.remove("hidden");
+  createTabModal.classList.remove("hidden");
+  document.getElementById("name-tab").focus();
+});
+
+document.getElementById("modify-tab-btn").addEventListener("click", async () => {
+  const info = await ipcRenderer.invoke("get-tab", document.body.id)
+  document.getElementById("name-modify-tab").value = info[0].name
+  const createTabModal = document.getElementById("modify-tab-modal");
+  document.getElementById("blur").classList.remove("hidden");
+  createTabModal.classList.remove("hidden");
+  document.getElementById("name-modify-tab").focus();
+});
 document
   .getElementById("close-create-list-modal")
   .addEventListener("click", async () => {
@@ -158,9 +220,25 @@ document
   });
 
 document
+  .getElementById("close-create-tab-modal")
+  .addEventListener("click", async () => {
+    const createTabModal = document.getElementById("create-tab-modal");
+    document.getElementById("blur").classList.add("hidden");
+    createTabModal.classList.add("hidden");
+  });
+
+document
   .getElementById("close-modify-list-modal")
   .addEventListener("click", async () => {
     const modifyListModal = document.getElementById("modify-liste-modal");
+    document.getElementById("blur").classList.add("hidden");
+    modifyListModal.classList.add("hidden");
+  });
+
+document
+  .getElementById("close-modify-tab-modal")
+  .addEventListener("click", async () => {
+    const modifyListModal = document.getElementById("modify-tab-modal");
     document.getElementById("blur").classList.add("hidden");
     modifyListModal.classList.add("hidden");
   });
@@ -186,20 +264,36 @@ document
     event.preventDefault();
     const name = document.getElementById("name-list").value;
     const color = document.getElementById("color-list").value;
-    console.log(name)
+    const tab_id = document.body.id;
     if (name !== null) {
-      const result = await ipcRenderer.invoke("add-list", name, color);
+      const result = await ipcRenderer.invoke("add-list", tab_id, name, color);
       addNewList(name, color, result.id);
 
       const createListModal = document.getElementById("create-liste-modal");
       document.getElementById("blur").classList.add("hidden");
       createListModal.classList.add("hidden");
       updateContent();
-      document.getElementById("name-list").classList.remove("border-rose-500")
-      document.getElementById("name-list-required").classList.add("hidden")
+      document.getElementById("name-list").classList.remove("border-rose-500");
+      document.getElementById("name-list-required").classList.add("hidden");
     }
-    document.getElementById("name-list").classList.add("border-rose-500")
-    document.getElementById("name-list-required").classList.remove("hidden")
+    document.getElementById("name-list").classList.add("border-rose-500");
+    document.getElementById("name-list-required").classList.remove("hidden");
+  });
+
+document
+  .getElementById("submit-create-tab")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const name = document.getElementById("name-tab").value;
+    if (name !== null) {
+      const result = await ipcRenderer.invoke("add-tab", name);
+      updateContent();
+      document.getElementById("name-tab").classList.remove("border-rose-500");
+      document.getElementById("name-tab-required").classList.add("hidden");
+      window.location.reload()
+    }
+    document.getElementById("name-tab").classList.add("border-rose-500");
+    document.getElementById("name-tab-required").classList.remove("hidden");
   });
 
 document
@@ -216,12 +310,49 @@ document
       const createListModal = document.getElementById("modify-liste-modal");
       document.getElementById("blur").classList.add("hidden");
       createListModal.classList.add("hidden");
-      document.getElementById("name-modify-list").classList.remove("border-rose-500")
-      document.getElementById("name-modify-list-required").classList.add("hidden")
+      document
+        .getElementById("name-modify-list")
+        .classList.remove("border-rose-500");
+      document
+        .getElementById("name-modify-list-required")
+        .classList.add("hidden");
       window.location.reload();
     }
-    document.getElementById("name-modify-list").classList.add("border-rose-500")
-    document.getElementById("name-modify-list-required").classList.remove("hidden")
+    document
+      .getElementById("name-modify-list")
+      .classList.add("border-rose-500");
+    document
+      .getElementById("name-modify-list-required")
+      .classList.remove("hidden");
+  });
+
+document
+  .getElementById("submit-modify-tab")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const id = document.body.id;
+    const name = document.getElementById("name-modify-tab").value;
+
+    if (name !== null) {
+      deactiveButton("button-submit-modify-tab");
+      const result = await ipcRenderer.invoke("update-tab", name, id);
+      const createTabModal = document.getElementById("modify-tab-modal");
+      document.getElementById("blur").classList.add("hidden");
+      createTabModal.classList.add("hidden");
+      document
+        .getElementById("name-modify-tab")
+        .classList.remove("border-rose-500");
+      document
+        .getElementById("name-modify-tab-required")
+        .classList.add("hidden");
+      window.location.reload();
+    }
+    document
+      .getElementById("name-modify-tab")
+      .classList.add("border-rose-500");
+    document
+      .getElementById("name-modify-list-required")
+      .classList.remove("hidden");
   });
 
 document
@@ -234,7 +365,7 @@ document
     const listId = document.getElementById("list-id-task").value;
 
     if (name !== null) {
-      document.getElementById("submit-create-task").reset()
+      document.getElementById("submit-create-task").reset();
       const result = await ipcRenderer.invoke(
         "add-task",
         listId,
@@ -247,11 +378,11 @@ document
       const createTaskModal = document.getElementById("create-task-modal");
       document.getElementById("blur").classList.add("hidden");
       createTaskModal.classList.add("hidden");
-      document.getElementById("name-task").classList.remove("border-rose-500")
-      document.getElementById("name-task-required").classList.add("hidden")
+      document.getElementById("name-task").classList.remove("border-rose-500");
+      document.getElementById("name-task-required").classList.add("hidden");
     }
-    document.getElementById("name-task").classList.add("border-rose-500")
-    document.getElementById("name-task-required").classList.remove("hidden")
+    document.getElementById("name-task").classList.add("border-rose-500");
+    document.getElementById("name-task-required").classList.remove("hidden");
   });
 document
   .getElementById("submit-modify-task")
@@ -276,12 +407,20 @@ document
       const updateTaskModal = document.getElementById("modify-task-modal");
       document.getElementById("blur").classList.add("hidden");
       updateTaskModal.classList.add("hidden");
-      document.getElementById("name-modify-task").classList.remove("border-rose-500")
-      document.getElementById("name-modify-task-required").classList.add("hidden")
+      document
+        .getElementById("name-modify-task")
+        .classList.remove("border-rose-500");
+      document
+        .getElementById("name-modify-task-required")
+        .classList.add("hidden");
       window.location.reload();
     }
-    document.getElementById("name-modify-task").classList.add("border-rose-500")
-    document.getElementById("name-modify-task-required").classList.remove("hidden")
+    document
+      .getElementById("name-modify-task")
+      .classList.add("border-rose-500");
+    document
+      .getElementById("name-modify-task-required")
+      .classList.remove("hidden");
   });
 
 document

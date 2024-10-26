@@ -64,11 +64,19 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Créer les tables si elles n'existent pas
 db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS tabs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name VARCHAR(255) NOT NULL
+    )
+  `);
     db.run(`
       CREATE TABLE IF NOT EXISTS lists (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tab_id INTEGER NOT NULL,
         name VARCHAR(255) NOT NULL,
-        color TEXT NOT NULL DEFAULT '#FFFFFF'
+        color TEXT NOT NULL DEFAULT '#FFFFFF',
+        FOREIGN KEY (tab_id) REFERENCES tabs(id)
       )
     `);
   
@@ -97,6 +105,7 @@ db.serialize(() => {
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [0, "languages", "Languages of the app", "system"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [1, "theme", "Theme of the app", "system"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "blur", "Blur of the app", "1"])
+    db.run('INSERT OR IGNORE INTO tabs (id, name) VALUES (?, ?)', [0, "First Tab"])
   });
 
 /**
@@ -180,30 +189,6 @@ function get_latest_backup(returnElement) {
     return element
   }
   return lastFile
-
-
-
-  // var today = new Date();
-  // var dd = String(today.getDate()).padStart(2, '0');
-  // var mm = String(today.getMonth() + 1).padStart(2, '0');
-  // var yyyy = today.getFullYear();
-  // today = dd + '-' + mm + '-' + yyyy;
-
-  // const name = "database_backup_" + today + ".db"
-
-  // const dest = path.join(get_link(), name)
-  // fs.copyFileSync(file, dest)
-
-  // if (returnElement === true) {
-  //   const element = document.createElement("a")
-  //   element.href = "file://" + dest
-  //   element.setAttribute("target", "_blank");
-  //   element.download = name
-  //   element.classList.add("rounded-lg", "bg-blue-700", "px-5", "py-2.5", "text-center", "text-sm", "font-medium", "text-white", "hover:bg-blue-800", "focus:outline-none", "focus:ring-4", "focus:ring-blue-300", "dark:bg-blue-600", "dark:hover:bg-blue-700", "dark:focus:ring-blue-800")
-  //   element.setAttribute("data-i18n", "Download_Backup")
-  //   return element
-  // }
-  // return dest
 }
 
 module.exports = { db, make_backup, get_link, get_latest_backup, get_link };

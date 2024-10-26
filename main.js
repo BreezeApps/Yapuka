@@ -18,6 +18,7 @@ async function createWindow() {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
       contextIsolation: false,
+      webviewTag: true,
     },
   });
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -114,9 +115,9 @@ ipcMain.handle("remove-config-variable", (event, name) => {
 });
 
 // Gestion des événements IPC pour la base de données
-ipcMain.handle("get-lists", (event) => {
+ipcMain.handle("get-lists", (event, tab) => {
   return new Promise((resolve, reject) => {
-    db.all("SELECT * FROM lists", [], (err, rows) => {
+    db.all("SELECT * FROM lists WHERE tab_id = ?", [tab], (err, rows) => {
       if (err) {
         reject(err);
       } else {
@@ -166,11 +167,11 @@ ipcMain.handle("get-tasks-withId", (event, taskId) => {
   });
 });
 
-ipcMain.handle("add-list", (event, listName, color) => {
+ipcMain.handle("add-list", (event, tab, listName, color) => {
   return new Promise((resolve, reject) => {
     db.run(
-      "INSERT INTO lists (name, color) VALUES (?, ?)",
-      [listName, color],
+      "INSERT INTO lists (tab_id, name, color) VALUES (?, ?, ?)",
+      [tab, listName, color],
       function (err) {
         if (err) {
           reject(err);
@@ -432,6 +433,85 @@ ipcMain.handle("update-theme", (event, theme) => {
         }
       },
     );
+  });
+});
+
+ipcMain.handle("get-tabs", (event) => {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM tabs", [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+});
+
+ipcMain.handle("get-tab", (event, id) => {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM tabs WHERE id = ?", [id], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+});
+
+ipcMain.handle("add-tab", (event, name) => {
+  return new Promise((resolve, reject) => {
+    db.get(
+      "SELECT COUNT(*) AS count FROM tabs WHERE name = ?",
+      [name],
+      (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          const position = row.count;
+          db.run(
+            "INSERT INTO tabs (name) VALUES (?)",
+            [name],
+            function (err) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve({ id: this.lastID });
+              }
+            },
+          );
+        }
+      },
+    );
+  });
+});
+
+ipcMain.handle("update-tab", (event, name, id) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      "UPDATE tabs SET name = ? WHERE id = ?",
+      [name, id],
+      function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      },
+    );
+  });
+});
+
+ipcMain.handle("delete-tab", (event, tabId) => {
+  return new Promise((resolve, reject) => {
+    db.run("DELETE FROM tabs WHERE id = ?", [tabId], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows)
+      }
+    });
   });
 });
 

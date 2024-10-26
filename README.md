@@ -20,8 +20,7 @@ fond où se trouvent les listes), l\'une à côté de l\'autre. On peut
 
 ~~Inutile d\'afficher autre chose sur le tableau.~~
 
-**Plus tard :** on peut imaginer un deuxième (troisième, \...n<sup>ième</sup>)
-tableau de listes accessible par onglet en haut de la fenêtre.
+~~**Plus tard :** on peut imaginer un deuxième (troisième, \...n<sup>ième</sup>) tableau de listes accessible par onglet en haut de la fenêtre.~~
 
 ## Commandes
 

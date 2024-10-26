@@ -11,20 +11,16 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - name: Print OS name
-        shell: bash
-        run: |
-          echo "$RUNNER_OS"
-    #   - name: Check out Git repository
-    #     uses: actions/checkout@v1
+      - name: Check out Git repository
+        uses: actions/checkout@v1
 
-    #   - name: Install Node.js, NPM and Yarn
-    #     uses: actions/setup-node@v1
-    #     with:
-    #       node-version: 10
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
 
-    #   - name: Install Dependencies
-    #     run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-    #   - name: Build and Deploy
-    #     run: npm run deploy
+      - name: Build and Deploy
+        run: npm run deploy:$RUNNER_OS
