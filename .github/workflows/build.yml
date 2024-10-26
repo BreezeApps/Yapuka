@@ -23,7 +23,7 @@ jobs:
       - name: Set env variable
         # run: export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
         run:  |
-          if [ "$RUNNER_OS" == "ubuntu-latest" ]; then
+          if [ "$RUNNER_OS" == "Linux" ]; then
               export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
           elif [ "$RUNNER_OS" == "Windows" ]; then
               set GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
