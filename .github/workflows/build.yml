@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: 23
 
+      - name: Set env variable
+        run: export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
       - name: Install Dependencies
         run: npm install
 
