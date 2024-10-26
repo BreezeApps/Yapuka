@@ -8,8 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        # os: [macos-latest, ubuntu-latest, windows-latest]
-        os: [ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - name: Get Repo
@@ -24,4 +23,4 @@ jobs:
         run: npm install
 
       - name: Build and Deploy
-        run: npm run deploy:all
+        run: npm run deploy:$RUNNER_OS
