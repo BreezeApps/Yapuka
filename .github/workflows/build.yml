@@ -15,9 +15,6 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-      - name: Runner OS
-        run:
-          echo ${{ runner.os }}
       - name: Get Repo
         uses: actions/checkout@v4
 
@@ -26,22 +23,8 @@ jobs:
         with:
           node-version: 23
 
-      #   if: runner.os != 'Linux'
-      # - name: Set Linux env variable
-      #   run: export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-
-      #   if: runner.os != 'Windows'
-      # - name: Set Windows env variable
-      #   run: set GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-
-
       - name: Install Dependencies
         run: npm install
-
-      # - name: Build/release Electron app
-      #   uses: samuelmeuli/action-electron-builder@v1.6.0
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-
+        
       - name: Build and Deploy
         run: npm run deploy:$RUNNER_OS
