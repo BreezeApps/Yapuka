@@ -14,12 +14,13 @@ const downloadButton = document.getElementById("download-button");
 async function checkUpdate() {
   const currentVersion = await getVersion()
   const update = await ipcRenderer.invoke("check-update");
+  if (update !== null) {
+    const msg = "A new update is available.\n" + currentVersion + " >> " + update.versionInfo.version
 
-  const msg = "A new update is available.\n" + currentVersion + " >> " + update.versionInfo.version
-
-  message.innerText = msg
-  notification.classList.remove("hidden");
-  downloadButton.classList.remove("hidden");
+    message.innerText = msg
+    notification.classList.remove("hidden");
+    downloadButton.classList.remove("hidden");
+  }
 }
 
 ipcRenderer.on("update_downloaded", () => {

@@ -73,13 +73,6 @@ ipcMain.handle("check-update", (event) => {
   autoUpdater.autoDownload = false
   const check = autoUpdater.checkForUpdates()
   return check
-  if (check !== null) {
-    const returnCheck = {
-      updateName: check.versionInfo.releaseName
-    }
-    return returnCheck
-  }
-  return null
 })
 
 ipcMain.handle("get-config-variable", async (event, name) => {
