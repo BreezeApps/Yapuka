@@ -54,14 +54,12 @@ app.on("window-all-closed", () => {
 app.once('ready-to-show', () => {
   autoUpdater.autoDownload = false
   autoUpdater.checkForUpdatesAndNotify();
-  console.log(autoUpdater.currentVersion)
-  console.log(autoUpdater.checkForUpdates())
 });
 
 
-// autoUpdater.on('update-downloaded', () => {
-//   mainWindow.webContents.send('update_downloaded');
-// });
+autoUpdater.on('update-downloaded', () => {
+  win.webContents.send('update_downloaded');
+});
 
 ipcMain.handle("download_update", (event) => {
   autoUpdater.downloadUpdate()
@@ -74,10 +72,10 @@ ipcMain.handle('restart_app', (event) => {
 ipcMain.handle("check-update", (event) => {
   autoUpdater.autoDownload = false
   const check = autoUpdater.checkForUpdates()
+  return check
   if (check !== null) {
     const returnCheck = {
-      updateName: check.versionInfo.releaseName,
-      updateDate: check.versionInfo.releaseDate
+      updateName: check.versionInfo.releaseName
     }
     return returnCheck
   }

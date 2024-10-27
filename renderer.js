@@ -11,11 +11,11 @@ const message = document.getElementById("message");
 const restartButton = document.getElementById("restart-button");
 const downloadButton = document.getElementById("download-button");
 
-function checkUpdate() {
-  const currentVersion = getVersion()
-  const update = ipcRenderer.invoke("check-update");
-  const date = new Date(update.updateDate)
-  const msg = "A new update is available.\n" + currentVersion + " >> " + update.updateName + "\n" + date
+async function checkUpdate() {
+  const currentVersion = await getVersion()
+  const update = await ipcRenderer.invoke("check-update");
+
+  const msg = "A new update is available.\n" + currentVersion + " >> " + update.versionInfo.version
 
   message.innerText = msg
   notification.classList.remove("hidden");
@@ -37,7 +37,7 @@ function closeNotification() {
 function restartApp() {
   ipcRenderer.invoke("restart_app");
 }
-function downloadUpdate() {
+async function downloadUpdate() {
   ipcRenderer.invoke("download_update");
 }
 
@@ -83,6 +83,7 @@ function changeTab(tabid) {
 }
 
 window.onload = async () => {
+  await checkUpdate()
   const tabs = await ipcRenderer.invoke("get-tabs");
   if (getURLParameter("tab") === null) {
     document.body.id = tabs[0].id;
@@ -149,7 +150,6 @@ window.onload = async () => {
   setTimeout(function () {
     updateContent();
   }, 500);
-  checkUpdate()
 };
 
 function getURLParameter(sParam) {
