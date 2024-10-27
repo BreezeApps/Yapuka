@@ -15,9 +15,9 @@ async function checkUpdate() {
   const currentVersion = await getVersion()
   const update = await ipcRenderer.invoke("check-update");
   if (update !== null) {
-    const msg = "A new update is available.\n" + currentVersion + " >> " + update.versionInfo.version
+    const msg = "<span data-i18n='update_Available' />\n" + currentVersion + " >> " + update.versionInfo.version
 
-    message.innerText = msg
+    message.innerHTML = msg
     notification.classList.remove("hidden");
     downloadButton.classList.remove("hidden");
   }
@@ -25,8 +25,7 @@ async function checkUpdate() {
 
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
-  message.innerText =
-    "Update Downloaded. It will be installed on restart. Restart now?";
+  message.innerHTML = "<span data-i18n='update_Downloaded' />";
   restartButton.classList.remove("hidden");
   notification.classList.remove("hidden");
   downloadButton.classList.add("hidden");
@@ -106,16 +105,17 @@ window.onload = async () => {
     "focus:ring-indigo-200",
     "focus:ring-opacity-50",
   );
+  const tabsElement = document.getElementById("tabs")
   tabs.forEach((tab) => {
     let list_tab = document.createElement("option");
     if (document.body.id == tab.id) {
-      list_tab.setAttribute("selected", "true");
+      list_tab.setAttribute("selected", "true")
     }
-    list_tab.value = tab.id;
+    list_tab.value = tab.id
     list_tab.innerText = tab.name;
     list_tabs.appendChild(list_tab);
   });
-  document.getElementById("tabs").appendChild(list_tabs);
+  tabsElement.appendChild(list_tabs)
   const lists = await ipcRenderer.invoke("get-lists", document.body.id);
   const blur = await ipcRenderer.invoke("get-blur");
   if (blur[0].value === "1") {
@@ -719,43 +719,3 @@ function addNewTask(listElement, taskName, taskId) {
 async function go_config_window() {
   const list = await ipcRenderer.invoke("config-window");
 }
-
-// window.addEventListener(
-//   "contextmenu",
-//   (e) => {
-//     e.preventDefault();
-//     const menu = new Menu();
-//     menu.append(
-//       new MenuItem(new MenuItem({ label: "This menu item is always shown", click: function () {
-//         alert(`you clicked on ${e.target.id}`);
-//       }, })),
-//     );
-//     if (e.target.id === "p1" || e.target.id === "p3") {
-//       menu.append(
-//         new MenuItem({
-//           label: "This menu is not always shown",
-//           click: function () {
-//             alert(`you clicked on ${e.target.id}`);
-//           },
-//         }),
-//       );
-//     }
-//     menu.popup({ window: remote.getCurrentWindow() });
-//   },
-//   false,
-// );
-
-// const config = await ipcRenderer.invoke('get-config');
-
-// const test = document.getElementById('test')
-// test.innerHTML = config.get('database.host')
-
-//   function switchDatabase(e) {
-//     if (e.target.checked) {
-//         localStorage.setItem('theme', 'dark');
-//         document.documentElement.classList.add('dark');
-//     } else {
-//         localStorage.setItem('theme', 'light');
-//         document.documentElement.classList.remove('dark')
-//     }
-// }

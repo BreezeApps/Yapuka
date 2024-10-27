@@ -30,7 +30,7 @@ async function createWindow() {
     return { action: "deny" };
   });
   win.loadFile("index.html");
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
@@ -40,7 +40,6 @@ app.whenReady().then(() => {
   });
   autoUpdater.autoDownload = false
   autoUpdater.checkForUpdatesAndNotify();
-  console.log(autoUpdater.currentVersion)
 });
 
 app.on("window-all-closed", () => {
