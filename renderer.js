@@ -8,9 +8,11 @@ async function getVersion() {
 
 function checkUpdate(element) {
   const currentVersion = getVersion()
+  console.log(currentVersion)
   const update = ipcRenderer.invoke("check-update");
+  console.log(update)
 
-  element.innerText = JSON.stringify({ version: currentVersion, update: update })
+  element.innerText = { version: currentVersion, update: update }
 }
 
 const notification = document.getElementById("notification");
