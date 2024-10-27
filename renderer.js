@@ -6,25 +6,22 @@ async function getVersion() {
   return version
 }
 
-function checkUpdate(element) {
-  const currentVersion = getVersion()
-  console.log(currentVersion)
-  const update = ipcRenderer.invoke("check-update");
-  console.log(update)
-
-  element.innerText = { version: currentVersion, update: update }
-}
-
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
 const restartButton = document.getElementById("restart-button");
 const downloadButton = document.getElementById("download-button");
-ipcRenderer.on("update_available", () => {
-  ipcRenderer.removeAllListeners("update_available");
-  message.innerText = "A new update is available.";
+
+function checkUpdate() {
+  const currentVersion = getVersion()
+  const update = ipcRenderer.invoke("check-update");
+  const date = new Date(update.updateDate)
+  const msg = "A new update is available.\n" + currentVersion + " >> " + update.updateName + "\n" + date
+
+  message.innerText(msg)
   notification.classList.remove("hidden");
   downloadButton.classList.remove("hidden");
-});
+}
+
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   message.innerText =
@@ -38,10 +35,10 @@ function closeNotification() {
   notification.classList.add("hidden");
 }
 function restartApp() {
-  ipcRenderer.send("restart_app");
+  ipcRenderer.invoke("restart_app");
 }
 function downloadUpdate() {
-  ipcRenderer.send("download_update");
+  ipcRenderer.invoke("download_update");
 }
 
 function activeButton(id) {
@@ -152,6 +149,7 @@ window.onload = async () => {
   setTimeout(function () {
     updateContent();
   }, 500);
+  checkUpdate()
 };
 
 function getURLParameter(sParam) {

@@ -58,25 +58,30 @@ app.once('ready-to-show', () => {
   console.log(autoUpdater.checkForUpdates())
 });
 
-// autoUpdater.on('update-available', () => {
-//   win.webContents.send('update_available');
-//   console.log("update-available")
-// });
+
 // autoUpdater.on('update-downloaded', () => {
 //   mainWindow.webContents.send('update_downloaded');
 // });
 
-// ipcMain.handle("download_update", (event) => {
-//   autoUpdater.downloadUpdate()
-// })
+ipcMain.handle("download_update", (event) => {
+  autoUpdater.downloadUpdate()
+})
 
-// ipcMain.on('restart_app', () => {
-//   autoUpdater.quitAndInstall();
-// });
+ipcMain.handle('restart_app', (event) => {
+  autoUpdater.quitAndInstall();
+});
 
 ipcMain.handle("check-update", (event) => {
   autoUpdater.autoDownload = false
-  return autoUpdater.checkForUpdates()
+  const check = autoUpdater.checkForUpdates()
+  if (check !== null) {
+    const returnCheck = {
+      updateName: check.versionInfo.releaseName,
+      updateDate: check.versionInfo.releaseDate
+    }
+    return returnCheck
+  }
+  return null
 })
 
 ipcMain.handle("get-config-variable", async (event, name) => {
