@@ -22,10 +22,10 @@ jobs:
 
       - name: Set env variable
         run:  |
-          if "$RUNNER_OS" == "Linux"
-              export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-          if "$RUNNER_OS" == "Windows"
-              set GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          if "$RUNNER_OS" == "Linux";
+              export GH_TOKEN=${{ secrets.GITHUB_TOKEN }};
+          if "$RUNNER_OS" == "Windows";
+              set GH_TOKEN=${{ secrets.GITHUB_TOKEN }};
 
       - name: Install Dependencies
         run: npm install
