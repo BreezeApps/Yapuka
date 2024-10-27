@@ -1,6 +1,18 @@
 const { ipcRenderer } = require("electron");
 const { updateContent, getTranslationWithVar } = require("./i18n.js");
 
+async function getVersion() {
+  const version = await ipcRenderer.invoke("app_version")
+  return version
+}
+
+function checkUpdate(element) {
+  const currentVersion = getVersion()
+  const update = ipcRenderer.invoke("check-update");
+
+  element.innerText = JSON.stringify({ version: currentVersion, update: update })
+}
+
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
 const restartButton = document.getElementById("restart-button");

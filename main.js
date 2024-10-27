@@ -38,6 +38,9 @@ app.whenReady().then(() => {
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+  autoUpdater.autoDownload = false
+  autoUpdater.checkForUpdatesAndNotify();
+  console.log(autoUpdater.currentVersion)
 });
 
 app.on("window-all-closed", () => {
@@ -51,22 +54,30 @@ app.on("window-all-closed", () => {
 app.once('ready-to-show', () => {
   autoUpdater.autoDownload = false
   autoUpdater.checkForUpdatesAndNotify();
+  console.log(autoUpdater.currentVersion)
+  console.log(autoUpdater.checkForUpdates())
 });
 
-autoUpdater.on('update-available', () => {
-  mainWindow.webContents.send('update_available');
-});
-autoUpdater.on('update-downloaded', () => {
-  mainWindow.webContents.send('update_downloaded');
-});
+// autoUpdater.on('update-available', () => {
+//   win.webContents.send('update_available');
+//   console.log("update-available")
+// });
+// autoUpdater.on('update-downloaded', () => {
+//   mainWindow.webContents.send('update_downloaded');
+// });
 
-ipcMain.handle("download_update", (event) => {
-  autoUpdater.downloadUpdate()
+// ipcMain.handle("download_update", (event) => {
+//   autoUpdater.downloadUpdate()
+// })
+
+// ipcMain.on('restart_app', () => {
+//   autoUpdater.quitAndInstall();
+// });
+
+ipcMain.handle("check-update", (event) => {
+  autoUpdater.autoDownload = false
+  return autoUpdater.checkForUpdates()
 })
-
-ipcMain.on('restart_app', () => {
-  autoUpdater.quitAndInstall();
-});
 
 ipcMain.handle("get-config-variable", async (event, name) => {
   const response_db = await new Promise((resolve, reject) => {
@@ -517,4 +528,5 @@ ipcMain.handle("delete-tab", (event, tabId) => {
 
 ipcMain.handle('app_version', (event) => {
   event.sender.send('app_version', { version: app.getVersion() });
+  return app.getVersion()
 });
