@@ -17,7 +17,7 @@ function checkUpdate() {
   const date = new Date(update.updateDate)
   const msg = "A new update is available.\n" + currentVersion + " >> " + update.updateName + "\n" + date
 
-  message.innerText(msg)
+  message.innerText = msg
   notification.classList.remove("hidden");
   downloadButton.classList.remove("hidden");
 }
