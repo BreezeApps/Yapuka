@@ -3,7 +3,7 @@ name: Build/Deploy
 on: workflow_dispatch
 
 env:
-  GH_TOKEN: ${{ secrets.PUBLISHING_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   release:
