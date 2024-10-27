@@ -2,6 +2,9 @@ name: Build/Deploy
 
 on: workflow_dispatch
 
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
@@ -23,18 +26,14 @@ jobs:
         with:
           node-version: 23
 
-        if: runner.os != 'Linux'
-      - name: Set Linux env variable
-        run: export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      #   if: runner.os != 'Linux'
+      # - name: Set Linux env variable
+      #   run: export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
-        if: runner.os != 'Windows'
-      - name: Set Windows env variable
-        run: set GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        # run:  |
-        #   if "$RUNNER_OS" == "Linux";
-        #       export GH_TOKEN=${{ secrets.GITHUB_TOKEN }};
-        #   if "$RUNNER_OS" == "Windows";
-        #       set GH_TOKEN=${{ secrets.GITHUB_TOKEN }};
+      #   if: runner.os != 'Windows'
+      # - name: Set Windows env variable
+      #   run: set GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Install Dependencies
         run: npm install
