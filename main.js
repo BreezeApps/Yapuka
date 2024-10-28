@@ -6,6 +6,7 @@ const { db } = require("./database.js");
 const fs = require("fs");
 
 let win;
+let reload = true;
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -20,6 +21,14 @@ async function createWindow() {
       contextIsolation: false,
       webviewTag: true,
     },
+  });
+  win.on("closed", function () {
+    reload = false;
+    if (process.platform !== "darwin") {
+      app.quit();
+    } else {
+      i18nextBackend.clearMainBindings(ipcMain);
+    }
   });
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("file://")) {
@@ -382,7 +391,6 @@ ipcMain.handle("config-window", (event) => {
       contextIsolation: false,
     },
   });
-  let reload = true
   ipcMain.on("select-dirs", async (event, arg) => {
     const result = await dialog.showOpenDialog(win2, {
       properties: ["openDirectory"],

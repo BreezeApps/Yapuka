@@ -105,7 +105,7 @@ db.serialize(() => {
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [0, "languages", "Languages of the app", "system"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [1, "theme", "Theme of the app", "system"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "blur", "Blur of the app", "1"])
-    db.run('INSERT OR IGNORE INTO tabs (id, name) VALUES (?, ?)', [0, "First Tab"])
+    db.run('INSERT OR IGNORE INTO tabs (id, name) VALUES (?, ?)', [0, "Premier Onglet"])
   });
 
 /**

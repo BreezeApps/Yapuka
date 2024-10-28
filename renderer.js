@@ -95,7 +95,6 @@ window.onload = async () => {
   list_tabs.classList.add(
     "mt-1",
     "block",
-    "w-full",
     "rounded-md",
     "border-2",
     "border-gray-300",
@@ -286,11 +285,7 @@ document
       document.getElementById("blur").classList.add("hidden");
       createListModal.classList.add("hidden");
       updateContent();
-      document.getElementById("name-list").classList.remove("border-rose-500");
-      document.getElementById("name-list-required").classList.add("hidden");
     }
-    document.getElementById("name-list").classList.add("border-rose-500");
-    document.getElementById("name-list-required").classList.remove("hidden");
   });
 
 document
@@ -301,12 +296,8 @@ document
     if (name !== null) {
       const result = await ipcRenderer.invoke("add-tab", name);
       updateContent();
-      document.getElementById("name-tab").classList.remove("border-rose-500");
-      document.getElementById("name-tab-required").classList.add("hidden");
       window.location.reload()
     }
-    document.getElementById("name-tab").classList.add("border-rose-500");
-    document.getElementById("name-tab-required").classList.remove("hidden");
   });
 
 document
@@ -323,20 +314,8 @@ document
       const createListModal = document.getElementById("modify-liste-modal");
       document.getElementById("blur").classList.add("hidden");
       createListModal.classList.add("hidden");
-      document
-        .getElementById("name-modify-list")
-        .classList.remove("border-rose-500");
-      document
-        .getElementById("name-modify-list-required")
-        .classList.add("hidden");
       window.location.reload();
     }
-    document
-      .getElementById("name-modify-list")
-      .classList.add("border-rose-500");
-    document
-      .getElementById("name-modify-list-required")
-      .classList.remove("hidden");
   });
 
 document
@@ -352,20 +331,8 @@ document
       const createTabModal = document.getElementById("modify-tab-modal");
       document.getElementById("blur").classList.add("hidden");
       createTabModal.classList.add("hidden");
-      document
-        .getElementById("name-modify-tab")
-        .classList.remove("border-rose-500");
-      document
-        .getElementById("name-modify-tab-required")
-        .classList.add("hidden");
       window.location.reload();
     }
-    document
-      .getElementById("name-modify-tab")
-      .classList.add("border-rose-500");
-    document
-      .getElementById("name-modify-list-required")
-      .classList.remove("hidden");
   });
 
 document
@@ -391,11 +358,7 @@ document
       const createTaskModal = document.getElementById("create-task-modal");
       document.getElementById("blur").classList.add("hidden");
       createTaskModal.classList.add("hidden");
-      document.getElementById("name-task").classList.remove("border-rose-500");
-      document.getElementById("name-task-required").classList.add("hidden");
     }
-    document.getElementById("name-task").classList.add("border-rose-500");
-    document.getElementById("name-task-required").classList.remove("hidden");
   });
 document
   .getElementById("submit-modify-task")
@@ -420,20 +383,8 @@ document
       const updateTaskModal = document.getElementById("modify-task-modal");
       document.getElementById("blur").classList.add("hidden");
       updateTaskModal.classList.add("hidden");
-      document
-        .getElementById("name-modify-task")
-        .classList.remove("border-rose-500");
-      document
-        .getElementById("name-modify-task-required")
-        .classList.add("hidden");
       window.location.reload();
     }
-    document
-      .getElementById("name-modify-task")
-      .classList.add("border-rose-500");
-    document
-      .getElementById("name-modify-task-required")
-      .classList.remove("hidden");
   });
 
 document

@@ -66,7 +66,6 @@
   },
   "license": "ISC",
   "dependencies": {
-    "csv-stringify": "^6.5.1",
     "electron-context-menu": "^4.0.4",
     "electron-tabs": "^1.0.4",
     "electron-updater": "^6.3.9",
@@ -108,7 +107,8 @@
       {
         "provider": "github",
         "owner": "Marvideo2009",
-        "repo": "Yapuka"
+        "repo": "Yapuka",
+        "releaseType": "release"
       }
     ]
   }
