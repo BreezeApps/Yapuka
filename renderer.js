@@ -6,6 +6,8 @@ async function getVersion() {
   return version
 }
 
+// document.getElementById("print")
+
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
 const restartButton = document.getElementById("restart-button");
