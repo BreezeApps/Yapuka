@@ -1,10 +1,3 @@
-function openModal() {
-    document.getElementById("demoModal").style.display = "flex";
-}
-function closeModal() {
-    document.getElementById("demoModal").style.display = "none";
-}
-
 async function fetchLatestRelease() {
     const apiURL = "https://api.github.com/repos/Marvideo2009/Yapuka/releases/latest";
     

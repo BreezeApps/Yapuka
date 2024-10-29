@@ -653,8 +653,8 @@ video {
   margin-top: 1.5rem;
 }
 
-.block {
-  display: block;
+.inline {
+  display: inline;
 }
 
 .flex {
@@ -663,6 +663,26 @@ video {
 
 .grid {
   display: grid;
+}
+
+.h-20 {
+  height: 5rem;
+}
+
+.h-12 {
+  height: 3rem;
+}
+
+.h-36 {
+  height: 9rem;
+}
+
+.w-auto {
+  width: auto;
+}
+
+.w-36 {
+  width: 9rem;
 }
 
 .max-w-lg {
@@ -701,6 +721,10 @@ video {
   --tw-space-x-reverse: 0;
   margin-right: calc(1rem * var(--tw-space-x-reverse));
   margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.scroll-smooth {
+  scroll-behavior: smooth;
 }
 
 .rounded-full {

@@ -1,31 +1,24 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yapuka - Gestionnaire de Tâches et de Listes</title>
     <link href="style.css" rel="stylesheet">
-    <style>
-        .modal {
-            display: none;
-        }
-    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-
-    <!-- Navigation -->
     <header class="bg-white shadow sticky top-0 z-50">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-blue-600">Yapuka</h1>
+            <a href="#">
+                <img src="assets/logo.png" alt="Logo Yapuka" class="h-12 w-auto"> <!-- Taille ajustée pour un logo de hauteur 12 -->
+            </a>
             <nav class="flex space-x-4">
                 <a href="#features" class="text-gray-600 hover:text-blue-500 transition">Fonctionnalités</a>
-                <a href="#demo" class="text-gray-600 hover:text-blue-500 transition">Démonstration</a>
+                <a href="#screenshots" class="text-gray-600 hover:text-blue-500 transition">ScreenShots</a>
                 <a href="#download" class="text-gray-600 hover:text-blue-500 transition">Télécharger</a>
             </nav>
         </div>
     </header>
-
-    <!-- Hero Section -->
     <section class="bg-blue-600 text-white py-20">
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-4xl font-bold mb-2">Organisez votre vie avec Yapuka</h2>
@@ -33,47 +26,31 @@
             <a href="#download" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Télécharger l'application</a>
         </div>
     </section>
-
-    <!-- Features Section -->
     <section id="features" class="py-16">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-12">Fonctionnalités Principales</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="grid grid-cols-1 gap-12"> <!-- md:grid-cols-2 -->
                 <div class="text-center transform hover:scale-105 transition duration-300">
-                    <img src="https://placehold.co/150/png" alt="Icon" class="mx-auto mb-4">
+                    <img src="./assets/task.png" class="w-36 inline " alt="Icon" class="mx-auto mb-4">
                     <h3 class="text-xl font-semibold mb-2">Gestion de Tâches</h3>
                     <p class="text-gray-600">Créez, organisez et complétez vos tâches facilement.</p>
                 </div>
-                <div class="text-center transform hover:scale-105 transition duration-300">
-                    <img src="https://placehold.co/150/png" alt="Icon" class="mx-auto mb-4">
+                <!-- <div class="text-center transform hover:scale-105 transition duration-300">
+                    <img src="./assets/reminder.png" class="w-36 inline " alt="Icon" class="mx-auto mb-4">
                     <h3 class="text-xl font-semibold mb-2">Rappels et Notifications</h3>
                     <p class="text-gray-600">Ne manquez jamais une tâche importante grâce aux rappels.</p>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>
-
-    <!-- Demo Section with Modal -->
-    <section id="demo" class="bg-gray-100 py-16">
+    <section id="screenshots" class="bg-gray-100 py-16">
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-3xl font-bold mb-8">Découvrez Yapuka</h2>
             <div class="flex justify-center">
-                <img src="https://placehold.co/600x400/png" alt="Demo Image" class="rounded-lg shadow-lg cursor-pointer hover:opacity-80 transition" onclick="openModal()">
+                <img src="./assets/screenshots.png" alt="Capture d'écran de Yapuka" class="rounded-lg shadow-lg hover:opacity-80 transition">
             </div>
         </div>
     </section>
-
-    <!-- Modal Section for Demo -->
-    <div id="demoModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg p-8 relative max-w-lg">
-            <button class="absolute top-3 right-3 text-gray-600 hover:text-gray-800" onclick="closeModal()">✕</button>
-            <h3 class="text-2xl font-semibold mb-4">Démo de Yapuka</h3>
-            <p class="text-gray-700 mb-6">Voici un aperçu de l'application Yapuka en action. Découvrez comment elle peut vous aider à organiser vos tâches efficacement.</p>
-            <img src="https://via.placeholder.com/600x400" alt="Demo Video">
-        </div>
-    </div>
-
-    <!-- Download Section -->
     <section id="download" class="bg-blue-600 text-white py-16">
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-3xl font-bold mb-6">Prêt à essayer Yapuka ?</h2>
@@ -85,8 +62,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-6 text-center">
             <p>&copy; 2023 Yapuka. Tous droits réservés.</p>
@@ -95,6 +70,5 @@
 
     <!-- JavaScript -->
     <script src="./index.js"></script>
-
 </body>
 </html>
