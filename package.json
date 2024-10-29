@@ -94,11 +94,11 @@
         "deb",
         "AppImage"
       ],
-      "artifactName": "${productName}-Setup-${os}.${ext}",
+      "artifactName": "${productName}-Setup-${os}.${ext}"
     },
     "win": {
-      "artifactName": "${productName}-Setup-${os}.${ext}",
-    }
+      "artifactName": "${productName}-Setup-${os}.${ext}"
+    },
     "extraFiles": [
       {
         "from": "Yapuka_Data",
