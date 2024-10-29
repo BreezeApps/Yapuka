@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const { autoUpdater } = require("electron-updater")
+const { autoUpdater } = require("electron-updater");
 const shell = require("electron").shell;
 const path = require("path");
 const { db } = require("./database.js");
@@ -12,7 +12,7 @@ async function createWindow() {
   win = new BrowserWindow({
     width: 1200,
     height: 600,
-    icon: path.join(__dirname, 'build/icon.ico'),
+    icon: path.join(__dirname, "build/icon.ico"),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -47,7 +47,7 @@ app.whenReady().then(() => {
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-  autoUpdater.autoDownload = false
+  autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
 });
 
@@ -59,29 +59,28 @@ app.on("window-all-closed", () => {
   }
 });
 
-app.once('ready-to-show', () => {
-  autoUpdater.autoDownload = false
+app.once("ready-to-show", () => {
+  autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
 });
 
-
-autoUpdater.on('update-downloaded', () => {
-  win.webContents.send('update_downloaded');
+autoUpdater.on("update-downloaded", () => {
+  win.webContents.send("update_downloaded");
 });
 
 ipcMain.handle("download_update", (event) => {
-  autoUpdater.downloadUpdate()
-})
+  autoUpdater.downloadUpdate();
+});
 
-ipcMain.handle('restart_app', (event) => {
+ipcMain.handle("restart_app", (event) => {
   autoUpdater.quitAndInstall();
 });
 
 ipcMain.handle("check-update", (event) => {
-  autoUpdater.autoDownload = false
-  const check = autoUpdater.checkForUpdates()
-  return check
-})
+  autoUpdater.autoDownload = false;
+  const check = autoUpdater.checkForUpdates();
+  return check;
+});
 
 ipcMain.handle("get-config-variable", async (event, name) => {
   const response_db = await new Promise((resolve, reject) => {
@@ -338,40 +337,42 @@ ipcMain.handle("get-blur", (event) => {
 });
 
 ipcMain.handle(
-  "print",
-  (event, arg, link = path.join(__dirname, "/printme.html")) => {
-    let win = new BrowserWindow({ width: 302, height: 793, show: false });
-    win.once("ready-to-show", () => win.hide());
-    fs.writeFile(link, arg, function () {
-      win.loadURL(`file://${link}`);
-      win.webContents.on("did-finish-load", () => {
-        // Finding Default Printer name
-        // let printersInfo = win.webContents.getPrinters();
-        // let printer = printersInfo.filter(printer => printer.isDefault === true)[0];
+  "printer",
+  (event, link = path.join(__dirname, "/printme.html")) => {
+    const { startPrint } = require("./printer/index.js");
+    const html = fs.readFileSync(link)
+    // startPrint({htmlString :`<style>h1{color: #42b983}</style> <h1>hello world !</h1>`},undefined)
+    startPrint({htmlString :html},undefined)
+    // let win3 = new BrowserWindow({ width: 302, height: 793, show: false });
+    // win3.once("ready-to-show", () => win.hide());
+    // win3.loadURL(`file://${link}`);
+    // win3.webContents.on("did-finish-load", () => {
+    //   // Finding Default Printer name
+    //   // let printersInfo = win.webContents.getPrinters();
+    //   // let printer = printersInfo.filter(printer => printer.isDefault === true)[0];
 
-        const options = {
-          silent: false,
-          printBackground: false,
-          color: false,
-          margin: {
-            marginType: "printableArea",
-          },
-          landscape: false,
-          pagesPerSheet: 1,
-          collate: false,
-          copies: 1,
-          header: "Header of the Page",
-          footer: "Footer of the Page",
-        };
+    //   const options = {
+    //     silent: false,
 
-        win.webContents.print(options, (success, failureReason) => {
-          if (!success) console.log(failureReason);
-          console.log("Print Initiated");
-        });
-      });
-    });
+    //     printBackground: false,
+    //     color: false,
+    //     margin: {
+    //       marginType: "printableArea",
+    //     },
+    //     landscape: false,
+    //     pagesPerSheet: 1,
+    //     collate: false,
+    //     copies: 1,
+    //     header: "Header of the Page",
+    //     footer: "Footer of the Page",
+    //   };
 
-    event.returnValue = true;
+    //   win3.webContents.print(options, (success, failureReason) => {
+    //     if (!success) console.log(failureReason);
+    //   });
+    // });
+
+    // event.returnValue = true;
   },
 );
 
@@ -382,7 +383,7 @@ ipcMain.handle("config-window", (event) => {
     height: 600,
     minimizable: false,
     resizable: false,
-    icon: path.join(__dirname, 'build/icon.ico'),
+    icon: path.join(__dirname, "build/icon.ico"),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -399,10 +400,13 @@ ipcMain.handle("config-window", (event) => {
       return null;
     } else {
       const dir = path.join(result.filePaths[0], "Yapuka_Data");
-      fs.writeFileSync(path.join(__dirname, "Yapuka_Data", "db.json"), JSON.stringify({ link: dir }))
-      reload = false
-      app.relaunch()
-      app.exit()
+      fs.writeFileSync(
+        path.join(__dirname, "Yapuka_Data", "db.json"),
+        JSON.stringify({ link: dir }),
+      );
+      reload = false;
+      app.relaunch();
+      app.exit();
     }
   });
   win2.on("closed", function () {
@@ -484,17 +488,13 @@ ipcMain.handle("add-tab", (event, name) => {
           reject(err);
         } else {
           const position = row.count;
-          db.run(
-            "INSERT INTO tabs (name) VALUES (?)",
-            [name],
-            function (err) {
-              if (err) {
-                reject(err);
-              } else {
-                resolve({ id: this.lastID });
-              }
-            },
-          );
+          db.run("INSERT INTO tabs (name) VALUES (?)", [name], function (err) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve({ id: this.lastID });
+            }
+          });
         }
       },
     );
@@ -503,17 +503,13 @@ ipcMain.handle("add-tab", (event, name) => {
 
 ipcMain.handle("update-tab", (event, name, id) => {
   return new Promise((resolve, reject) => {
-    db.run(
-      "UPDATE tabs SET name = ? WHERE id = ?",
-      [name, id],
-      function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      },
-    );
+    db.run("UPDATE tabs SET name = ? WHERE id = ?", [name, id], function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
   });
 });
 
@@ -523,13 +519,13 @@ ipcMain.handle("delete-tab", (event, tabId) => {
       if (err) {
         reject(err);
       } else {
-        resolve(rows)
+        resolve(rows);
       }
     });
   });
 });
 
-ipcMain.handle('app_version', (event) => {
-  event.sender.send('app_version', { version: app.getVersion() });
-  return app.getVersion()
+ipcMain.handle("app_version", (event) => {
+  event.sender.send("app_version", { version: app.getVersion() });
+  return app.getVersion();
 });

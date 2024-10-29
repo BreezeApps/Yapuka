@@ -6,7 +6,9 @@ async function getVersion() {
   return version
 }
 
-// document.getElementById("print")
+document.getElementById("print").addEventListener('click', (event) => {
+  ipcRenderer.invoke("printer")
+});
 
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
