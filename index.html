@@ -40,12 +40,12 @@
             <h2 class="text-3xl font-bold text-center mb-12">Fonctionnalités Principales</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <div class="text-center transform hover:scale-105 transition duration-300">
-                    <img src="https://via.placeholder.com/150" alt="Icon" class="mx-auto mb-4">
+                    <img src="https://placehold.co/150/png" alt="Icon" class="mx-auto mb-4">
                     <h3 class="text-xl font-semibold mb-2">Gestion de Tâches</h3>
                     <p class="text-gray-600">Créez, organisez et complétez vos tâches facilement.</p>
                 </div>
                 <div class="text-center transform hover:scale-105 transition duration-300">
-                    <img src="https://via.placeholder.com/150" alt="Icon" class="mx-auto mb-4">
+                    <img src="https://placehold.co/150/png" alt="Icon" class="mx-auto mb-4">
                     <h3 class="text-xl font-semibold mb-2">Rappels et Notifications</h3>
                     <p class="text-gray-600">Ne manquez jamais une tâche importante grâce aux rappels.</p>
                 </div>
@@ -56,9 +56,9 @@
     <!-- Demo Section with Modal -->
     <section id="demo" class="bg-gray-100 py-16">
         <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl font-bold mb-8">Découvrez Yapuka en Action</h2>
+            <h2 class="text-3xl font-bold mb-8">Découvrez Yapuka</h2>
             <div class="flex justify-center">
-                <img src="https://via.placeholder.com/600x400" alt="Demo Image" class="rounded-lg shadow-lg cursor-pointer hover:opacity-80 transition" onclick="openModal()">
+                <img src="https://placehold.co/600x400/png" alt="Demo Image" class="rounded-lg shadow-lg cursor-pointer hover:opacity-80 transition" onclick="openModal()">
             </div>
         </div>
     </section>
@@ -78,11 +78,10 @@
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-3xl font-bold mb-6">Prêt à essayer Yapuka ?</h2>
             <p class="text-lg mb-8">Téléchargez l'application dès aujourd'hui et commencez à organiser vos tâches efficacement.</p>
-            <a href="https://github.com/Marvideo2009/Yapuka/releases" target="_blank" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Page des Releases GitHub</a>
             <div class="mt-6 space-x-4">
-                <a href="https://github.com/Marvideo2009/Yapuka/releases/download/latest/Yapuka-Setup-win.exe" target="_blank" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Télécharger pour Windows</a>
-                <a href="https://github.com/Marvideo2009/Yapuka/releases/download/latest/Yapuka-Setup-linux.AppImage" target="_blank" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Télécharger pour Linux (AppImage)</a>
-                <a href="https://github.com/Marvideo2009/Yapuka/releases/download/latest/Yapuka-Setup-linux.deb" target="_blank" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Télécharger pour Linux (DEB)</a>
+                <a href="#" id="downloadWindows" target="_blank" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Télécharger pour Windows</a>
+                <a href="#" id="downloadLinuxAppImage" target="_blank" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Télécharger pour Linux (AppImage)</a>
+                <a href="#" id="downloadLinuxDeb" target="_blank" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition transform hover:scale-105">Télécharger pour Linux (DEB)</a>
             </div>
         </div>
     </section>
@@ -94,15 +93,8 @@
         </div>
     </footer>
 
-    <!-- JavaScript for Modal -->
-    <script>
-        function openModal() {
-            document.getElementById("demoModal").style.display = "flex";
-        }
-        function closeModal() {
-            document.getElementById("demoModal").style.display = "none";
-        }
-    </script>
+    <!-- JavaScript -->
+    <script src="./index.js"></script>
 
 </body>
 </html>
