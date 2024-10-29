@@ -87,13 +87,18 @@
   },
   "build": {
     "appId": "fr.marvideo.yapuka",
+    "compression": "maximum",
     "linux": {
       "category": "Utility",
       "target": [
         "deb",
         "AppImage"
-      ]
+      ],
+      "artifactName": "${productName}-Setup-${os}.${ext}",
     },
+    "win": {
+      "artifactName": "${productName}-Setup-${os}.${ext}",
+    }
     "extraFiles": [
       {
         "from": "Yapuka_Data",
