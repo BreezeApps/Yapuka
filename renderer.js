@@ -1,5 +1,5 @@
 const { ipcRenderer } = require("electron");
-const { updateContent, getTranslationWithVar } = require("./i18n.js");
+const { updateContent, getTranslationWithVar, getTranslation } = require("./i18n.js");
 
 async function getVersion() {
   const version = await ipcRenderer.invoke("app_version")
@@ -463,12 +463,13 @@ function addNewList(name, color, id) {
   deleteListBtn.addEventListener("click", async () => {
     if (
       confirm(
-        getTranslationWithVar("Are_Sure", { title: name.toUpperCase() }),
+        getTranslationWithVar("Are_Sure", { title: name.toUpperCase(), type: getTranslation("list") }),
       ) == true
     ) {
       await ipcRenderer.invoke("delete-list", id);
       newList.remove();
     }
+    document.getElementById("description-modal").classList.add("hidden");
   });
   btnList.appendChild(deleteListBtn);
 
@@ -627,12 +628,13 @@ function addNewTask(listElement, taskName, taskId) {
     document.getElementById("description-modal").classList.add("hidden");
     if (
       confirm(
-        getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase() }),
+        getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase(), type: getTranslation("task") }),
       ) == true
     ) {
       await ipcRenderer.invoke("delete-task", taskId);
       newTask.remove();
     }
+    document.getElementById("description-modal").classList.add("hidden");
   });
 
   newTask.appendChild(modifyTaskBtn);
@@ -646,7 +648,7 @@ function addNewTask(listElement, taskName, taskId) {
           .classList.contains("hidden")
       ) {
         if (
-          document
+          !document
             .getElementById("modify-task-modal")
             .classList.contains("hidden")
         ) {
