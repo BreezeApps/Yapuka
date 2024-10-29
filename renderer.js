@@ -6,9 +6,9 @@ async function getVersion() {
   return version
 }
 
-document.getElementById("print").addEventListener('click', (event) => {
-  ipcRenderer.invoke("printer")
-});
+// document.getElementById("print").addEventListener('click', (event) => {
+//   ipcRenderer.invoke("printer")
+// });
 
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
@@ -18,7 +18,7 @@ const downloadButton = document.getElementById("download-button");
 async function checkUpdate() {
   const currentVersion = await getVersion()
   const update = await ipcRenderer.invoke("check-update");
-  if (update !== null) {
+  if (update !== null && currentVersion !== update.versionInfo.version) {
     const msg = "<span data-i18n='update_Available' />\n" + currentVersion + " >> " + update.versionInfo.version
 
     message.innerHTML = msg
