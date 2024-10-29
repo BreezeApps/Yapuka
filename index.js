@@ -24,3 +24,5 @@ async function fetchLatestRelease() {
 
 // Appel de la fonction lors du chargement de la page
 fetchLatestRelease();
+
+document.getElementById("year").innerText = new Date().getFullYear()
