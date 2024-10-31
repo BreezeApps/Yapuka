@@ -4,6 +4,8 @@ const shell = require("electron").shell;
 const path = require("path");
 const { db } = require("./database.js");
 const fs = require("fs");
+const { generate_list, generate_tab } = require("./print_template/generate_file.js");
+const { startPrint } = require("./printer/index.js");
 
 let win;
 let reload = true;
@@ -336,43 +338,10 @@ ipcMain.handle("get-blur", (event) => {
   });
 });
 
-ipcMain.handle(
-  "printer",
-  (event, link = path.join(__dirname, "/printme.html")) => {
-    const { startPrint } = require("./printer/index.js");
-    const html = fs.readFileSync(link)
-    // startPrint({htmlString :`<style>h1{color: #42b983}</style> <h1>hello world !</h1>`},undefined)
-    startPrint({htmlString :html},undefined)
-    // let win3 = new BrowserWindow({ width: 302, height: 793, show: false });
-    // win3.once("ready-to-show", () => win.hide());
-    // win3.loadURL(`file://${link}`);
-    // win3.webContents.on("did-finish-load", () => {
-    //   // Finding Default Printer name
-    //   // let printersInfo = win.webContents.getPrinters();
-    //   // let printer = printersInfo.filter(printer => printer.isDefault === true)[0];
-
-    //   const options = {
-    //     silent: false,
-
-    //     printBackground: false,
-    //     color: false,
-    //     margin: {
-    //       marginType: "printableArea",
-    //     },
-    //     landscape: false,
-    //     pagesPerSheet: 1,
-    //     collate: false,
-    //     copies: 1,
-    //     header: "Header of the Page",
-    //     footer: "Footer of the Page",
-    //   };
-
-    //   win3.webContents.print(options, (success, failureReason) => {
-    //     if (!success) console.log(failureReason);
-    //   });
-    // });
-
-    // event.returnValue = true;
+ipcMain.handle("printer", (event, link = path.join(__dirname, "/printme.html")) => {
+    // const html = fs.readFileSync(link)
+    // generate_tab(db, 0)
+    // startPrint({htmlString :html},undefined)
   },
 );
 
@@ -519,7 +488,7 @@ ipcMain.handle("delete-tab", (event, tabId) => {
       if (err) {
         reject(err);
       } else {
-        resolve(rows);
+        resolve();
       }
     });
   });

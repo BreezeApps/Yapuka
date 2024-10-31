@@ -1,0 +1,46 @@
+<style>
+  .container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 40px;
+  }
+  .task-list-wrapper {
+    margin-bottom: 30px;
+  }
+  .list-title {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+  }
+  .task-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  .task-list th,
+  .task-list td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+  .task-list th {
+    background-color: #f4f4f4;
+    color: #333;
+  }
+  .task-list td {
+    background-color: #fff;
+  }
+</style>
+<div class="container">
+  <h1>Listes de Taches - Yapuka</h1>
+  <div class="task-list-wrapper">
+    {{list}}
+  </div>
+</div>

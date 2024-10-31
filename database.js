@@ -1,32 +1,3 @@
-// const { ipcRenderer } = require('electron');
-
-// async function get_config_mysql() {
-//   const mysql_config = await ipcRenderer.invoke('get-config-variable', 'mysql_database');
-//   return mysql_config
-// }
-
-// if(get_config_mysql()) {
-//   load_mysql()
-// }
-
-// async function load_mysql() {
-//   const mysql = require('mysql')
-
-//   const host = await ipcRenderer.invoke('get-config-variable', 'database.host') + ":" + await ipcRenderer.invoke('get-config-variable', 'database.port');
-//   const user = await ipcRenderer.invoke('get-config-variable', 'database.user');
-//   const password = await ipcRenderer.invoke('get-config-variable', 'database.password');
-
-//   const con = mysql.createConnection({
-//     host: host,
-//     user: user,
-//     password: password
-//   });
-//   con.connect(function(err) {
-//     if (err) throw err;
-//     console.log("Connected!");
-//   });
-// }
-
 const fs = require("fs");
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');

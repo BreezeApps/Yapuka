@@ -1,0 +1,42 @@
+<style>
+  .container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .task-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+  .task-list th,
+  .task-list td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+  .task-list th {
+    background-color: #f4f4f4;
+    color: #333;
+  }
+</style>
+<div class="container">
+  <h1>Liste de Taches - Yapuka</h1>
+  <table class="task-list">
+    <thead>
+      <tr>
+        <th>Tache</th>
+        <th>Description</th>
+        <th>Date d'echeance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{task}}
+    </tbody>
+  </table>
+</div>

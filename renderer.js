@@ -92,7 +92,12 @@ window.onload = async () => {
   if (getURLParameter("tab") === null) {
     document.body.id = tabs[0].id;
   } else {
-    document.body.id = getURLParameter("tab");
+    const verif_tab = await ipcRenderer.invoke("get-tab", getURLParameter("tab"))
+    if (verif_tab[0] === null) {
+      document.body.id = tabs[0].id;
+    } else {
+      document.body.id = getURLParameter("tab");
+    }
   }
   let list_tabs = document.createElement("select");
   list_tabs.setAttribute("onchange", "changeTab(this.value)");
@@ -227,6 +232,25 @@ document.getElementById("modify-tab-btn").addEventListener("click", async () => 
   createTabModal.classList.remove("hidden");
   document.getElementById("name-modify-tab").focus();
 });
+document.getElementById("delete-tab-btn").addEventListener("click", async () => {
+  const tab = await ipcRenderer.invoke("get-tab", document.body.id)
+  if (
+    confirm(
+      getTranslationWithVar("Are_Sure", { title: tab[0].name.toUpperCase(), type: getTranslation("tab") }),
+    ) == true
+  ) {
+    const lists = await ipcRenderer.invoke("get-lists", document.body.id)
+    lists.forEach(async list => {
+      const tasks = await ipcRenderer.invoke("get-task", list.id)
+      tasks.forEach(async task => {
+        await ipcRenderer.invoke("delete-task", task.id)
+      })
+      await ipcRenderer.invoke("delete-list", list.id)
+    })
+    await ipcRenderer.invoke("delete-tab", document.body.id);
+    window.location.reload()
+  }
+})
 document
   .getElementById("close-create-list-modal")
   .addEventListener("click", async () => {
@@ -300,7 +324,7 @@ document
     if (name !== null) {
       const result = await ipcRenderer.invoke("add-tab", name);
       updateContent();
-      window.location.reload()
+      window.location.replace("index.html?tab=" + result.id);
     }
   });
 
@@ -466,6 +490,10 @@ function addNewList(name, color, id) {
         getTranslationWithVar("Are_Sure", { title: name.toUpperCase(), type: getTranslation("list") }),
       ) == true
     ) {
+      const tasks = await ipcRenderer.invoke("get-task", id)
+      tasks.forEach(async task => {
+        await ipcRenderer.invoke("delete-task", task.id)
+      })
       await ipcRenderer.invoke("delete-list", id);
       newList.remove();
     }
