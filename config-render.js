@@ -18,10 +18,6 @@ document.getElementById("backup-button").addEventListener("click", (e) => {
   window.location.reload()
 })
 
-// function test() {
-//   console.log(document.getElementById("myFile").files[0].path)
-// }
-
 async function load() {
   var options = "<option value='system' id='options-system-lang' data-i18n='system_theme'></option>"
   const languages = getLanguages()

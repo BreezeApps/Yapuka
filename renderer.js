@@ -6,10 +6,6 @@ async function getVersion() {
   return version
 }
 
-// document.getElementById("print").addEventListener('click', (event) => {
-//   ipcRenderer.invoke("printer")
-// });
-
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
 const restartButton = document.getElementById("restart-button");
@@ -437,7 +433,19 @@ function addNewList(name, color, id) {
   newList.className =
     "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline m-3";
 
-  const modifyListIconSvg = document.createElementNS(
+    const printListIcon = document.createElement("img")
+    printListIcon.setAttribute("src", "./build/img/print-icon.svg")
+    printListIcon.classList.add("h-6");
+  
+    const printListBtn = document.createElement("button");
+    printListBtn.className =
+      "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
+    printListBtn.appendChild(printListIcon);
+    printListBtn.addEventListener("click", async () => {
+      ipcRenderer.invoke("printer", "list", id)
+    });
+
+    const modifyListIconSvg = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "svg",
   );
@@ -529,6 +537,7 @@ function addNewList(name, color, id) {
   const listHeader = document.createElement("h3");
   listHeader.innerText = name;
   listHeader.appendChild(modifyListBtn);
+  listHeader.appendChild(printListBtn);
   listHeader.className = "rounded capitalize text-center p-2 font-bold";
   listHeader.style.background = color;
   listHeader.id = "list_header-" + id;

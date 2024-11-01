@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { console } = require("inspector");
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
@@ -76,6 +77,10 @@ db.serialize(() => {
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [0, "languages", "Languages of the app", "system"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [1, "theme", "Theme of the app", "system"])
     db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [2, "blur", "Blur of the app", "1"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [3, "screen-width", "", ""])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [4, "screen-height", "", ""])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [5, "screen-x", "", "0"])
+    db.run('INSERT OR IGNORE INTO configs (id, name, description, value) VALUES (?, ?, ?, ?)', [6, "screen-y", "", "0"])
     db.run('INSERT OR IGNORE INTO tabs (id, name) VALUES (?, ?)', [0, "Premier Onglet"])
   });
 
@@ -110,11 +115,7 @@ function make_backup(returnElement) {
 }
 
 function getDays(milli){
-  let minutes = Math.floor(milli / 60000);
-  let hours = Math.round(minutes / 60);
-  let days = Math.round(hours / 24);
-
-  return days
+  return Math.round(Math.round(Math.floor(milli / 60000) / 60) / 24);
 };
 
 function get_latest_backup(returnElement) {
@@ -162,4 +163,4 @@ function get_latest_backup(returnElement) {
   return lastFile
 }
 
-module.exports = { db, make_backup, get_link, get_latest_backup, get_link };
+module.exports = { db, make_backup, get_latest_backup, get_link };

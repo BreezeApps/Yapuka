@@ -78,7 +78,7 @@ async function generate_list(db, list_id) {
   fs.writeFileSync(dest_link, response);
 
   final = "";
-  return true;
+  return dest_link;
 }
 
 async function generate_tab(db, tab_id) {

@@ -1,8 +1,8 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow, screen, ipcMain, dialog } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const shell = require("electron").shell;
 const path = require("path");
-const { db } = require("./database.js");
+const { db, get_link } = require("./database.js");
 const fs = require("fs");
 const { generate_list, generate_tab } = require("./print_template/generate_file.js");
 const { startPrint } = require("./printer/index.js");
@@ -11,9 +11,50 @@ let win;
 let reload = true;
 
 async function createWindow() {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const saved_width = await new Promise((resolve, reject) => {
+    db.all("SELECT * FROM configs WHERE name = ?", ["screen-width"], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+  const saved_height = await new Promise((resolve, reject) => {
+    db.all("SELECT * FROM configs WHERE name = ?", ["screen-height"], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+  const saved_x = await new Promise((resolve, reject) => {
+    db.all("SELECT * FROM configs WHERE name = ?", ["screen-x"], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+  const saved_y = await new Promise((resolve, reject) => {
+    db.all("SELECT * FROM configs WHERE name = ?", ["screen-y"], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+  const defaultWidth = Math.floor(width * 0.8);
+  const defaultHeight = Math.floor(height * 0.8);
   win = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: parseInt(saved_width[0].value) || defaultWidth,
+    height: parseInt(saved_height[0].value) || defaultHeight,
+    x: parseInt(saved_x[0].value),
+    y: parseInt(saved_y[0].value),
     icon: path.join(__dirname, "build/icon.ico"),
     autoHideMenuBar: true,
     webPreferences: {
@@ -24,8 +65,61 @@ async function createWindow() {
       webviewTag: true,
     },
   });
-  win.on("closed", function () {
+  win.on("close", async function () {
     reload = false;
+    const bounds = win.getBounds();
+    new Promise((resolve, reject) => {
+      db.run(
+        "UPDATE configs SET value = ? WHERE name = ?",
+        [bounds.x, "screen-x"],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ id: this.lastID });
+          }
+        },
+      );
+    });
+    new Promise((resolve, reject) => {
+      db.run(
+        "UPDATE configs SET value = ? WHERE name = ?",
+        [bounds.y, "screen-y"],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ id: this.lastID });
+          }
+        },
+      );
+    });
+    new Promise((resolve, reject) => {
+      db.run(
+        "UPDATE configs SET value = ? WHERE name = ?",
+        [bounds.width, "screen-width"],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ id: this.lastID });
+          }
+        },
+      );
+    });
+    new Promise((resolve, reject) => {
+      db.run(
+        "UPDATE configs SET value = ? WHERE name = ?",
+        [bounds.height, "screen-height"],
+        function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ id: this.lastID });
+          }
+        },
+      );
+    });
     if (process.platform !== "darwin") {
       app.quit();
     } else {
@@ -105,7 +199,7 @@ ipcMain.handle("get-config-variable", async (event, name) => {
 ipcMain.handle("set-config-variable", (event, name, value) => {
   return new Promise((resolve, reject) => {
     db.run(
-      "UPDATE config SET value = ? WHERE name = ?",
+      "UPDATE configs SET value = ? WHERE name = ?",
       [value, name],
       function (err) {
         if (err) {
@@ -338,9 +432,14 @@ ipcMain.handle("get-blur", (event) => {
   });
 });
 
-ipcMain.handle("printer", (event, link = path.join(__dirname, "/printme.html")) => {
-    // const html = fs.readFileSync(link)
-    // generate_tab(db, 0)
+ipcMain.handle("printer", async (event, type, id) => {
+    if (type !== "") {
+      if (type === "list") {
+        startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
+      } else if (type === "tab") {
+        generate_tab(db, id)
+      }
+    }
     // startPrint({htmlString :html},undefined)
   },
 );
@@ -369,6 +468,8 @@ ipcMain.handle("config-window", (event) => {
       return null;
     } else {
       const dir = path.join(result.filePaths[0], "Yapuka_Data");
+      fs.mkdirSync(dir)
+      fs.copyFileSync(path.join(get_link(), "Database.db"), path.join(dir, "Database.db"), fs.constants.COPYFILE_EXCL)
       fs.writeFileSync(
         path.join(__dirname, "Yapuka_Data", "db.json"),
         JSON.stringify({ link: dir }),
