@@ -6,11 +6,6 @@ async function getVersion() {
   return version
 }
 
-// a function that add 2 number
-function add(a, b) {
-  
-}
-
 // document.getElementById("print").addEventListener('click', (event) => {
 //   ipcRenderer.invoke("printer")
 // });
