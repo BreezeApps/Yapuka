@@ -13,7 +13,7 @@ let reload = true;
 async function createWindow() {
   win = new BrowserWindow({
     width: 1200,
-    height: 600,
+    height: 800,
     icon: path.join(__dirname, "build/icon.ico"),
     autoHideMenuBar: true,
     webPreferences: {
