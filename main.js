@@ -136,8 +136,6 @@ async function createWindow() {
   });
   win.loadFile("index.html");
   // win.webContents.openDevTools();
-  logger.log('Main log');
-	logger.error('Main error');
 }
 
 app.whenReady().then(() => {
