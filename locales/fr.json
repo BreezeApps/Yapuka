@@ -46,6 +46,7 @@
   "update_Downloaded": "Mise à jour téléchargée. Elle sera installée au redémarrage. Voulez-vous redémarrer maintenant ?",
   "update_btn_download": "Télécharger maintenant",
   "update_btn_restart": "Redémarrer",
+  "Print": "Imprimer",
   "task": "la tâche",
   "list": "la liste",
   "tab": "l'onglet",

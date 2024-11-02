@@ -46,6 +46,7 @@
   "update_Downloaded": "Update Downloaded. It will be installed on restart. Restart now?",
   "update_btn_download": "Downloading Now",
   "update_btn_restart": "Restart",
+  "Print": "Print",
   "task": "the task",
   "list": "the list",
   "tab": "the tab",

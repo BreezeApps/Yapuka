@@ -151,17 +151,15 @@ async function generate_tab(db, tab_id) {
       response_list += task_html;
     });
     response_list += "</tbody></table>";
-    final = response_list
+    final += response_list
   });
 
-  console.log(final)
-
-  const response = html.replace("{{list}}", final);
-
-  fs.writeFileSync(dest_link, response);
-
-  final = "";
-  return true;
+  setTimeout(function () {
+    const response = html.replace("{{list}}", final);
+    fs.writeFileSync(dest_link, response);
+    final = "";
+  }, 500);
+  return dest_link;
 }
 
 module.exports = { generate_list, generate_tab };

@@ -136,6 +136,8 @@ async function createWindow() {
   });
   win.loadFile("index.html");
   // win.webContents.openDevTools();
+  logger.log('Main log');
+	logger.error('Main error');
 }
 
 app.whenReady().then(() => {
@@ -437,7 +439,7 @@ ipcMain.handle("printer", async (event, type, id) => {
       if (type === "list") {
         startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
       } else if (type === "tab") {
-        generate_tab(db, id)
+        startPrint({ htmlString : fs.readFileSync(await generate_tab(db, id)) },undefined)
       }
     }
     // startPrint({htmlString :html},undefined)
