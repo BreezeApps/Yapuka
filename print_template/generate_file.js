@@ -23,11 +23,21 @@ async function generate_list(db, list_id) {
     db,
     "SELECT * FROM tasks WHERE list_id = " + list_id,
   );
+  const list = await database(
+    db,
+    "SELECT * FROM lists WHERE id = " + list_id
+  )
+  const tab = await database(
+    db,
+    "SELECT * FROM tabs WHERE id = " + list[0].id
+  )
+  let date = new Date()
+  date = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear()
   let html = fs.readFileSync(html_template_list, "utf-8");
   all_task.forEach((task) => {
     let task_html = "<tr>";
-    task_html += "<td>" + task.name + "</td>";
-    task_html += "<td>" + task.description + "</td>";
+    task_html += "<td width='234' style='border: none; padding: 0cm'><p><font face='Arial, sans-serif'>" + task.name + "</font></p></td>";
+    task_html += "<td width='283' style='border: none; padding: 0cm'>" + task.description + "</td>";
     if (task.date !== "") {
       const date = new Date(task.date);
       let day;
@@ -55,7 +65,7 @@ async function generate_list(db, list_id) {
         minutes = date.getMinutes();
       }
       task_html +=
-        "<td>" +
+        "<td width='151' style='border: none; padding: 0cm'><p><font face='Arial, sans-serif'>" +
         day +
         "-" +
         month +
@@ -65,15 +75,15 @@ async function generate_list(db, list_id) {
         hours +
         ":" +
         minutes +
-        "</td>";
+        "</font></p></td>";
     } else {
-      task_html += "<td>Pas de date d'echeance</td>";
+      task_html += "<td width='151' style='border: none; padding: 0cm'><p><font face='Arial, sans-serif'>Pas de date d'echeance</font></p></td>";
     }
     task_html += "</tr>";
     final += task_html;
   });
 
-  const response = html.replace("{{task}}", final);
+  let response = html.replace("{{task}}", final).replace("{{tab_name}}", tab[0].name).replace("{{date}}", date).replace("{{list_name}}", list[0].name);
 
   fs.writeFileSync(dest_link, response);
 
