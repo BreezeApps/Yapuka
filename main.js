@@ -431,13 +431,46 @@ ipcMain.handle("get-blur", (event) => {
     });
   });
 });
-
+let win_toprint;
 ipcMain.handle("printer", async (event, type, id) => {
     if (type !== "") {
+      win_toprint = new BrowserWindow({
+        width: 300,
+        height: 300,
+        show: false,
+        frame: false,
+        webPreferences: {
+            sandbox: true,
+            nodeIntegration: true,
+            contextIsolation: false,
+            webSecurity: false,
+            minimumFontSize: 12,
+            defaultFontFamily: {
+                standard: 'Microsoft Yauheni'
+            }
+        },
+    });
+    const printOptions = {
+      printBackground: true,
+            landscape: this.landscape,
+            pagesize: 'A4',
+            scale: this.scaleFactor / 100,
+            margin: 10,
+    }
       if (type === "list") {
-        startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
+        const link = await generate_list(db, id)
+        win_toprint.loadFile(link)
+        const data = await win_toprint.webContents.printToPDF(printOptions);
+        fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
+        win.webContents.downloadUrl("file://" + path.join(__dirname, "print.pdf"))
+        win_toprint.close()
+        // startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
       } else if (type === "tab") {
-        startPrint({ htmlString : fs.readFileSync(await generate_tab(db, id)) },undefined)
+        win_toprint.loadFile(await generate_tab(db, id))
+        const data = await win_toprint.webContents.printToPDF(printOptions);
+        fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
+        win_toprint.close()
+        // startPrint({ htmlString : fs.readFileSync(await generate_tab(db, id)) },undefined)
       }
     }
     // startPrint({htmlString :html},undefined)
