@@ -431,7 +431,9 @@ ipcMain.handle("get-blur", (event) => {
     });
   });
 });
+
 let win_toprint;
+const saveFile = require("electron-save-file")
 ipcMain.handle("printer", async (event, type, id) => {
     if (type !== "") {
       win_toprint = new BrowserWindow({
@@ -460,16 +462,26 @@ ipcMain.handle("printer", async (event, type, id) => {
       if (type === "list") {
         const link = await generate_list(db, id)
         win_toprint.loadFile(link)
-        const data = await win_toprint.webContents.printToPDF(printOptions);
-        fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
-        win.webContents.downloadUrl("file://" + path.join(__dirname, "print.pdf"))
-        win_toprint.close()
+        win_toprint.on('ready-to-show', async () => {
+          const data = await win_toprint.webContents.printToPDF(printOptions);
+          fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
+          const pdf_link = "file://" + path.join(__dirname, "print.pdf")
+          let pdf_name = type + "-" + id + ".pdf"
+          win.webContents.send('pdfLink', pdf_link, pdf_name)
+          win_toprint.close()
+        })
         // startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
       } else if (type === "tab") {
-        win_toprint.loadFile(await generate_tab(db, id))
-        const data = await win_toprint.webContents.printToPDF(printOptions);
-        fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
-        win_toprint.close()
+        const link = await generate_tab(db, id)
+        win_toprint.loadFile(link)
+        win_toprint.on('ready-to-show', async () => {
+          const data = await win_toprint.webContents.printToPDF(printOptions);
+          fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
+          const pdf_link = "file://" + path.join(__dirname, "print.pdf")
+          let pdf_name = type + "-" + id + ".pdf"
+          win.webContents.send('pdfLink', pdf_link, pdf_name)
+          win_toprint.close()
+        });
         // startPrint({ htmlString : fs.readFileSync(await generate_tab(db, id)) },undefined)
       }
     }

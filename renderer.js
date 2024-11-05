@@ -5,6 +5,17 @@ async function getVersion() {
   const version = await ipcRenderer.invoke("app_version")
   return version
 }
+
+ipcRenderer.on('pdfLink', function (evt, link, name) {
+  setTimeout(() => {
+    var link_Element = document.createElement("a");
+    link_Element.download = name;
+    link_Element.href = link;
+    link_Element.click();
+    link_Element.remove();
+  }, 500)
+})
+
 document.getElementById("print-tab-btn").addEventListener("click", (event) => {
   ipcRenderer.invoke("printer", "tab", document.body.id)
 })
