@@ -460,25 +460,29 @@ ipcMain.handle("printer", async (event, type, id) => {
             margin: 10,
     }
       if (type === "list") {
-        const link = await generate_list(db, id)
+        const { link, name } = await generate_list(db, id)
         win_toprint.loadFile(link)
         win_toprint.on('ready-to-show', async () => {
           const data = await win_toprint.webContents.printToPDF(printOptions);
           fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
           const pdf_link = "file://" + path.join(__dirname, "print.pdf")
-          let pdf_name = type + "-" + id + ".pdf"
+          let date = new Date()
+          date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear()
+          let pdf_name = name + "_" + date + ".pdf"
           win.webContents.send('pdfLink', pdf_link, pdf_name)
           win_toprint.close()
         })
         // startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
       } else if (type === "tab") {
-        const link = await generate_tab(db, id)
+        const { link, name } = await generate_tab(db, id)
         win_toprint.loadFile(link)
         win_toprint.on('ready-to-show', async () => {
           const data = await win_toprint.webContents.printToPDF(printOptions);
           fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
           const pdf_link = "file://" + path.join(__dirname, "print.pdf")
-          let pdf_name = type + "-" + id + ".pdf"
+          let date = new Date()
+          date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear()
+          let pdf_name = name + "_" + date + ".pdf"
           win.webContents.send('pdfLink', pdf_link, pdf_name)
           win_toprint.close()
         });

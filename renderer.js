@@ -1,5 +1,5 @@
 const { ipcRenderer } = require("electron");
-const { updateContent, getTranslationWithVar, getTranslation } = require("./i18n.js");
+const i18next = require("./i18n.js")
 
 async function getVersion() {
   const version = await ipcRenderer.invoke("app_version")
@@ -166,8 +166,10 @@ window.onload = async () => {
       document.documentElement.classList.remove("light");
     }
   }
+  new i18next()
+  i18next.init()
   setTimeout(function () {
-    updateContent();
+    i18next.updateContent();
   }, 500);
 };
 
@@ -246,7 +248,7 @@ document.getElementById("delete-tab-btn").addEventListener("click", async () => 
   const tab = await ipcRenderer.invoke("get-tab", document.body.id)
   if (
     confirm(
-      getTranslationWithVar("Are_Sure", { title: tab[0].name.toUpperCase(), type: getTranslation("tab") }),
+      i18next.getTranslationWithVar("Are_Sure", { title: tab[0].name.toUpperCase(), type: i18next.getTranslation("tab") }),
     ) == true
   ) {
     const lists = await ipcRenderer.invoke("get-lists", document.body.id)
@@ -333,7 +335,7 @@ document
     const name = document.getElementById("name-tab").value;
     if (name !== null) {
       const result = await ipcRenderer.invoke("add-tab", name);
-      updateContent();
+      i18next.updateContent();
       window.location.replace("index.html?tab=" + result.id);
     }
   });
@@ -509,7 +511,7 @@ function addNewList(name, color, id) {
   deleteListBtn.addEventListener("click", async () => {
     if (
       confirm(
-        getTranslationWithVar("Are_Sure", { title: name.toUpperCase(), type: getTranslation("list") }),
+        i18next.getTranslationWithVar("Are_Sure", { title: name.toUpperCase(), type: i18next.getTranslation("list") }),
       ) == true
     ) {
       const tasks = await ipcRenderer.invoke("get-task", id)
@@ -679,7 +681,7 @@ function addNewTask(listElement, taskName, taskId) {
     document.getElementById("description-modal").classList.add("hidden");
     if (
       confirm(
-        getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase(), type: getTranslation("task") }),
+        i18next.getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase(), type: i18next.getTranslation("task") }),
       ) == true
     ) {
       await ipcRenderer.invoke("delete-task", taskId);

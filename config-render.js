@@ -1,6 +1,7 @@
 const { ipcRenderer } = require("electron");
 // require("./theme.js");
-const { getLanguages, changesLanguage, updateContent } = require("./i18n.js")
+// const { getLanguages, changesLanguage, updateContent } = require("./i18n.js")
+const i18next = require("./i18n.js")
 const { make_backup, get_latest_backup, get_link } = require("./database.js")
 
 document.getElementById('data_link').value = get_link()
@@ -19,27 +20,30 @@ document.getElementById("backup-button").addEventListener("click", (e) => {
 })
 
 async function load() {
+  new i18next()
+  i18next.init()
   var options = "<option value='system' id='options-system-lang' data-i18n='system_theme'></option>"
-  const languages = getLanguages()
+  const languages = i18next.getLanguages()
   languages.forEach(element => {
     options += "<option value='" + element.short + "' id='options-" + element.short + "' >";
     options += element.full;
     options += "</option>";
   });
   document.getElementById("language").innerHTML = options
-
+  
   const blur = await ipcRenderer.invoke("get-blur");
   if(blur[0].value === "1") {
     document.getElementById("blur").checked = true
   } else {
     document.getElementById("blur").checked = false
   }
-
+  
   const back = get_latest_backup(true)
   if(back !== false) {
     document.getElementById("backup-dir").appendChild(back)
   }
-
+  
+  i18next.updateContent()
   themeSetup();
 }
 

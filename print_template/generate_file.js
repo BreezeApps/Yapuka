@@ -88,10 +88,14 @@ async function generate_list(db, list_id) {
   fs.writeFileSync(dest_link, response);
 
   final = "";
-  return dest_link;
+  return { link: dest_link, name: list[0].name };
 }
 
 async function generate_tab(db, tab_id) {
+  const tab = await database(
+    db,
+    "SELECT * FROM tabs WHERE id = " + tab_id
+  );
   const lists = await database(
     db,
     "SELECT * FROM lists WHERE tab_id = " + tab_id,
@@ -169,7 +173,7 @@ async function generate_tab(db, tab_id) {
     fs.writeFileSync(dest_link, response);
     final = "";
   }, 500);
-  return dest_link;
+  return { link: dest_link, name: tab[0].name };
 }
 
 module.exports = { generate_list, generate_tab };
