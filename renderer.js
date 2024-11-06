@@ -678,7 +678,6 @@ function addNewTask(listElement, taskName, taskId) {
     "ml-auto grid place-items-center justify-self-end rounded-md border border-transparent p-[0.1px] text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
   deleteTaskBtn.appendChild(deleteTaskIconSvg);
   deleteTaskBtn.addEventListener("click", async () => {
-    document.getElementById("description-modal").classList.add("hidden");
     if (
       confirm(
         i18next.getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase(), type: i18next.getTranslation("task") }),
@@ -687,7 +686,6 @@ function addNewTask(listElement, taskName, taskId) {
       await ipcRenderer.invoke("delete-task", taskId);
       newTask.remove();
     }
-    document.getElementById("description-modal").classList.add("hidden");
   });
 
   newTask.appendChild(modifyTaskBtn);
@@ -695,13 +693,8 @@ function addNewTask(listElement, taskName, taskId) {
 
   newTask.addEventListener("click", async function (event) {
     setTimeout(async () => {
-      if (
-        document
-          .getElementById("description-modal")
-          .classList.contains("hidden")
-      ) {
         if (
-          !document
+          document
             .getElementById("modify-task-modal")
             .classList.contains("hidden")
         ) {
@@ -719,8 +712,7 @@ function addNewTask(listElement, taskName, taskId) {
           document.getElementById("blur").classList.remove("hidden");
           descriptionModal.classList.remove("hidden");
         }
-      }
-    }, 500);
+    }, 100);
   });
 
   taskContainer.appendChild(newTask);
