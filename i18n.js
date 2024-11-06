@@ -2,12 +2,23 @@ const i18next = require("i18next");
 const Backend = require("i18next-fs-backend");
 const path = require("path");
 const fs = require('fs');
+const { ipcRenderer } = require("electron");
+
+ipcRenderer.invoke("set-config-variable", "languages", "system")
+let lang = ipcRenderer.invoke("get-config-variable", "languages")
+console.log(lang)
+if(lang[0].value === "system") {
+  lang = navigator.language
+} else {
+  lang = lang[0].value
+}
+console.log(lang)
 
 // Initialisation de i18next avec un backend de fichiers
 i18next.use(Backend).init(
   {
-    lng: "en", // Langue par défaut
-    fallbackLng: ["fr", "en"],
+    lng: lang,
+    fallbackLng: ["fr", "en", "es", "de"],
     backend: {
       loadPath: path.join(__dirname, "locales/{{lng}}.json"), // Chemin des fichiers de traduction
     },
@@ -54,17 +65,13 @@ function getLanguages() {
   return lang_response;
 }
 
-i18next.changeLanguage(navigator.language, (err, t) => {
-  if (err) return console.error(err);
-  updateContent(); // Met à jour le contenu après changement de langue
-});
-
 function changesLanguage(language) {
   if (language === "system") {
     language = navigator.language
   }
   i18next.changeLanguage(language, (err, t) => {
     if (err) return console.error(err);
+    ipcRenderer.invoke("set-config-variable", "languages", language)
     updateContent(); // Met à jour le contenu après changement de langue
   });
 }
