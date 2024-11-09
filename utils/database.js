@@ -163,4 +163,48 @@ function get_latest_backup(returnElement) {
   return lastFile
 }
 
-module.exports = { db, make_backup, get_latest_backup, get_link };
+// Fonction pour récupérer les configurations d'un plugin
+function getConfigs(pluginName) {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT * FROM configs WHERE name LIKE ?`,
+      [`plugin.${pluginName}.%`],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          // Transformer les rows en un objet clé-valeur
+          const configs = {};
+          rows.forEach(row => {
+            const configKey = row.name.replace(`plugin.${pluginName}.`, '');
+            configs[configKey] = {
+              description: row.description,
+              value: row.value
+            };
+          });
+          resolve(configs);
+        }
+      }
+    );
+  });
+}
+
+// Fonction pour définir une configuration pour un plugin
+function setConfig(pluginName, key, description, value) {
+  return new Promise((resolve, reject) => {
+    const nom = `plugin.${pluginName}.${key}`;
+    db.run(
+      `INSERT OR REPLACE INTO configs (name, description, value) VALUES (?, ?, ?)`,
+      [nom, description, value],
+      function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
+module.exports = { db, make_backup, get_latest_backup, get_link, getConfigs, setConfig };

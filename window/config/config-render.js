@@ -1,8 +1,8 @@
 const { ipcRenderer } = require("electron");
 // require("./theme.js");
 // const { getLanguages, changesLanguage, updateContent } = require("./i18n.js")
-const i18next = require("./i18n.js")
-const { make_backup, get_latest_backup, get_link } = require("./database.js")
+const i18next = require("../../utils/i18n.js")
+const { make_backup, get_latest_backup, get_link } = require("../../utils/database.js")
 
 document.getElementById('data_link').value = get_link()
 

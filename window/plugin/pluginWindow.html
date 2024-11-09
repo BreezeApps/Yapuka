@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Plugins</title>
+</head>
+<body>
+  <h1>Available Plugins</h1>
+  <ul id="pluginList"></ul>
+  
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    async function loadPlugins() {
+      const plugins = await ipcRenderer.invoke('get-plugins-list');
+      const pluginList = document.getElementById('pluginList');
+      
+      plugins.forEach(plugin => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${plugin.name}: ${plugin.description}`;
+
+        const installButton = document.createElement('button');
+        installButton.textContent = 'Install';
+        installButton.onclick = () => ipcRenderer.invoke("install-plugin", plugin.github_url);
+        
+        listItem.appendChild(installButton);
+        pluginList.appendChild(listItem);
+      });
+    }
+
+    async function installPlugin(githubUrl) {
+      await ipcRenderer.invoke('install-plugin', githubUrl);
+    }
+
+    loadPlugins();
+  </script>
+</body>
+</html>

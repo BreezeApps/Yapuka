@@ -1,5 +1,15 @@
 const { ipcRenderer } = require("electron");
-const i18next = require("./i18n.js")
+const i18next = require("../../utils/i18n.js")
+
+
+
+ipcRenderer.on('inject-code', (event, code) => {
+  try {
+    eval(code);
+  } catch (error) {
+    console.error("Erreur lors de l'injection de code du plugin :", error);
+  }
+})
 
 async function getVersion() {
   const version = await ipcRenderer.invoke("app_version")
@@ -450,7 +460,7 @@ function addNewList(name, color, id) {
     "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline m-3";
 
     const printListIcon = document.createElement("img")
-    printListIcon.setAttribute("src", "./build/img/print-icon.svg")
+    printListIcon.setAttribute("src", "../../build/img/print-icon.svg")
     printListIcon.classList.add("h-6");
   
     const printListBtn = document.createElement("button");

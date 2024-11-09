@@ -1,0 +1,13 @@
+[
+    {
+      "name": "pluginA",
+      "description": "This plugin adds feature A.",
+      "github_url": "https://github.com/user/pluginA"
+    },
+    {
+      "name": "pluginB",
+      "description": "This plugin adds feature B.",
+      "github_url": "https://github.com/user/pluginB"
+    }
+  ]
+  

@@ -2,51 +2,82 @@ const { app, BrowserWindow, screen, ipcMain, dialog } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const shell = require("electron").shell;
 const path = require("path");
-const { db, get_link } = require("./database.js");
+const { db, get_link, getConfigs, setConfig } = require("./utils/database.js");
 const fs = require("fs");
-const { generate_list, generate_tab } = require("./print_template/generate_file.js");
+const {
+  generate_list,
+  generate_tab,
+} = require("./print_template/generate_file.js");
 const { startPrint } = require("./printer/index.js");
+const AdmZip = require('adm-zip');
+const axios = require('axios');
 
 let win;
+let pluginWindow
 let reload = true;
+
+// Fonction pour charger le contenu d'un fichier renderer.js
+function loadRendererScript(pluginPath) {
+  const rendererPath = path.join(pluginPath, "renderer.js");
+  if (fs.existsSync(rendererPath)) {
+    return fs.readFileSync(rendererPath, "utf-8");
+  }
+  return null;
+}
 
 async function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const saved_width = await new Promise((resolve, reject) => {
-    db.all("SELECT * FROM configs WHERE name = ?", ["screen-width"], (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
+    db.all(
+      "SELECT * FROM configs WHERE name = ?",
+      ["screen-width"],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      },
+    );
   });
   const saved_height = await new Promise((resolve, reject) => {
-    db.all("SELECT * FROM configs WHERE name = ?", ["screen-height"], (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
+    db.all(
+      "SELECT * FROM configs WHERE name = ?",
+      ["screen-height"],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      },
+    );
   });
   const saved_x = await new Promise((resolve, reject) => {
-    db.all("SELECT * FROM configs WHERE name = ?", ["screen-x"], (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
+    db.all(
+      "SELECT * FROM configs WHERE name = ?",
+      ["screen-x"],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      },
+    );
   });
   const saved_y = await new Promise((resolve, reject) => {
-    db.all("SELECT * FROM configs WHERE name = ?", ["screen-y"], (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
+    db.all(
+      "SELECT * FROM configs WHERE name = ?",
+      ["screen-y"],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      },
+    );
   });
   const defaultWidth = Math.floor(width * 0.8);
   const defaultHeight = Math.floor(height * 0.8);
@@ -58,7 +89,7 @@ async function createWindow() {
     icon: path.join(__dirname, "build/icon.ico"),
     autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "utils", "preload.js"),
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
       contextIsolation: false,
@@ -134,8 +165,89 @@ async function createWindow() {
     shell.openExternal(url);
     return { action: "deny" };
   });
-  win.loadFile("index.html");
+  win.loadFile("window/main/index.html");
+  win.webContents.on("did-finish-load", () => {
+    loadPlugins();
+  });
   // win.webContents.openDevTools();
+}
+
+function openPluginWindow() {
+  pluginWindow = new BrowserWindow({
+    width: 600,
+    height: 400,
+    webPreferences: {
+      contextIsolation: true
+    }
+  });
+
+  pluginWindow.loadFile('window/plugin/pluginWindow.html');
+}
+
+// Gestionnaire de fonctions backend
+const backendFunctions = {
+  calculate: (x, y) => x + y,
+};
+
+// Fonction pour permettre aux plugins de remplacer des fonctions backend
+function overrideFunction(name, newFunction) {
+  if (backendFunctions[name]) {
+    backendFunctions[name] = newFunction;
+  } else {
+    console.error(`Fonction ${name} non trouvée pour le remplacement.`);
+  }
+}
+
+function loadPlugins() {
+  const pluginsDir = path.join(__dirname, "plugins");
+
+  fs.readdirSync(pluginsDir).forEach((pluginFolder) => {
+    const pluginPath = path.join(pluginsDir, pluginFolder);
+    const packagePath = path.join(pluginPath, "package.json");
+
+    if (fs.existsSync(packagePath)) {
+      try {
+        // Charger les informations du plugin depuis le package.json
+        const packageInfo = require(packagePath);
+        const mainFilePath = path.join(
+          pluginPath,
+          packageInfo.main || "index.js",
+        );
+
+        if (fs.existsSync(mainFilePath)) {
+          const plugin = require(mainFilePath);
+
+          // Vérifier si le plugin a une fonction d'activation
+          if (typeof plugin.activate === "function") {
+            plugin.activate({
+              win,
+              app,
+              overrideFunction,
+              getConfigs: (pluginName) => getConfigs(pluginName),
+              setConfig: (pluginName, key, description, value) =>
+                setConfig(pluginName, key, description, value),
+            });
+
+            const rendererScript = loadRendererScript(pluginPath);
+            if (rendererScript) {
+              console.log(typeof rendererScript)
+              win.webContents.send("inject-code", rendererScript);
+            }
+          }
+        } else {
+          console.error(
+            `Fichier principal du plugin introuvable pour ${packageInfo.name}`,
+          );
+        }
+      } catch (error) {
+        console.error(`Échec du chargement du plugin ${pluginFolder}:`, error);
+      }
+    } else {
+      console.warn(
+        `Le plugin ${pluginFolder} n'a pas de package.json et a été ignoré.`,
+      );
+    }
+  });
 }
 
 app.whenReady().then(() => {
@@ -145,6 +257,7 @@ app.whenReady().then(() => {
   });
   autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
+  openPluginWindow()
 });
 
 app.on("window-all-closed", () => {
@@ -162,6 +275,16 @@ app.once("ready-to-show", () => {
 
 autoUpdater.on("update-downloaded", () => {
   win.webContents.send("update_downloaded");
+});
+
+ipcMain.handle('get-plugins-list', async () => {
+  try {
+    const response = await axios.get('https://raw.githubusercontent.com/Marvideo2009/Yapuka/refs/heads/master/plugins.json');
+    return response.data;
+  } catch (error) {
+    console.error("Erreur lors du chargement des plugins:", error);
+    return [];
+  }
 });
 
 ipcMain.handle("download_update", (event) => {
@@ -432,66 +555,98 @@ ipcMain.handle("get-blur", (event) => {
   });
 });
 
+async function database(db1, command) {
+  return await new Promise((resolve, reject) => {
+    db1.all(command, [], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
 let win_toprint;
-const saveFile = require("electron-save-file")
+const saveFile = require("electron-save-file");
 ipcMain.handle("printer", async (event, type, id) => {
-    if (type !== "") {
-      win_toprint = new BrowserWindow({
-        width: 300,
-        height: 300,
-        show: false,
-        frame: false,
-        webPreferences: {
-            sandbox: true,
-            nodeIntegration: true,
-            contextIsolation: false,
-            webSecurity: false,
-            minimumFontSize: 12,
-            defaultFontFamily: {
-                standard: 'Microsoft Yauheni'
-            }
+  if (type !== "") {
+    win_toprint = new BrowserWindow({
+      width: 300,
+      height: 300,
+      show: false,
+      frame: false,
+      webPreferences: {
+        sandbox: true,
+        nodeIntegration: true,
+        contextIsolation: false,
+        webSecurity: false,
+        minimumFontSize: 12,
+        defaultFontFamily: {
+          standard: "Microsoft Yauheni",
         },
+      },
     });
     const printOptions = {
       printBackground: true,
-            landscape: this.landscape,
-            pagesize: 'A4',
-            scale: this.scaleFactor / 100,
-            margin: 10,
+      landscape: this.landscape,
+      pagesize: "A4",
+      scale: this.scaleFactor / 100,
+      margin: 10,
+    };
+    if (type === "list") {
+      const { link, name } = await generate_list(db, id);
+      win_toprint.loadFile(link);
+      win_toprint.on("ready-to-show", async () => {
+        const list = await database(db, "SELECT * FROM lists WHERE id = " + id);
+        const tab = await database(
+          db,
+          "SELECT * FROM tabs WHERE id = " + list[0].id,
+        );
+        let date = new Date();
+        date =
+          date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+        printOptions.footer = {
+          height: "1cm",
+          content: function (pageNum, numPages, callback) {
+            callback(
+              "<div title='footer'><p style='line-height: 100%; margin-top: 0.5cm; margin-bottom: 0cm'>" +
+                tab[0].name +
+                "<span style='background: #c0c0c0'>" +
+                date +
+                "</span></p></div>",
+            );
+          },
+        };
+        const data = await win_toprint.webContents.printToPDF(printOptions);
+        fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
+        const pdf_link = "file://" + path.join(__dirname, "print.pdf");
+        date =
+          date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+        let pdf_name = name + "_" + date + ".pdf";
+        win.webContents.send("pdfLink", pdf_link, pdf_name);
+        win_toprint.close();
+      });
+      // startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
+    } else if (type === "tab") {
+      const { link, name } = await generate_tab(db, id);
+      win_toprint.loadFile(link);
+      win_toprint.on("ready-to-show", async () => {
+        const data = await win_toprint.webContents.printToPDF(printOptions);
+        fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
+        const pdf_link = "file://" + path.join(__dirname, "print.pdf");
+        let date = new Date();
+        date =
+          date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+        let pdf_name = name + "_" + date + ".pdf";
+        win.webContents.send("pdfLink", pdf_link, pdf_name);
+        win_toprint.close();
+      });
+      // startPrint({ htmlString : fs.readFileSync(await generate_tab(db, id)) },undefined)
     }
-      if (type === "list") {
-        const { link, name } = await generate_list(db, id)
-        win_toprint.loadFile(link)
-        win_toprint.on('ready-to-show', async () => {
-          const data = await win_toprint.webContents.printToPDF(printOptions);
-          fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
-          const pdf_link = "file://" + path.join(__dirname, "print.pdf")
-          let date = new Date()
-          date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear()
-          let pdf_name = name + "_" + date + ".pdf"
-          win.webContents.send('pdfLink', pdf_link, pdf_name)
-          win_toprint.close()
-        })
-        // startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
-      } else if (type === "tab") {
-        const { link, name } = await generate_tab(db, id)
-        win_toprint.loadFile(link)
-        win_toprint.on('ready-to-show', async () => {
-          const data = await win_toprint.webContents.printToPDF(printOptions);
-          fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
-          const pdf_link = "file://" + path.join(__dirname, "print.pdf")
-          let date = new Date()
-          date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear()
-          let pdf_name = name + "_" + date + ".pdf"
-          win.webContents.send('pdfLink', pdf_link, pdf_name)
-          win_toprint.close()
-        });
-        // startPrint({ htmlString : fs.readFileSync(await generate_tab(db, id)) },undefined)
-      }
-    }
-    // startPrint({htmlString :html},undefined)
-  },
-);
+  }
+  // startPrint({htmlString :html},undefined)
+});
 
 ipcMain.handle("config-window", (event) => {
   let win2;
@@ -517,10 +672,14 @@ ipcMain.handle("config-window", (event) => {
       return null;
     } else {
       const dir = path.join(result.filePaths[0], "Yapuka_Data");
-      fs.mkdirSync(dir)
-      fs.copyFileSync(path.join(get_link(), "Database.db"), path.join(dir, "Database.db"), fs.constants.COPYFILE_EXCL)
+      fs.mkdirSync(dir);
+      fs.copyFileSync(
+        path.join(get_link(), "Database.db"),
+        path.join(dir, "Database.db"),
+        fs.constants.COPYFILE_EXCL,
+      );
       fs.writeFileSync(
-        path.join(__dirname, "Yapuka_Data", "db.json"),
+        path.join(__dirname, "utils", "Yapuka_Data", "db.json"),
         JSON.stringify({ link: dir }),
       );
       reload = false;
@@ -542,7 +701,7 @@ ipcMain.handle("config-window", (event) => {
     shell.openExternal(url);
     return { action: "deny" };
   });
-  win2.loadFile("config.html");
+  win2.loadFile("window/config/config.html");
 });
 
 ipcMain.handle("get-theme", (event) => {
@@ -647,4 +806,25 @@ ipcMain.handle("delete-tab", (event, tabId) => {
 ipcMain.handle("app_version", (event) => {
   event.sender.send("app_version", { version: app.getVersion() });
   return app.getVersion();
+});
+
+ipcMain.handle('install-plugin', async (event, githubUrl) => {
+  try {
+    const zipUrl = `${githubUrl}/archive/refs/heads/main.zip`;
+    const response = await axios.get(zipUrl, { responseType: 'arraybuffer' });
+
+    const zipPath = path.join(__dirname, 'temp.zip');
+    fs.writeFileSync(zipPath, response.data);
+
+    const zip = new AdmZip(zipPath);
+    const pluginDir = path.join(__dirname, 'plugins');
+    zip.extractAllTo(pluginDir, true);
+    fs.unlinkSync(zipPath); // Supprimer le fichier ZIP temporaire
+
+    console.log(`Plugin téléchargé depuis ${githubUrl}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur lors de l\'installation du plugin:', error);
+    return false;
+  }
 });

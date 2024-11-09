@@ -1,0 +1,8 @@
+{
+    "name": "testplugin",
+    "description": "This is a test plugin that modifies the application behavior.",
+    "main": "index.js",
+    "version": "1.0.0",
+    "author": "Your Name"
+  }
+  
