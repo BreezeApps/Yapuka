@@ -177,7 +177,11 @@ function openPluginWindow() {
     width: 600,
     height: 400,
     webPreferences: {
-      contextIsolation: true
+      preload: path.join(__dirname, "utils", "preload.js"),
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      contextIsolation: false,
+      webviewTag: true,
     }
   });
 
@@ -280,6 +284,7 @@ autoUpdater.on("update-downloaded", () => {
 ipcMain.handle('get-plugins-list', async () => {
   try {
     const response = await axios.get('https://raw.githubusercontent.com/Marvideo2009/Yapuka/refs/heads/master/plugins.json');
+    // console.log(response)
     return response.data;
   } catch (error) {
     console.error("Erreur lors du chargement des plugins:", error);
