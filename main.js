@@ -172,22 +172,6 @@ async function createWindow() {
   // win.webContents.openDevTools();
 }
 
-function openPluginWindow() {
-  pluginWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
-    webPreferences: {
-      preload: path.join(__dirname, "utils", "preload.js"),
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      contextIsolation: false,
-      webviewTag: true,
-    }
-  });
-
-  pluginWindow.loadFile('window/plugin/pluginWindow.html');
-}
-
 // Gestionnaire de fonctions backend
 const backendFunctions = {
   calculate: (x, y) => x + y,
@@ -261,7 +245,6 @@ app.whenReady().then(() => {
   });
   autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
-  openPluginWindow()
 });
 
 app.on("window-all-closed", () => {
@@ -284,7 +267,6 @@ autoUpdater.on("update-downloaded", () => {
 ipcMain.handle('get-plugins-list', async () => {
   try {
     const response = await axios.get('https://raw.githubusercontent.com/Marvideo2009/Yapuka/refs/heads/master/plugins.json');
-    // console.log(response)
     return response.data;
   } catch (error) {
     console.error("Erreur lors du chargement des plugins:", error);
@@ -709,6 +691,31 @@ ipcMain.handle("config-window", (event) => {
   win2.loadFile("window/config/config.html");
 });
 
+ipcMain.handle('plugin-window', (event) => {
+  pluginWindow = new BrowserWindow({
+    width: 600,
+    height: 400,
+    webPreferences: {
+      preload: path.join(__dirname, "utils", "preload.js"),
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      contextIsolation: false,
+      webviewTag: true,
+    }
+  });
+  pluginWindow.webContents.setWindowOpenHandler(({ url }) => {
+    console.log(url)
+    if (url.startsWith("file://")) {
+      return { action: "allow" };
+    }
+    // open url in a browser and prevent default
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+
+  pluginWindow.loadFile('window/plugin/pluginWindow.html');
+})
+
 ipcMain.handle("get-theme", (event) => {
   return new Promise((resolve, reject) => {
     db.all("SELECT value FROM configs WHERE id = 1", [], (err, rows) => {
@@ -825,11 +832,10 @@ ipcMain.handle('install-plugin', async (event, githubUrl) => {
     const pluginDir = path.join(__dirname, 'plugins');
     zip.extractAllTo(pluginDir, true);
     fs.unlinkSync(zipPath); // Supprimer le fichier ZIP temporaire
-
-    console.log(`Plugin téléchargé depuis ${githubUrl}`);
     return true;
   } catch (error) {
-    console.error('Erreur lors de l\'installation du plugin:', error);
-    return false;
+    // console.error('Erreur lors de l\'installation du plugin:', error);
+    message = "https://github.com/Marvideo2009/Yapuka/issues/new?labels=bug&title=New+bug+report&body=Error+when+install+plugin+:+" + githubUrl + "+" + error.toString().split(' ').join('+')
+    return message;
   }
 });

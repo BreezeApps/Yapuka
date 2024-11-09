@@ -1,13 +1,1 @@
-[
-    {
-      "name": "pluginA",
-      "description": "This plugin adds feature A.",
-      "github_url": "https://github.com/Marvideo2009/file-sorter"
-    },
-    {
-      "name": "pluginB",
-      "description": "This plugin adds feature B.",
-      "github_url": "https://github.com/user/pluginB"
-    }
-  ]
-  
+[]

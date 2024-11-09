@@ -19,6 +19,10 @@ document.getElementById("backup-button").addEventListener("click", (e) => {
   window.location.reload()
 })
 
+async function go_plugin_window() {
+  const list = await ipcRenderer.invoke("plugin-window");
+}
+
 async function load() {
   new i18next()
   i18next.init()
