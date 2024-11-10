@@ -608,8 +608,6 @@ ipcMain.handle("printer", async (event, type, id) => {
         const data = await win_toprint.webContents.printToPDF(printOptions);
         fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
         const pdf_link = "file://" + path.join(__dirname, "print.pdf");
-        date =
-          date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
         let pdf_name = name + "_" + date + ".pdf";
         win.webContents.send("pdfLink", pdf_link, pdf_name);
         win_toprint.close();

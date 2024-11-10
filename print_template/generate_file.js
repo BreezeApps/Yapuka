@@ -29,7 +29,7 @@ async function generate_list(db, list_id) {
   )
   const tab = await database(
     db,
-    "SELECT * FROM tabs WHERE id = " + list[0].id
+    "SELECT * FROM tabs WHERE id = " + list[0].tab_id
   )
   let date = new Date()
   date = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear()
