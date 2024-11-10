@@ -334,7 +334,7 @@ document
       const createListModal = document.getElementById("create-liste-modal");
       document.getElementById("blur").classList.add("hidden");
       createListModal.classList.add("hidden");
-      updateContent();
+      i18next.updateContent();
     }
   });
 

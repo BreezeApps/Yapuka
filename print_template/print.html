@@ -1,107 +1,46 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <style type="text/css">
-      @page {
-        size: 21cm 29.7cm;
-        margin-left: 1cm;
-        margin-right: 1cm;
-        margin-top: 1cm;
-        margin-bottom: 1cm;
-      }
-      p {
-        line-height: 115%;
-        margin-bottom: 0.25cm;
-        background: transparent;
-      }
-      h1 {
-        color: #333333;
-        text-align: center;
-        margin-bottom: 0.53cm;
-        background: transparent;
-        page-break-after: avoid;
-      }
-      h1.western {
-        font-family: "Liberation Serif", serif;
-        font-size: 18pt;
-        font-weight: bold;
-      }
-      h1.cjk {
-        font-family: "Noto Serif CJK SC";
-        font-size: 18pt;
-        font-weight: bold;
-      }
-      h1.ctl {
-        font-family: "Lohit Devanagari";
-        font-size: 18pt;
-        font-weight: bold;
-      }
-      td p {
-        orphans: 0;
-        widows: 0;
-        background: transparent;
-      }
-      th p {
-        font-weight: bold;
-        text-align: center;
-        orphans: 0;
-        widows: 0;
-        background: transparent;
-      }
-      a:link {
-        color: #000080;
-        text-decoration: underline;
-      }
-      a:visited {
-        color: #800000;
-        text-decoration: underline;
-      }
-    </style>
-  </head>
-  <body lang="fr-FR" link="#000080" vlink="#800000" dir="ltr">
-    <h1
-      class="western"
-      style="margin-left: 0.53cm; margin-right: 0.53cm; margin-top: 0.53cm"
-    >
-      <font face="Arial, sans-serif">Test</font>
-    </h1>
-    <center>
-      <table width="100%" cellpadding="2" cellspacing="0">
-        <col width="95" />
-
-        <col width="104" />
-
-        <col width="57" />
-
-        <thead>
-          <tr>
-            <th width="37%" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm; padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
-              <p><font face="Arial, sans-serif">Tâche</font></p>
-            </th>
-            <th width="41%" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm; padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
-              <p><font face="Arial, sans-serif">Description</font></p>
-            </th>
-            <th width="22%" style="border: 1px solid #000000; padding: 0.05cm">
-              <p><font face="Arial, sans-serif">Date d'échéance</font></p>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td width='234' style='border: none; padding: 0cm'><p><font face='Arial, sans-serif'>gyujljgv</font></p></td><td width='283' style='border: none; padding: 0cm'>j</td><td width='151' style='border: none; padding: 0cm'><p><font face='Arial, sans-serif'>Pas de date d'echeance</font></p></td></tr><tr><td width='234' style='border: none; padding: 0cm'><p><font face='Arial, sans-serif'>test</font></p></td><td width='283' style='border: none; padding: 0cm'></td><td width='151' style='border: none; padding: 0cm'><p><font face='Arial, sans-serif'>Pas de date d'echeance</font></p></td></tr>
-        </tbody>
-      </table>
-    </center>
-    <p style="margin-left: 0.53cm; margin-right: 0.53cm">
-      <br/>
-      <br/>
-    </p>
-    <div title="footer">
-      <p style="line-height: 100%; margin-top: 0.5cm; margin-bottom: 0cm">
-        Premier Onglet
-        <span style="background: #c0c0c0">10/10/2024</span
-        >
-      </p>
-    </div>
-  </body>
-</html>
+<style>
+  .container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 40px;
+  }
+  .task-list-wrapper {
+    margin-bottom: 30px;
+  }
+  .list-title {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+  }
+  .task-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  .task-list th,
+  .task-list td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+  .task-list th {
+    background-color: #f4f4f4;
+    color: #333;
+  }
+  .task-list td {
+    background-color: #fff;
+  }
+</style>
+<div class="container">
+  <h1>{{tab_name}}</h1>
+  <div class="task-list-wrapper">
+    {{list_name}}
+  </div>
+</div>
