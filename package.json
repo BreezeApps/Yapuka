@@ -95,7 +95,6 @@
       "category": "Utility",
       "target": [
         "deb",
-        "apk",
         "AppImage"
       ],
       "artifactName": "${productName}-Setup-${os}.${ext}"
