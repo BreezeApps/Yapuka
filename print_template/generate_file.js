@@ -169,7 +169,7 @@ async function generate_tab(db, tab_id) {
   });
 
   setTimeout(function () {
-    const response = html.replace("{{list}}", final);
+    const response = html.replace("{{lists}}", final).replace("{{tab_name}}", tab[0].name);
     fs.writeFileSync(dest_link, response);
     final = "";
   }, 500);
