@@ -558,8 +558,6 @@ async function database(db1, command) {
 let win_toprint;
 const saveFile = require("electron-save-file");
 ipcMain.handle("printer", async (event, type, id) => {
-  console.log(type);
-  console.log(id);
   if (type !== "") {
     win_toprint = new BrowserWindow({
       width: 300,
