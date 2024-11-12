@@ -76,8 +76,8 @@ Les builds seront créés dans le dossier `dist`.
 - On peut exporter en pdf les listes d'un onglet et les tâches d'une liste.
 - Données :
  Les données sont gérées dans une base de données au format SQlite. Vous pouvez :
-    Choisir l'emplacement de la base de données.
-    Sauvegarder la base de données.
+    - Choisir l'emplacement de la base de données.
+    - Sauvegarder la base de données.
 - Version : surveillance de l'existence d'une version plus récente de l'application Yapuka. Yapuka vous propose une mise à jour automatique de l'application directement depuis le site Github. 
 
 - **Multi-plateforme :** Compatible avec Windows et Linux.
