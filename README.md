@@ -62,25 +62,25 @@ Les builds seront créés dans le dossier `dist`.
 ## 🚀 Fonctionnalités
 
 - **Gestion de listes de tâches :**
-Sécurité : Yapuka est une application qui fonctionne sur votre ordinateur, pas sur un serveur externe. Pas d'inscription, pas de données en balade. 
-Simplicité : Yapuka se concentre sur les fonctions essentielles ; pas de gadget inutile.
- Yapuka permet de : 
- Créer, supprimer et mettre à jour des listes de tâches regroupées dans un onglet.
- Créer, supprimer et mettre à jour les onglets. 
- Créer, supprimer et mettre à jour les tâches dans chaque liste.
- Chaque tâche est décrite par un titre (obligatoire), et facultativement par un court texte et une date d’échéance.
- Déplacer, avec la souris, les tâches d'une liste à l'autre au sein d'un onglet.
- Déplacer, avec la souris, les tâches au sein d'une liste.
+- Sécurité : Yapuka est une application qui fonctionne sur votre ordinateur, pas sur un serveur externe. Pas d'inscription, pas de données en balade. 
+- Simplicité : Yapuka se concentre sur les fonctions essentielles ; pas de gadget inutile.
+- Yapuka permet de : 
+  - Créer, supprimer et mettre à jour des listes de tâches regroupées dans un onglet.
+  - Créer, supprimer et mettre à jour les onglets. 
+  - Créer, supprimer et mettre à jour les tâches dans chaque liste.
+  - Chaque tâche est décrite par un titre (obligatoire), et facultativement par un court texte et une date d’échéance.
+  - Déplacer, avec la souris, les tâches d'une liste à l'autre au sein d'un onglet.
+  - Déplacer, avec la souris, les tâches au sein d'une liste.
  
- Toute modification est enregistrée automatiquement.
- On peut exporter en pdf les listes d'un onglet et les tâches d'une liste.
- Données :
+- Toute modification est enregistrée automatiquement.
+- On peut exporter en pdf les listes d'un onglet et les tâches d'une liste.
+- Données :
  Les données sont gérées dans une base de données au format SQlite. Vous pouvez :
     Choisir l'emplacement de la base de données.
     Sauvegarder la base de données.
-Version : surveillance de l'existence d'une version plus récente de l'application Yapuka. Yapuka vous propose une mise à jour automatique de l'application directement depuis le site Github. 
+- Version : surveillance de l'existence d'une version plus récente de l'application Yapuka. Yapuka vous propose une mise à jour automatique de l'application directement depuis le site Github. 
 
-- **Multi-plateforme :** Compatible avec Windows, MacOS et Linux.
+- **Multi-plateforme :** Compatible avec Windows et Linux.
 
 ## 🖼️ Aperçu
 
