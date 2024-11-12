@@ -7,9 +7,9 @@ async function fetchYear() {
 
         const commit = data.commit;
         const date = commit.author.date
-        return new Date(date).getFullYear()
+        document.getElementById("year").innerText = new Date(date).getFullYear()
     } catch (error) {
-        return new Date().getFullYear()
+        document.getElementById("year").innerText =  new Date().getFullYear()
     }
 }
 
@@ -40,4 +40,4 @@ async function fetchLatestRelease() {
 // Appel de la fonction lors du chargement de la page
 fetchLatestRelease();
 
-document.getElementById("year").innerText = fetchYear()
+fetchYear()
