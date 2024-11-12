@@ -7,6 +7,7 @@ async function fetchYear() {
 
         const commit = data.commit;
         const date = commit.author.date
+        console.log(date)
         document.getElementById("year").innerText = new Date(date).getFullYear()
     } catch (error) {
         document.getElementById("year").innerText =  new Date().getFullYear()
