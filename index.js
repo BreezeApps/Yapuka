@@ -1,3 +1,18 @@
+async function fetchYear() {
+    const apiURL = "https://api.github.com/repos/Marvideo2009/Yapuka/releases/latest";
+    
+    try {
+        const response = await fetch(apiURL);
+        const data = await response.json();
+
+        const commit = data.commit;
+        const date = commit.author.date
+        return new Date(date).getFullYear()
+    } catch (error) {
+        return new Date().getFullYear()
+    }
+}
+
 async function fetchLatestRelease() {
     const apiURL = "https://api.github.com/repos/Marvideo2009/Yapuka/releases/latest";
     
@@ -25,4 +40,4 @@ async function fetchLatestRelease() {
 // Appel de la fonction lors du chargement de la page
 fetchLatestRelease();
 
-document.getElementById("year").innerText = new Date().getFullYear()
+document.getElementById("year").innerText = fetchYear()
