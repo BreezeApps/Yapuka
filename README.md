@@ -5,7 +5,7 @@
 ![Electron](https://img.shields.io/badge/Electron-%5E21.0.1-blue?style=flat-square&logo=electron)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey?style=flat-square)
 ![Release](https://img.shields.io/github/v/release/Marvideo2009/Yapuka?style=flat-square)
-![Website](https://img.shields.io/badge/Website-Yapuka-0a0a0a?style=flat-square&logo=google-chrome&link=https://yapuka.marvideo.fr)
+![Website](https://img.shields.io/badge/Website-https://yapuka.marvideo.fr-0a0a0a?style=flat-square&logo=google-chrome&link=https://yapuka.marvideo.fr)
 ![GitHub Downloads](https://img.shields.io/github/downloads/Marvideo2009/Yapuka/total?label=Number%20of%20downloads)
 
 **Yapuka** est une application développée en **Electron** qui permet de créer et gérer simplement des listes de tâches. L’application est disponible pour Windows et Linux.
