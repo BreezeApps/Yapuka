@@ -697,10 +697,6 @@ video {
   margin-left: auto;
 }
 
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
 .ms-auto {
   margin-inline-start: auto;
 }
@@ -1548,11 +1544,6 @@ input[type="range"]::-webkit-slider-thumb {
 .dark\:bg-gray-700:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(55 65 81 / var(--tw-bg-opacity));
-}
-
-.dark\:text-gray-200:is(.dark *) {
-  --tw-text-opacity: 1;
-  color: rgb(229 231 235 / var(--tw-text-opacity));
 }
 
 .dark\:text-gray-400:is(.dark *) {
