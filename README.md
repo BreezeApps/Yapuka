@@ -5,10 +5,10 @@
 ![Electron](https://img.shields.io/badge/Electron-%5E21.0.1-blue?style=flat-square&logo=electron)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey?style=flat-square)
 ![Release](https://img.shields.io/github/v/release/Marvideo2009/Yapuka?style=flat-square)
-![Website](https://img.shields.io/badge/Website-Yapuka-0a0a0a?style=flat-square&logo=google-chrome&link=https://yapuka.marvideo.fr)
+![Website](https://img.shields.io/badge/Website-https://yapuka.marvideo.fr-0a0a0a?style=flat-square&logo=google-chrome&link=https://yapuka.marvideo.fr)
 ![GitHub Downloads](https://img.shields.io/github/downloads/Marvideo2009/Yapuka/total?label=Number%20of%20downloads)
 
-**Yapuka** est une application développée en **Electron** qui permet d'organiser et gérer vos tâches efficacement. L’application est disponible pour Windows et Linux.
+**Yapuka** est une application développée en **Electron** qui permet de créer et gérer simplement des listes de tâches. L’application est disponible pour Windows et Linux.
 
 ## 📥 Installation
 
@@ -61,9 +61,26 @@ Les builds seront créés dans le dossier `dist`.
 
 ## 🚀 Fonctionnalités
 
-- **Gestion de tâches :** Ajoutez, supprimez et mettez à jour facilement des tâches pour organiser vos journées. Chaque tâche peut inclure un titre, une description et une date d’échéance pour mieux planifier vos projets.
-<!-- - **Notifications et rappels :** Restez à jour avec des notifications qui vous rappellent les échéances. -->
-- **Multi-plateforme :** Compatible avec Windows, MacOS et Linux.
+- **Gestion de listes de tâches :**
+- Sécurité : Yapuka est une application qui fonctionne sur votre ordinateur, pas sur un serveur externe. Pas d'inscription, pas de données en balade. 
+- Simplicité : Yapuka se concentre sur les fonctions essentielles ; pas de gadget inutile.
+- Yapuka permet de : 
+  - Créer, supprimer et mettre à jour des listes de tâches regroupées dans un onglet.
+  - Créer, supprimer et mettre à jour les onglets. 
+  - Créer, supprimer et mettre à jour les tâches dans chaque liste.
+  - Chaque tâche est décrite par un titre (obligatoire), et facultativement par un court texte et une date d’échéance.
+  - Déplacer, avec la souris, les tâches d'une liste à l'autre au sein d'un onglet.
+  - Déplacer, avec la souris, les tâches au sein d'une liste.
+ 
+- Toute modification est enregistrée automatiquement.
+- On peut exporter en pdf les listes d'un onglet et les tâches d'une liste.
+- Données :
+ Les données sont gérées dans une base de données au format SQlite. Vous pouvez :
+    - Choisir l'emplacement de la base de données.
+    - Sauvegarder la base de données.
+- Version : surveillance de l'existence d'une version plus récente de l'application Yapuka. Yapuka vous propose une mise à jour automatique de l'application directement depuis le site Github. 
+
+- **Multi-plateforme :** Compatible avec Windows et Linux.
 
 ## 🖼️ Aperçu
 
@@ -84,4 +101,4 @@ Les builds seront créés dans le dossier `dist`.
 
 ## 📝 Licence
 
-Ce projet est sous licence - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence Creative Commons BY-NC-SA- voir le fichier [LICENSE](LICENSE) pour plus de détails.

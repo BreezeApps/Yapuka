@@ -9,11 +9,11 @@ const {
   generate_tab,
 } = require("./print_template/generate_file.js");
 const { startPrint } = require("./printer/index.js");
-const AdmZip = require('adm-zip');
-const axios = require('axios');
+const AdmZip = require("adm-zip");
+const axios = require("axios");
 
 let win;
-let pluginWindow
+let pluginWindow;
 let reload = true;
 
 // Fonction pour charger le contenu d'un fichier renderer.js
@@ -213,7 +213,6 @@ function loadPlugins() {
 
             const rendererScript = loadRendererScript(pluginPath);
             if (rendererScript) {
-              console.log(typeof rendererScript)
               win.webContents.send("inject-code", rendererScript);
             }
           }
@@ -259,9 +258,11 @@ autoUpdater.on("update-downloaded", () => {
   win.webContents.send("update_downloaded");
 });
 
-ipcMain.handle('get-plugins-list', async () => {
+ipcMain.handle("get-plugins-list", async () => {
   try {
-    const response = await axios.get('https://raw.githubusercontent.com/Marvideo2009/Yapuka/refs/heads/master/plugins.json');
+    const response = await axios.get(
+      "https://raw.githubusercontent.com/Marvideo2009/Yapuka/refs/heads/master/plugins.json",
+    );
     return response.data;
   } catch (error) {
     console.error("Erreur lors du chargement des plugins:", error);
@@ -610,18 +611,32 @@ ipcMain.handle("printer", async (event, type, id) => {
       // startPrint({ htmlString : fs.readFileSync(await generate_list(db, id)) },undefined)
     } else if (type === "tab") {
       const { link, name } = await generate_tab(db, id);
-      win_toprint.loadFile(link);
-      win_toprint.on("ready-to-show", async () => {
-        const data = await win_toprint.webContents.printToPDF(printOptions);
-        fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
-        const pdf_link = "file://" + path.join(__dirname, "print.pdf");
-        let date = new Date();
-        date =
-          date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
-        let pdf_name = name + "_" + date + ".pdf";
-        win.webContents.send("pdfLink", pdf_link, pdf_name);
-        win_toprint.close();
-      });
+      setTimeout(async function () {
+        win_toprint.loadFile(link);
+        win_toprint.on("ready-to-show", async () => {
+          const data = await win_toprint.webContents.printToPDF(printOptions);
+          fs.writeFileSync(path.join(__dirname, "print.pdf"), data);
+          const pdf_link = "file://" + path.join(__dirname, "print.pdf");
+          let date = new Date();
+          printOptions.footer = {
+            height: "1cm",
+            content: function (pageNum, numPages, callback) {
+              callback(
+                "<div title='footer'><p style='line-height: 100%; margin-top: 0.5cm; margin-bottom: 0cm'>" +
+                  name +
+                  "<span style='background: #c0c0c0'>" +
+                  date +
+                  "</span></p></div>",
+              );
+            },
+          };
+          date =
+            date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+          let pdf_name = name + "_" + date + ".pdf";
+          win.webContents.send("pdfLink", pdf_link, pdf_name);
+          win_toprint.close();
+        });
+      }, 600);
       // startPrint({ htmlString : fs.readFileSync(await generate_tab(db, id)) },undefined)
     }
   }
@@ -684,7 +699,7 @@ ipcMain.handle("config-window", (event) => {
   win2.loadFile("window/config/config.html");
 });
 
-ipcMain.handle('plugin-window', (event) => {
+ipcMain.handle("plugin-window", (event) => {
   pluginWindow = new BrowserWindow({
     width: 600,
     height: 400,
@@ -694,10 +709,9 @@ ipcMain.handle('plugin-window', (event) => {
       nodeIntegrationInWorker: true,
       contextIsolation: false,
       webviewTag: true,
-    }
+    },
   });
   pluginWindow.webContents.setWindowOpenHandler(({ url }) => {
-    console.log(url)
     if (url.startsWith("file://")) {
       return { action: "allow" };
     }
@@ -706,8 +720,8 @@ ipcMain.handle('plugin-window', (event) => {
     return { action: "deny" };
   });
 
-  pluginWindow.loadFile('window/plugin/pluginWindow.html');
-})
+  pluginWindow.loadFile("window/plugin/pluginWindow.html");
+});
 
 ipcMain.handle("get-theme", (event) => {
   return new Promise((resolve, reject) => {
@@ -813,22 +827,26 @@ ipcMain.handle("app_version", (event) => {
   return app.getVersion();
 });
 
-ipcMain.handle('install-plugin', async (event, githubUrl) => {
+ipcMain.handle("install-plugin", async (event, githubUrl) => {
   try {
     const zipUrl = `${githubUrl}/archive/refs/heads/main.zip`;
-    const response = await axios.get(zipUrl, { responseType: 'arraybuffer' });
+    const response = await axios.get(zipUrl, { responseType: "arraybuffer" });
 
-    const zipPath = path.join(__dirname, 'temp.zip');
+    const zipPath = path.join(__dirname, "temp.zip");
     fs.writeFileSync(zipPath, response.data);
 
     const zip = new AdmZip(zipPath);
-    const pluginDir = path.join(__dirname, 'plugins');
+    const pluginDir = path.join(__dirname, "plugins");
     zip.extractAllTo(pluginDir, true);
     fs.unlinkSync(zipPath); // Supprimer le fichier ZIP temporaire
     return true;
   } catch (error) {
     // console.error('Erreur lors de l\'installation du plugin:', error);
-    message = "https://github.com/Marvideo2009/Yapuka/issues/new?labels=bug&title=New+bug+report&body=Error+when+install+plugin+:+" + githubUrl + "+" + error.toString().split(' ').join('+')
+    message =
+      "https://github.com/Marvideo2009/Yapuka/issues/new?labels=bug&title=New+bug+report&body=Error+when+install+plugin+:+" +
+      githubUrl +
+      "+" +
+      error.toString().split(" ").join("+");
     return message;
   }
 });

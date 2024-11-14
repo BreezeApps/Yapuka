@@ -460,7 +460,7 @@ function addNewList(name, color, id) {
     "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline m-3";
 
     const printListIcon = document.createElement("img")
-    printListIcon.setAttribute("src", "../../build/img/print-icon.svg")
+    printListIcon.setAttribute("src", "../../build/img/icons/print-icon.svg")
     printListIcon.classList.add("h-6");
   
     const printListBtn = document.createElement("button");
@@ -471,34 +471,14 @@ function addNewList(name, color, id) {
       ipcRenderer.invoke("printer", "list", id)
     });
 
-    const modifyListIconSvg = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "svg",
-  );
-  modifyListIconSvg.setAttribute("fill", "none");
-  modifyListIconSvg.setAttribute("viewbox", "0 0 24 24");
-  modifyListIconSvg.setAttribute("stroke-width", "1.5");
-  modifyListIconSvg.setAttribute("stroke", "currentcolor");
-  modifyListIconSvg.classList.add("w-6");
-  modifyListIconSvg.classList.add("h-6");
-
-  const modifyListIconPath = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path",
-  );
-  modifyListIconPath.setAttribute(
-    "d",
-    "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
-  );
-  modifyListIconPath.setAttribute("stroke-linecap", "round");
-  modifyListIconPath.setAttribute("stroke-linejoin", "round");
-
-  modifyListIconSvg.appendChild(modifyListIconPath);
+  const modifyListIcon = document.createElement("img")
+  modifyListIcon.src = "../../build/img/icons/modify.svg"
+  modifyListIcon.classList.add("w-6", "h-6")
 
   const modifyListBtn = document.createElement("button");
   modifyListBtn.className =
     "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
-  modifyListBtn.appendChild(modifyListIconSvg);
+  modifyListBtn.appendChild(modifyListIcon);
   modifyListBtn.addEventListener("click", async () => {
     const list = await ipcRenderer.invoke("get-list", id);
 
@@ -542,18 +522,6 @@ function addNewList(name, color, id) {
   addTaskBtn.addEventListener("click", async () => {
     document.getElementById("list-id-task").value = id;
     const createTaskModal = document.getElementById("create-task-modal");
-    // const editor = new EditorJS({
-    //   holder : '#editorjs',
-    //   tools: {
-    //     header: Header,
-    //     linkTool: LinkTool,
-    //     image: SimpleImage,
-    //     checklist: Checklist
-    //   },
-    //   onReady: () => {
-    //     console.log('Editor.js is ready to work!')
-    //  }
-    // })
     document.getElementById("blur").classList.remove("hidden");
     createTaskModal.classList.remove("hidden");
     document.getElementById("name-task").focus();
@@ -616,34 +584,14 @@ function addNewTask(listElement, taskName, taskId) {
   newTask.id = "task-" + taskId;
   newTask.innerText = taskName;
 
-  const modifyTaskIconSvg = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "svg",
-  );
-  modifyTaskIconSvg.setAttribute("fill", "none");
-  modifyTaskIconSvg.setAttribute("viewbox", "0 0 24 24");
-  modifyTaskIconSvg.setAttribute("stroke-width", "1.5");
-  modifyTaskIconSvg.setAttribute("stroke", "currentcolor");
-  modifyTaskIconSvg.classList.add("w-6");
-  modifyTaskIconSvg.classList.add("h-6");
-
-  const modifyTaskIconPath = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path",
-  );
-  modifyTaskIconPath.setAttribute(
-    "d",
-    "m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10",
-  );
-  modifyTaskIconPath.setAttribute("stroke-linecap", "round");
-  modifyTaskIconPath.setAttribute("stroke-linejoin", "round");
-
-  modifyTaskIconSvg.appendChild(modifyTaskIconPath);
+  const modifyTaskIcon = document.createElement("img")
+  modifyTaskIcon.src = "../../build/img/icons/modify.svg"
+  modifyTaskIcon.classList.add("w-6", "h-6")
 
   const modifyTaskBtn = document.createElement("button");
   modifyTaskBtn.className = // p-[0.1px]
     "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
-  modifyTaskBtn.appendChild(modifyTaskIconSvg);
+  modifyTaskBtn.appendChild(modifyTaskIcon);
   modifyTaskBtn.addEventListener("click", async () => {
     document.getElementById("description-modal").classList.add("hidden");
     const task = await ipcRenderer.invoke("get-tasks-withId", taskId);
@@ -661,32 +609,14 @@ function addNewTask(listElement, taskName, taskId) {
     modifyTaskModal.classList.remove("hidden");
   });
 
-  const deleteTaskIconSvg = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "svg",
-  );
-  deleteTaskIconSvg.setAttribute("fill", "currentcolor");
-  deleteTaskIconSvg.setAttribute("viewbox", "0 0 24 24");
-  deleteTaskIconSvg.classList.add("w-6");
-  deleteTaskIconSvg.classList.add("h-6");
-
-  const deleteTaskIconPath = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "path",
-  );
-  deleteTaskIconPath.setAttribute(
-    "d",
-    "M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z",
-  );
-  deleteTaskIconPath.setAttribute("fill-rule", "evenodd");
-  deleteTaskIconPath.setAttribute("clip-rule", "evenodd");
-
-  deleteTaskIconSvg.appendChild(deleteTaskIconPath);
+  const deleteTaskIcon = document.createElement("img")
+  deleteTaskIcon.src = "../../build/img/icons/delete.svg"
+  deleteTaskIcon.classList.add("w-6", "h-6")
 
   const deleteTaskBtn = document.createElement("button");
   deleteTaskBtn.className =
     "ml-auto grid place-items-center justify-self-end rounded-md border border-transparent p-[0.1px] text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
-  deleteTaskBtn.appendChild(deleteTaskIconSvg);
+  deleteTaskBtn.appendChild(deleteTaskIcon);
   deleteTaskBtn.addEventListener("click", async () => {
     if (
       confirm(

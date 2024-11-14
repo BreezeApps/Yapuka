@@ -32,7 +32,7 @@
   "Blur": "Flou",
   "Reset": "Réinitialiser",
   "Language": "Langage",
-  "Are_Sure": "Etes vous sûr de supprimer {{type}} {{title}} ?",
+  "Are_Sure": "Êtes vous sûr de supprimer {{type}} {{title}} ?",
   "Make_Backup": "Faire une sauvegarde",
   "Download_Backup": "Télécharger la dernière sauvegarde (il y a {{0}} jour(s))",
   "Required_field": "Ce champ est obligatoire",
