@@ -1,5 +1,6 @@
 {
   "name": "Yapuka",
+  "homepage": "https://yapuka.marvideo.fr",
   "version": "1.0.0",
   "icons": [
     {
@@ -39,13 +40,16 @@
     }
   ],
   "description": "Application de gestion de taches et listes",
-  "main": "main.js",
+  "main": "./out/main/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Marvideo2009/Yapuka.git"
   },
   "scripts": {
-    "start": "electron .",
+    "start": "electron-vite dev",
+    "build": "electron-vite build",
+    "migrate": "drizzle-kit generate --config=drizzle.config.ts",
+    "start-alt": "electron .",
     "style": "pnpx tailwindcss -i ./input.css -o style.css --watch",
     "dev": "pnpm run build:css && pnpm start",
     "build:css": "pnpx tailwindcss -i ./input.css -o style.css",
@@ -66,27 +70,43 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react-swc": "^3.7.1",
     "adm-zip": "^0.5.16",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.28.0",
+    "drizzle-orm": "^0.36.1",
     "electron-context-menu": "^4.0.4",
     "electron-save-file": "^1.0.2",
     "electron-tabs": "^1.0.4",
     "electron-updater": "^6.3.9",
-    "i18next": "^23.16.2",
+    "electron-vite": "^2.3.0",
+    "fs-extra": "^11.2.0",
+    "i18next": "^23.16.5",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-fs-backend": "^2.3.2",
-    "mysql2": "^3.11.3",
+    "mysql2": "^3.11.4",
     "os": "^0.1.2",
-    "sqlite3": "^5.1.7"
+    "postcss-load-config": "^6.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sqlite3": "^5.1.7",
+    "vite": "^5.4.11",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
-    "electron": "^32.2.0",
+    "electron": "^32.2.3",
     "electron-builder": "^25.1.8",
     "postcss-loader": "^8.1.1",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
-    "tailwindcss": "^3.4.13"
+    "tailwindcss": "^3.4.14"
   },
   "build": {
     "appId": "fr.marvideo.yapuka",
@@ -119,5 +139,11 @@
         "releaseType": "release"
       }
     ]
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
   }
 }

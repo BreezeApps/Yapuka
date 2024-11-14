@@ -53,29 +53,23 @@ async function createWindow() {
       },
     );
   });
-  const saved_x = await new Promise((resolve, reject) => {
+  const saved_x = new Promise((resolve, reject) => {
     db.all(
       "SELECT * FROM configs WHERE name = ?",
       ["screen-x"],
-      (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      },
+      (error, rows) => {
+        const callback = rows ? resolve : reject
+        callback(rows ?? error)
+      }
     );
   });
   const saved_y = await new Promise((resolve, reject) => {
     db.all(
       "SELECT * FROM configs WHERE name = ?",
       ["screen-y"],
-      (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
+      (error, rows) => {
+        const callback = rows ? resolve : reject
+        callback(rows ?? error)
       },
     );
   });
@@ -87,7 +81,7 @@ async function createWindow() {
     x: parseInt(saved_x[0].value),
     y: parseInt(saved_y[0].value),
     icon: path.join(__dirname, "build/icon.ico"),
-    autoHideMenuBar: true,
+    //autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "utils", "preload.js"),
       nodeIntegration: true,
@@ -96,6 +90,7 @@ async function createWindow() {
       webviewTag: true,
     },
   });
+  win.removeMenu()
   win.on("close", async function () {
     reload = false;
     const bounds = win.getBounds();
@@ -240,7 +235,7 @@ function loadPlugins() {
 app.whenReady().then(() => {
   createWindow();
   app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if(BrowserWindow.getAllWindows().length === 0) createWindow();
   });
   autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
