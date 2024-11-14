@@ -26,7 +26,7 @@ async function loadPlugins() {
       const installButton = document.createElement('button');
       installButton.setAttribute("data-i18n", "plugins-install")
       installButton.classList = 'px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition';
-      installButton.onclick = () => installPlugin(plugin.github_url);
+      installButton.onclick = () => installPlugin(plugin.githubUrl);
       
       listItem.appendChild(pluginInfo);
       listItem.appendChild(installButton);
