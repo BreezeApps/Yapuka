@@ -84,7 +84,7 @@ Les builds seront créés dans le dossier `dist`.
 
 ## 🖼️ Aperçu
 
-<img src="https://yapuka.marvideo.fr/assets/screenshots.png" width="1000"/>
+<img src="https://breezeapps.github.io/Yapuka/assets/screenshots.png" width="1000"/>
 
 ## 🔗 Liens utiles
 
