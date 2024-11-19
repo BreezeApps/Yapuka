@@ -5,3 +5,4 @@ tasks.db
 db.json
 Yapuka_Data/*
 /dist
+/out
