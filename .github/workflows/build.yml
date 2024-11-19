@@ -6,7 +6,7 @@ on:
       - "v*.*.*" # Déclenche uniquement sur les tags versionnés
   workflow_dispatch: # Permet un déclenchement manuel
 env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
 jobs:
   release:
