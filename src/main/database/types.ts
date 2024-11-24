@@ -15,7 +15,7 @@ import {
   }
 
   export interface boardsTable {
-    id: Generated<number>
+    id: number
     name: string
   }
 
@@ -25,7 +25,7 @@ import {
 
 
   export interface collectionsTable {
-    id: Generated<number>
+    id: number
     boardsId: string
     name: string
     color: string
@@ -37,7 +37,7 @@ import {
 
 
   export interface optionsTable {
-    id: Generated<number>
+    id: number
     key: string
     value: string
   }
@@ -48,7 +48,7 @@ import {
 
 
   export interface tasksTable {
-    id: Generated<number>
+    id: number
     collectionId: string
     order: string
     name: string

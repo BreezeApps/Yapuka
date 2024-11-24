@@ -12,18 +12,21 @@ async function createMainWindow() {
     mainWindow = new BrowserWindow({
         icon: path.join(__dirname, "build/icon.ico"),
         title: "Yapuka",
-        x: await getPreferredPositionX() ?? undefined,
-        y: await getPreferredPositionY() ?? undefined,
-        width: await getPreferredWidthResolution() ?? undefined,
-        height: await getPreferredHeightResolution() ?? undefined,
+        x: parseInt(await getPreferredPositionX()) ?? undefined,
+        y: parseInt(await getPreferredPositionY()) ?? undefined,
+        width: parseInt(await getPreferredWidthResolution()) ?? undefined,
+        height: parseInt(await getPreferredHeightResolution()) ?? undefined,
         webPreferences: {
             contextIsolation: true,
+            nodeIntegration: true,
             sandbox: true,
             webSecurity: true
         }
     })
+    mainWindow.loadURL("http://localhost:5173")
     mainWindow.setMenu(null)
     mainWindow.removeMenu()
+    mainWindow.webContents.openDevTools()
 
     mainWindow.on("close", async () => {
         const bounds = mainWindow?.getBounds()

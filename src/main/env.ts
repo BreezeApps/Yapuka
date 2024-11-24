@@ -5,11 +5,11 @@ const envSchema = z.object({
     DATABASE_URL: z.string().min(1)
 })
 
-export const env = envSchema.parse(process.env)
+// export const env = envSchema.parse(process.env)
 
-export const isDevelopment = env.NODE_ENV == "development"
-export const isProduction = env.NODE_ENV == "production"
-export const isTest = env.NODE_ENV == "test"
+// export const isDevelopment = env.NODE_ENV == "development"
+// export const isProduction = env.NODE_ENV == "production"
+// export const isTest = env.NODE_ENV == "test"
 
 declare global {
     namespace NodeJS {

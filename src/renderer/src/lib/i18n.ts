@@ -6,7 +6,10 @@ const { ipcRenderer } = require("electron");
 
 let language;
 
-class I18n {
+export default class I18n {
+  lang: string;
+  static list_lang: string[];
+  static lang: any;
   constructor() {
     this.lang = "system"
   }
@@ -20,7 +23,7 @@ class I18n {
         lng: this.lang,
         fallbackLng: this.list_lang,
         backend: {
-          loadPath: path.join(__dirname, "locales/{{lng}}.json"), // Chemin des fichiers de traduction
+          loadPath: "./locales/{{lng}}.json", // Chemin des fichiers de traduction
         },
         initImmediate: true,
       },
