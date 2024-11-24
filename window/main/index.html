@@ -28,6 +28,7 @@
       ></button>
     </div>
     <div id="blur" class="absolute z-[150] hidden h-full w-full"></div>
+    <!--menu contextuel-->
     <div
       id="context-menu"
       class="absolute z-[100] hidden border bg-white shadow-md"
@@ -39,43 +40,82 @@
         Modifier
       </button>
     </div>
-    <div class="w-full fixed top-0 left-0 py-4 text-center shadow-lg flex justify-between">
+    <!--boutons-->
+      
+      
+    <div class="w-full fixed top-0 left-0 py-2 text-left shadow flex justify-right">
+
+      Titre
       <div id="tabs"></div>
-      <button
+
+      <!--<button
       id="add-tab-btn"
-      class="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+      class="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-black hover:bg-blue-700"
       type="button"
       data-i18n="Add_a_Tab"
-      ></button>
+      >
+      </button>-->
+
+      <!--Bouton Ajouter en icône-->
+
+      <button
+       id="add-tab-btn"
+       Class="hover:bg-indigo-200"
+       type="button"
+       ><img src="../../Images/Icones/ajouter.png" alt="+" height="30" width="30">
+      </button>        
+      <!--Bouton Modifier
       <button
       id="modify-tab-btn"
       class="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
       type="button"
       data-i18n="Modify_a_Tab"
-      ></button>
+      ></button>-->
+
+      <!--Bouton Modifier en icône -->
+      <button
+        id="modify-tab-btn"
+        Class="hover:bg-indigo-200"    
+        type="button"      
+        ><img src="../../Images/Icones/modifier.png" alt="+" height="30" width="30">
+      </button>
+      <!--Bouton supprimer
       <button
       id="delete-tab-btn"
       class="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
       type="button"
       data-i18n="Delete_a_Tab"
-      ></button>
+      ></button>-->
+
+      <!--Bouton supprimer en icône -->
       <button
-        id="add-list-btn"
-        class="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+        id="delete-tab-btn"
+        class="hover:bg-indigo-200"
         type="button"
-        data-i18n="Add_a_List"
-      ></button>
-      <button
+        ><img src="../../Images/Icones/supprimer.png" alt="+" height="30" width="30">        
+      </button>
+
+      <!--<button
         id="print-tab-btn"
         class="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
         type="button"
         data-i18n="Print"
-        ></button>
-        <span onClick="go_config_window()" class="cursor-pointer w-7 h-7 flex flex-row-reverse justify-self-end">
-          <img src="../../build/img/icons/config.svg" alt="">
+        ></button>-->
+
+       <!--Bouton imprimer en icône -->
+       <button
+       id="print-tab-btn"
+       class="hover:bg-indigo-200 flex flex-row-reverse"
+       type="button"
+       ><img src="../../Images/Icones/imprimer.png" alt="+" height="30" width="30">        
+     </button>
+
+        <span onClick="go_config_window()" class="cursor-pointer w-7 h-7"> <!--flex flex-row-reverse">--> <!--justify-self-end">-->
+          <img src="../../build/img/icons/config.svg" alt="régler">
         </span>
     </div>
-    <div id="lists-container" class="w-full mt-16">
+
+    <div id="lists-container" class="w-full mt-12"><!---->
     </div>
 
     <div
