@@ -2,13 +2,15 @@ import dotenv from "dotenv"
 dotenv.config()
 
 import path from "node:path"
-import { app, BrowserWindow } from "electron"
+import { app, BrowserWindow, ipcMain } from "electron"
 import { getPreferredPositionX, getPreferredPositionY, getPreferredWidthResolution, getPreferredHeightResolution, setPreferredWidthResolution, setPreferredHeightResolution } from "./database"
 import { setupAutoUpdater } from "./updater"
+import { initializeI18n } from "./i18n-main"
 
 let mainWindow: BrowserWindow | undefined
 
 async function createMainWindow() {
+    initializeI18n()
     mainWindow = new BrowserWindow({
         icon: path.join(__dirname, "build/icon.ico"),
         title: "Yapuka",
@@ -17,8 +19,9 @@ async function createMainWindow() {
         width: parseInt(await getPreferredWidthResolution()) ?? undefined,
         height: parseInt(await getPreferredHeightResolution()) ?? undefined,
         webPreferences: {
+            preload: path.join(__dirname, '..', 'preload', 'index.js'),
             contextIsolation: true,
-            nodeIntegration: true,
+            nodeIntegration: false,
             sandbox: true,
             webSecurity: true
         }
@@ -34,6 +37,10 @@ async function createMainWindow() {
             await setPreferredWidthResolution(bounds?.width)
             await setPreferredHeightResolution(bounds?.height)
         }
+    })
+
+    mainWindow.on('ready-to-show', () => {
+        mainWindow?.show()
     })
 
     setupAutoUpdater()

@@ -85,6 +85,13 @@ export async function resetDb(db: Kysely<any>) {
         value: 'system'
     }
     db.insertInto('options').values(optiontheme).execute()
+
+    const optionlanguage: optionsTable = {
+        id: 6,
+        key: 'languages',
+        value: 'system'
+    }
+    db.insertInto('options').values(optionlanguage).execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

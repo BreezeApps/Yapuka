@@ -1,20 +1,37 @@
-import { ipcRenderer } from "electron";
-import i18next from "./lib/i18n";
+// import { ipcRenderer } from "electron";
+import { getTranslation, getTranslationWithVar, updateContent } from "./i18n";
+import Sortable from "sortablejs";
 
-ipcRenderer.on('inject-code', (event, code) => {
+// ipcRenderer.on('inject-code', (_event, code) => {
+//   try {
+//     eval(code);
+//   } catch (error) {
+//     console.error("Erreur lors de l'injection de code du plugin :", error);
+//   }
+// })
+await window.ipc.injectCode((code) => {
   try {
     eval(code);
   } catch (error) {
     console.error("Erreur lors de l'injection de code du plugin :", error);
   }
 })
-
-async function getVersion() {
-  const version = await ipcRenderer.invoke("app_version")
+export async function getVersion() {
+  const version = await window.ipc.getAppVersion()
   return version
 }
 
-ipcRenderer.on('pdfLink', function (evt, link, name) {
+// ipcRenderer.on('pdfLink', function (_evt, link, name) {
+//   setTimeout(() => {
+//     var link_Element = document.createElement("a");
+//     link_Element.download = name;
+//     link_Element.href = link;
+//     link_Element.click();
+//     link_Element.remove();
+//   }, 500)
+// })
+
+await window.ipc.pdfLink((link, name) => {
   setTimeout(() => {
     var link_Element = document.createElement("a");
     link_Element.download = name;
@@ -24,18 +41,18 @@ ipcRenderer.on('pdfLink', function (evt, link, name) {
   }, 500)
 })
 
-document.getElementById("print-tab-btn")?.addEventListener("click", (event) => {
-  ipcRenderer.invoke("printer", "tab", document.body.id)
+document.getElementById("print-tab-btn")?.addEventListener("click", async (_event) => {
+  await window.ipc.printer("tab", document.body.id)
 })
 
-const notification = document.getElementById("notification");
-const message = document.getElementById("message");
-const restartButton = document.getElementById("restart-button");
-const downloadButton = document.getElementById("download-button");
+const notification = document.getElementById("notification")!;
+const message = document.getElementById("message")!;
+const restartButton = document.getElementById("restart-button")!;
+const downloadButton = document.getElementById("download-button")!;
 
-async function checkUpdate() {
+export async function checkUpdate() {
   const currentVersion = await getVersion()
-  const update = await ipcRenderer.invoke("check-update");
+  const update = await window.ipc.checkUpdate();
   if (update !== null && currentVersion !== update.versionInfo.version) {
     const msg = "<span data-i18n='update_Available' />\n" + currentVersion + " >> " + update.versionInfo.version
 
@@ -45,25 +62,32 @@ async function checkUpdate() {
   }
 }
 
-ipcRenderer.on("update_downloaded", () => {
-  ipcRenderer.removeAllListeners("update_downloaded");
+await window.ipc.updateDownloaded((_event) => {
   message.innerHTML = "<span data-i18n='update_Downloaded' />";
   restartButton?.classList.remove("hidden");
   notification?.classList.remove("hidden");
   downloadButton?.classList.add("hidden");
-});
+})
 
-function closeNotification() {
+// ipcRenderer.on("update_downloaded", () => {
+//   ipcRenderer.removeAllListeners("update_downloaded");
+//   message.innerHTML = "<span data-i18n='update_Downloaded' />";
+//   restartButton?.classList.remove("hidden");
+//   notification?.classList.remove("hidden");
+//   downloadButton?.classList.add("hidden");
+// });
+
+export function closeNotification() {
   notification?.classList.add("hidden");
 }
-function restartApp() {
-  ipcRenderer.invoke("restart_app");
+export async function restartApp() {
+  await window.ipc.restartApp()
 }
-async function downloadUpdate() {
-  ipcRenderer.invoke("download_update");
+export async function downloadUpdate() {
+  await window.ipc.downloadUpdate()
 }
 
-function activeButton(id) {
+export function activeButton(id) {
   const button = document.getElementById(id);
   button?.removeAttribute("disabled");
 
@@ -75,7 +99,7 @@ function activeButton(id) {
   button?.classList.add("hover:bg-blue-800");
   button?.classList.add("text-white");
 }
-function deactiveButton(id) {
+export function deactiveButton(id) {
   const button = document.getElementById(id);
   button?.setAttribute("disabled", "disabled");
 
@@ -88,9 +112,9 @@ function deactiveButton(id) {
   button?.classList.remove("text-white");
 }
 
-function onmodif(element) {
-  const elementType = element.id.split("-")[2];
-  const elementMod = element.id.split("-")[1];
+export function onmodif(event: React.ChangeEvent<HTMLInputElement>): void {
+  const elementType = event.currentTarget.id.split("-")[2];
+  const elementMod = event.currentTarget.id.split("-")[1];
   if (elementMod === "modify") {
     if (elementType === "task") {
       activeButton("button-submit-modify-task");
@@ -100,21 +124,33 @@ function onmodif(element) {
   }
 }
 
-function changeTab(tabid) {
-  window.location.replace("index.html?tab=" + tabid);
+export function onmodifarea(event: React.ChangeEvent<HTMLTextAreaElement>): void {
+  const elementType = event.target.id.split("-")[2];
+  const elementMod = event.target.id.split("-")[1];
+  if (elementMod === "modify") {
+    if (elementType === "task") {
+      activeButton("button-submit-modify-task");
+    } else if (elementType === "list") {
+      activeButton("button-submit-modify-list");
+    }
+  }
+}
+
+export async function changeTab(tabid) {
+  await window.location.replace("index.html?tab=" + tabid);
 }
 
 window.onload = async () => {
   await checkUpdate()
-  const tabs = await ipcRenderer.invoke("get-tabs");
+  const tabs = await window.ipc.getTabs()
   if (getURLParameter("tab") === null) {
-    document.body.id = tabs[0].id;
+    document.body.id = tabs[0].id.toString();
   } else {
-    const verif_tab = await ipcRenderer.invoke("get-tab", getURLParameter("tab"))
+    const verif_tab = await window.ipc.getTab(await getURLParameter("tab"))
     if (verif_tab[0] === null) {
-      document.body.id = tabs[0].id;
+      document.body.id = tabs[0].id.toString();
     } else {
-      document.body.id = getURLParameter("tab")?.toString();
+      document.body.id = getURLParameter("tab")?.toString()!;
     }
   }
   let list_tabs = document.createElement("select");
@@ -134,16 +170,16 @@ window.onload = async () => {
   const tabsElement = document.getElementById("tabs")
   tabs.forEach((tab) => {
     let list_tab = document.createElement("option");
-    if (document.body.id == tab.id) {
+    if (document.body.id == tab.id.toString()) {
       list_tab.setAttribute("selected", "true")
     }
-    list_tab.value = tab.id
+    list_tab.value = tab.id.toString()
     list_tab.innerText = tab.name;
     list_tabs.appendChild(list_tab);
   });
   tabsElement?.appendChild(list_tabs)
-  const lists = await ipcRenderer.invoke("get-lists", document.body.id);
-  const blur = await ipcRenderer.invoke("get-blur");
+  const lists = window.ipc.getLists(document.body.id)
+  const blur = window.ipc.getBlur();
   if (blur[0].value === "1") {
     document.getElementById("blur")?.classList.add("backdrop-blur-md");
   } else {
@@ -151,13 +187,12 @@ window.onload = async () => {
   }
   lists.forEach(async (list) => {
     const listElement = addNewList(list.name, list.color, list.id);
-    const tasks = await ipcRenderer.invoke("get-tasks", list.id);
+    const tasks = window.ipc.getTasks(list.id.toString());
     tasks.forEach((task) => {
       addNewTask(listElement, task.name, task.id);
     });
   });
-  let theme = await ipcRenderer.invoke("get-theme");
-  theme = theme[0].value;
+  let theme = window.ipc.getTheme().value;
   localStorage.setItem("theme", theme);
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
@@ -174,15 +209,13 @@ window.onload = async () => {
       document.documentElement.classList.remove("light");
     }
   }
-  new i18next()
-  i18next.init()
   setTimeout(function () {
-    i18next.updateContent();
+    updateContent()
   }, 500);
 };
 
-function getURLParameter(sParam) {
-  const sPageURL = window.location.search.substring(1);
+async function getURLParameter(sParam) {
+  const sPageURL = await window.location.search.substring(1);
   const sURLVariables = sPageURL.split("&");
   for (let i = 0; i < sURLVariables.length; i++) {
     const sParameterName = sURLVariables[i].split("=");
@@ -190,7 +223,7 @@ function getURLParameter(sParam) {
       return decodeURIComponent(sParameterName[1] || "");
     }
   }
-  return null;
+  return "null";
 }
 // let url = document.getElementById('url');
 // url.addEventListener('click', async (event) => {
@@ -201,31 +234,37 @@ function getURLParameter(sParam) {
 // Ajout d'un event listener pour afficher le menu contextuel
 const contextMenu = document.getElementById("context-menu");
 const editButton = document.getElementById("edit-button");
-let targetDiv = null;
+let targetDiv: HTMLElement = document.getElementById("div")!;
 
 // Cacher le menu contextuel lors d'un clic en dehors
 document.addEventListener("click", (event) => {
-  if (!contextMenu?.contains(event.target)) {
+  if (event.target instanceof Node && !contextMenu?.contains(event.target)) {
     contextMenu?.classList.add("hidden");
   }
 });
 
 // Action lors du clic sur le bouton Modifier
 editButton?.addEventListener("click", async () => {
-  if (targetDiv && targetDiv.id.split("-")[0] === "list_header") {
-    editButton.classList.remove("hidden");
-    const id = targetDiv.id;
-    const list = await ipcRenderer.invoke("get-list", id.split("-")[1]);
+  if (typeof(targetDiv) != null) {
+    if (typeof(targetDiv) != null && targetDiv?.id.split("-")[0] === "list_header") {
+      editButton.classList.remove("hidden");
+      const id = targetDiv.id;
+      const list = await window.ipc.getList(id.split("-")[1]);
 
-    document.getElementById("id-modify-list").value = list[0].id;
-    document.getElementById("name-modify-list").value = list[0].name;
-    document.getElementById("color-modify-list").value = list[0].color;
-    const modifyListModal = document.getElementById("modify-liste-modal");
-    modifyListModal?.classList.remove("hidden");
-    document.getElementById("blur")?.classList.remove("hidden");
-    contextMenu?.classList.add("hidden");
-  } else {
-    editButton.classList.add("hidden");
+      const id_modify_list: HTMLInputElement = document.getElementById("id-modify-list") as HTMLInputElement;
+      const name_modify_list: HTMLInputElement = document.getElementById("name-modify-list") as HTMLInputElement;
+      const color_modify_list: HTMLInputElement = document.getElementById("color-modify-list") as HTMLInputElement;
+  
+      id_modify_list.value = list[0].id;
+      name_modify_list.value = list[0].name;
+      color_modify_list.value = list[0].color;
+      const modifyListModal = document.getElementById("modify-liste-modal");
+      modifyListModal?.classList.remove("hidden");
+      document.getElementById("blur")?.classList.remove("hidden");
+      contextMenu?.classList.add("hidden");
+    } else {
+      editButton.classList.add("hidden");
+    }
   }
 });
 
@@ -245,30 +284,31 @@ document.getElementById("add-tab-btn")?.addEventListener("click", async () => {
 });
 
 document.getElementById("modify-tab-btn")?.addEventListener("click", async () => {
-  const info = await ipcRenderer.invoke("get-tab", document.body.id)
-  document.getElementById("name-modify-tab").value = info[0].name
+  const info = await window.ipc.getTab(document.body.id)
+  const name_modify_tab = document.getElementById("name-modify-tab") as HTMLInputElement
+  name_modify_tab.value = info[0].name
   const createTabModal = document.getElementById("modify-tab-modal");
   document.getElementById("blur")?.classList.remove("hidden");
   createTabModal?.classList.remove("hidden");
   document.getElementById("name-modify-tab")?.focus();
 });
 document.getElementById("delete-tab-btn")?.addEventListener("click", async () => {
-  const tab = await ipcRenderer.invoke("get-tab", document.body.id)
+  const tab = await window.ipc.getTab(document.body.id)
   if (
     confirm(
-      i18next.getTranslationWithVar("Are_Sure", { title: tab[0].name.toUpperCase(), type: i18next.getTranslation("tab") }),
+      await getTranslationWithVar("Are_Sure", { title: tab[0].name.toUpperCase(), type: await getTranslation("tab") }),
     ) == true
   ) {
-    const lists = await ipcRenderer.invoke("get-lists", document.body.id)
+    const lists = await window.ipc.getLists(document.body.id)
     lists.forEach(async list => {
-      const tasks = await ipcRenderer.invoke("get-task", list.id)
+      const tasks = await window.ipc.getTasks(list.id.toString())
       tasks.forEach(async task => {
-        await ipcRenderer.invoke("delete-task", task.id)
+        await window.ipc.deleteTask(task.id.toString())
       })
-      await ipcRenderer.invoke("delete-list", list.id)
+      await window.ipc.deleteList(list.id.toString())
     })
-    await ipcRenderer.invoke("delete-tab", document.body.id);
-    window.location.reload()
+    await window.ipc.deleteTab(document.body.id)
+    await window.location.reload()
   }
 })
 document.getElementById("close-create-list-modal")?.addEventListener("click", async () => {
@@ -308,77 +348,83 @@ document.getElementById("close-modify-task-modal")?.addEventListener("click", as
 
 document.getElementById("submit-create-liste")?.addEventListener("submit", async function (event) {
     event.preventDefault();
-    const name = document.getElementById("name-list")?.value;
-    const color = document.getElementById("color-list")?.value;
+    const name_element = document.getElementById("name-list") as HTMLInputElement;
+    const name = name_element.value
+    const color_element = document.getElementById("color-list") as HTMLInputElement;
+    const color = color_element.value
     const tab_id = document.body.id;
     if (name !== null) {
-      const result = await ipcRenderer.invoke("add-list", tab_id, name, color);
+      const result = await window.ipc.addList(tab_id, name, color);
       addNewList(name, color, result.id);
 
       const createListModal = document.getElementById("create-liste-modal");
       document.getElementById("blur")?.classList.add("hidden");
       createListModal?.classList.add("hidden");
-      i18next.updateContent();
+      updateContent();
     }
   });
 
 document.getElementById("submit-create-tab")?.addEventListener("submit", async function (event) {
     event.preventDefault();
-    const name = document.getElementById("name-tab")?.value;
+    const name_element = document.getElementById("name-tab") as HTMLInputElement;
+    const name = name_element.value
     if (name !== null) {
-      const result = await ipcRenderer.invoke("add-tab", name);
-      i18next.updateContent();
-      window.location.replace("index.html?tab=" + result.id);
+      const result = await window.ipc.addTab(name)
+      updateContent();
+      await window.location.replace("index.html?tab=" + result.id);
     }
   });
 
 document.getElementById("submit-modify-liste")?.addEventListener("submit", async function (event) {
     event.preventDefault();
-    const id = document.getElementById("id-modify-list")?.value;
-    const name = document.getElementById("name-modify-list")?.value;
-    const color = document.getElementById("color-modify-list")?.value;
+    const id_element = document.getElementById("id-modify-list") as HTMLInputElement;
+    const id = id_element.value
+    const name_element = document.getElementById("name-modify-list") as HTMLInputElement;
+    const name = name_element.value
+    const color_element = document.getElementById("color-modify-list") as HTMLInputElement;
+    const color = color_element.value
 
     if (name !== null) {
       deactiveButton("button-submit-modify-list");
-      const result = await ipcRenderer.invoke("update-list", id, name, color);
+      await window.ipc.updateList(id, name, color)
       const createListModal = document.getElementById("modify-liste-modal");
       document.getElementById("blur")?.classList.add("hidden");
       createListModal?.classList.add("hidden");
-      window.location.reload();
+      await window.location.reload();
     }
   });
 
 document.getElementById("submit-modify-tab")?.addEventListener("submit", async function (event) {
     event.preventDefault();
     const id = document.body.id;
-    const name = document.getElementById("name-modify-tab")?.value;
+    const name_element = document.getElementById("name-modify-tab") as HTMLInputElement;
+    const name = name_element.value
 
     if (name !== null) {
       deactiveButton("button-submit-modify-tab");
-      const result = await ipcRenderer.invoke("update-tab", name, id);
+      await window.ipc.updateTab(id, name)
       const createTabModal = document.getElementById("modify-tab-modal");
       document.getElementById("blur")?.classList.add("hidden");
       createTabModal?.classList.add("hidden");
-      window.location.reload();
+      await window.location.reload();
     }
   });
 
 document.getElementById("submit-create-task")?.addEventListener("submit", async function (event) {
     event.preventDefault();
-    const name = document.getElementById("name-task")?.value;
-    const description = document.getElementById("description-task")?.value;
-    const date = document.getElementById("date-task")?.value;
-    const listId = document.getElementById("list-id-task")?.value;
+    const name_element = document.getElementById("name-task") as HTMLInputElement;
+    const name = name_element.value
+    const description_element = document.getElementById("description-task") as HTMLInputElement;
+    const description = description_element.value
+    const date_element = document.getElementById("date-task") as HTMLInputElement;
+    const date = date_element.value
+    const listId_element = document.getElementById("list-id-task") as HTMLInputElement;
+    const listId = listId_element.value
 
     if (name !== null) {
-      document.getElementById("submit-create-task")?.reset();
-      const result = await ipcRenderer.invoke(
-        "add-task",
-        listId,
-        description,
-        date,
-        name,
-      );
+      const create_task_form = document.getElementById("submit-create-task") as HTMLFormElement;
+      create_task_form.reset()
+      const result = await window.ipc.addTask(listId, description, date, name)
       const listElement = document.getElementById("list-" + listId);
       addNewTask(listElement, name, result.id);
       const createTaskModal = document.getElementById("create-task-modal");
@@ -388,26 +434,25 @@ document.getElementById("submit-create-task")?.addEventListener("submit", async 
   });
 document.getElementById("submit-modify-task")?.addEventListener("submit", async function (event) {
     event.preventDefault();
-    const name = document.getElementById("name-modify-task")?.value;
-    const description = document.getElementById(
+    const name_element = document.getElementById("name-modify-task") as HTMLInputElement;
+    const name = name_element.value
+    const description_element = document.getElementById(
       "description-modify-task",
-    )?.value;
-    const date = document.getElementById("date-modify-task")?.value;
-    const listId = document.getElementById("list-id-modify-task")?.value;
-    const taskId = document.getElementById("task-id-modify-task")?.value;
+    ) as HTMLInputElement;
+    const description = description_element.value
+    const date_element = document.getElementById("date-modify-task") as HTMLInputElement;
+    const date = date_element.value
+    // const listId_element = document.getElementById("list-id-modify-task") as HTMLInputElement;
+    // const listId = listId_element.value
+    const taskId_element = document.getElementById("task-id-modify-task") as HTMLInputElement;
+    const taskId = taskId_element.value
     if (name !== null) {
       deactiveButton("button-submit-modify-task");
-      const result = await ipcRenderer.invoke(
-        "update-task",
-        taskId,
-        description,
-        date,
-        name,
-      );
+      await window.ipc.updateTask(taskId, description, date, name)
       const updateTaskModal = document.getElementById("modify-task-modal");
       document.getElementById("blur")?.classList.add("hidden");
       updateTaskModal?.classList.add("hidden");
-      window.location.reload();
+      await window.location.reload();
     }
   });
 
@@ -422,7 +467,7 @@ document.getElementById("close-description-modal-foot")?.addEventListener("click
     descriptionModal?.classList.add("hidden");
   });
 
-function addNewList(name, color, id) {
+export function addNewList(name, color, id) {
   const listContainer = document.getElementById("lists-container");
 
   const newList = document.createElement("div");
@@ -438,7 +483,7 @@ function addNewList(name, color, id) {
       "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
     printListBtn.appendChild(printListIcon);
     printListBtn.addEventListener("click", async () => {
-      ipcRenderer.invoke("printer", "list", id)
+      await window.ipc.printer("list", id)
     });
 
   const modifyListIcon = document.createElement("img")
@@ -450,11 +495,17 @@ function addNewList(name, color, id) {
     "place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none";
   modifyListBtn.appendChild(modifyListIcon);
   modifyListBtn.addEventListener("click", async () => {
-    const list = await ipcRenderer.invoke("get-list", id);
+    const list = await window.ipc.getList(id)
 
-    document.getElementById("id-modify-list").value = list[0].id;
-    document.getElementById("name-modify-list").value = list[0].name;
-    document.getElementById("color-modify-list").value = list[0].color;
+    const id_modify_list = document.getElementById("id-modify-list") as HTMLInputElement
+    id_modify_list.value = list[0].id;
+
+    const name_modify_list = document.getElementById("name-modify-list") as HTMLInputElement
+    name_modify_list.value = list[0].name;
+
+    const color_modify_list = document.getElementById("color-modify-list") as HTMLInputElement
+    color_modify_list.value = list[0].color;
+
     const modifyListModal = document.getElementById("modify-liste-modal");
     document.getElementById("blur")?.classList.remove("hidden");
     document.getElementById("name-modify-list")?.focus();
@@ -471,14 +522,14 @@ function addNewList(name, color, id) {
   deleteListBtn.addEventListener("click", async () => {
     if (
       confirm(
-        i18next.getTranslationWithVar("Are_Sure", { title: name.toUpperCase(), type: i18next.getTranslation("list") }),
+        await getTranslationWithVar("Are_Sure", { title: name.toUpperCase(), type: await getTranslation("list") }),
       ) == true
     ) {
-      const tasks = await ipcRenderer.invoke("get-task", id)
+      const tasks = await window.ipc.getTasks(id)
       tasks.forEach(async task => {
-        await ipcRenderer.invoke("delete-task", task.id)
+        await window.ipc.deleteTask(task.id.toString())
       })
-      await ipcRenderer.invoke("delete-list", id);
+      await window.ipc.deleteList(id)
       newList.remove();
     }
     document.getElementById("description-modal")?.classList.add("hidden");
@@ -490,8 +541,10 @@ function addNewList(name, color, id) {
   addTaskBtn.className =
     "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-r float-left inline";
   addTaskBtn.addEventListener("click", async () => {
-    document.getElementById("list-id-task").value = id;
-    const createTaskModal = document.getElementById("create-task-modal");
+    const list_id_task = document.getElementById("list-id-task") as HTMLInputElement
+    list_id_task.value = id;
+
+    const createTaskModal = document.getElementById("create-task-modal") as HTMLElement;
     document.getElementById("blur")?.classList.remove("hidden");
     createTaskModal.classList.remove("hidden");
     document.getElementById("name-task")?.focus();
@@ -507,8 +560,8 @@ function addNewList(name, color, id) {
   listHeader.id = "list_header-" + id;
   listHeader.addEventListener("contextmenu", (event) => {
     event.preventDefault();
-    const contextMenu = document.getElementById("context-menu");
-    targetDiv = event.target;
+    const contextMenu = document.getElementById("context-menu")!;
+    targetDiv = event.target as HTMLElement;
 
     contextMenu.style.top = `${event.pageY}px`;
     contextMenu.style.left = `${event.pageX}px`;
@@ -529,14 +582,9 @@ function addNewList(name, color, id) {
     onEnd: async (evt) => {
       const taskId = evt.item.id.split("-")[1];
       const newPosition = evt.newIndex;
-      const newListId = evt.to.closest(".list").id.split("-")[1]; // Identifier la nouvelle liste
+      const newListId = evt.to.closest(".list")?.id.split("-")[1]; // Identifier la nouvelle liste
       // Mettre à jour la position et la liste dans la base de données
-      await ipcRenderer.invoke(
-        "update-task-list-and-position",
-        taskId,
-        newListId,
-        newPosition,
-      );
+      await window.ipc.updateTaskListPosition(taskId, newListId, newPosition?.toString())
     },
   });
 
@@ -544,7 +592,7 @@ function addNewList(name, color, id) {
   return newList;
 }
 
-function addNewTask(listElement, taskName, taskId) {
+export function addNewTask(listElement, taskName, taskId) {
   const taskContainer = listElement.querySelector(".task-container");
 
   const newTask = document.createElement("div");
@@ -564,15 +612,23 @@ function addNewTask(listElement, taskName, taskId) {
   modifyTaskBtn.appendChild(modifyTaskIcon);
   modifyTaskBtn.addEventListener("click", async () => {
     document.getElementById("description-modal")?.classList.add("hidden");
-    const task = await ipcRenderer.invoke("get-tasks-withId", taskId);
+    const task = await window.ipc.getTask(taskId)
 
-    document.getElementById("task-id-modify-task").value = taskId;
-    document.getElementById("name-modify-task").value = task[0].name;
-    document.getElementById("date-modify-task").value = task[0].date;
-    document.getElementById("description-modify-task").value =
-      task[0].description;
-    document.getElementById("list-id-modify-task").value =
-      listElement.id.split("-")[1];
+    const task_id_modify_task = document.getElementById("task-id-modify-task") as HTMLInputElement
+    task_id_modify_task.value = taskId;
+
+    const name_modify_task = document.getElementById("name-modify-task") as HTMLInputElement
+    name_modify_task.value = task[0].name;
+
+    const date_modify_task = document.getElementById("date-modify-task") as HTMLInputElement
+    date_modify_task.value = task[0].date;
+
+    const description_modify_task = document.getElementById("description-modify-task") as HTMLInputElement
+    description_modify_task.value = task[0].description;
+
+    const list_id_modify_task = document.getElementById("list-id-modify-task") as HTMLInputElement
+    list_id_modify_task.value = listElement.id.split("-")[1];
+
     const modifyTaskModal = document.getElementById("modify-task-modal");
     document.getElementById("blur")?.classList.remove("hidden");
     document.getElementById("name-modify-task")?.focus();
@@ -590,10 +646,10 @@ function addNewTask(listElement, taskName, taskId) {
   deleteTaskBtn.addEventListener("click", async () => {
     if (
       confirm(
-        i18next.getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase(), type: i18next.getTranslation("task") }),
+        await getTranslationWithVar("Are_Sure", { title: taskName.toUpperCase(), type: await getTranslation("task") }),
       ) == true
     ) {
-      await ipcRenderer.invoke("delete-task", taskId);
+      await window.ipc.deleteTask(taskId)
       newTask.remove();
     }
   });
@@ -601,19 +657,15 @@ function addNewTask(listElement, taskName, taskId) {
   newTask.appendChild(modifyTaskBtn);
   newTask.appendChild(deleteTaskBtn);
 
-  newTask.addEventListener("click", async function (event) {
+  newTask.addEventListener("click", async function (_event) {
     setTimeout(async () => {
         if (
           document.getElementById("modify-task-modal")?.classList.contains("hidden")
         ) {
           const descriptionModal = document.getElementById("description-modal");
-          const descriptionTextModalElement = document.getElementById(
-            "description-text-modal",
-          );
-          const descriptionTitleModalElement = document.getElementById(
-            "description-title-modal",
-          );
-          const task = await ipcRenderer.invoke("get-tasks-withId", taskId);
+          const descriptionTextModalElement = document.getElementById("description-text-modal") as HTMLInputElement;
+          const descriptionTitleModalElement = document.getElementById("description-title-modal") as HTMLInputElement;
+          const task = await window.ipc.getTask(taskId)
 
           descriptionTextModalElement.innerText = task[0].description;
           descriptionTitleModalElement.innerText = task[0].name;
@@ -626,10 +678,6 @@ function addNewTask(listElement, taskName, taskId) {
   taskContainer.appendChild(newTask);
 }
 
-async function go_config_window() {
-  const list = await ipcRenderer.invoke("config-window");
-}
-
-function getElementById(arg0: string) {
-    throw new Error("Function not implemented.");
+export async function go_config_window() {
+  await window.ipc.configWindow()
 }

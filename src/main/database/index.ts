@@ -2,12 +2,14 @@
 import path from "node:path"
 import { app } from "electron"
 // import Database from 'libsql';
-import { pathExistsSync, createFileSync, mkdirSync, readJSONSync, writeFileSync } from "fs-extra"
+import pkg from 'fs-extra';
+const { pathExistsSync, mkdirSync, writeFileSync, readJSONSync } = pkg;
+// import { pathExistsSync, mkdirSync, readJSONSync, writeFileSync } from "fs-extra"
 
-import { DatabaseType, Boards, BoardsUpdate, NewBoards, Collection, CollectionUpdate, NewCollection, Options, OptionsUpdate, NewOptions, Tasks, TaskUpdate, NewTask } from './types.ts' // this is the Database interface we defined earlier
+import { DatabaseType, Boards, Collection, Options, Tasks } from './types' // this is the Database interface we defined earlier
 import DatabaseSqlite from 'better-sqlite3'
 import { Kysely, SqliteDialect } from 'kysely'
-import { migrate } from "./migrations.ts"
+import { migrate } from "./migrations"
 
 type DataSourceJson = {
     path: string
@@ -31,7 +33,6 @@ if(!pathExistsSync(dataSourcePath)) {
 const dataSource = readJSONSync(dataSourcePath) as DataSourceJson
 let databaseURL: string;
 if (dataSource?.path !== '') {
-  console.log("aaa")
     databaseURL = path.join(dataSource?.path , "local.db")
 } else {
     databaseURL = path.join(appBasePath, "local.db")
@@ -41,9 +42,6 @@ const dbDirectory = path.dirname(databaseURL);
 if (!pathExistsSync(dbDirectory)) {
   mkdirSync(dbDirectory, { recursive: true });
 }
-
-console.log("Database URL:", databaseURL);
-console.log("App Base Path:", appBasePath);
 
 // const dialect = new SqliteDialect({
 //     database: new Database(databaseURL),
@@ -66,9 +64,9 @@ export const addOption = async (option: Options) => {
 
 export const getOption = async (key: string) => {
   return await db.selectFrom('options')
-    .where('key', '=', key)
     .selectAll()
-    .execute()
+    .where('key', '=', key)
+    .executeTakeFirst()
     // const request = db.prepare('SELECT * FROM options WHERE key = ?')
     // return request.get(key)
 }
@@ -107,7 +105,7 @@ export const getPreferredWidthResolution = async () => {
 
 export const setPreferredWidthResolution = async (newPreferredWidthResolution: number ) => {
   const id = await getOption("preferredWidthResolution")
-    return await setOption({ id: id[0].id, key: "preferredWidthResolution", value: newPreferredWidthResolution.toString() })
+    return await setOption({ id: id[0], key: "preferredWidthResolution", value: newPreferredWidthResolution.toString() })
 }
 
 export const getPreferredHeightResolution = async () => {
@@ -116,7 +114,7 @@ export const getPreferredHeightResolution = async () => {
 
 export const setPreferredHeightResolution = async (newPreferredHeightResolution: number ) => {
   const id = await getOption("preferredHeight")
-    return await setOption({ id: id[0], key: "preferredHeightResolution", value: newPreferredHeightResolution.toString() })
+    return await setOption({ id: id, key: "preferredHeightResolution", value: newPreferredHeightResolution.toString() })
 }
 
 export const getBlur = async () => {
@@ -177,8 +175,8 @@ export const fetchOneCollection = async (id: number) => {
     //     .where(eq(schema.collectionsTable.id, id))[0]
 }
 
-export const fetchAllCollection = async () => {
-  return await db.selectFrom('collections').selectAll().execute()
+export const fetchAllCollection = async (boardId: number) => {
+  return await db.selectFrom('collections').where("boardsId", "=", boardId.toString()).selectAll().execute()
     // return await db.select()
     //     .from(schema.collectionsTable)
     //     .where(eq(schema.collectionsTable.boardId, boardId))
@@ -211,7 +209,7 @@ export const fetchOneTask = async (id: number) => {
 }
 
 export const fetchAllTasks = async (listId: number) => {
-  return await db.selectFrom('tasks').selectAll().execute()
+  return await db.selectFrom('tasks').where('collectionId', '=', listId.toString()) .selectAll().execute()
     // return await db.select()
     //     .from(schema.tasksTable)
     //     .where(eq(schema.tasksTable.collectionId, listId))
@@ -236,7 +234,7 @@ export const deleteTask = async (taskId: number) => {
 
 // Update Task Position
 
-export const updatePosition = async (taskId: number, newCollectionId: number, newPosition: number) => {
+export const updateTaskPosition = async (taskId: number, newCollectionId: number, newPosition: number) => {
   return await db.updateTable('tasks')
     .set({ id: taskId, collectionId: newCollectionId.toString(), order: newPosition.toString() })
     .where('id', '=', taskId)

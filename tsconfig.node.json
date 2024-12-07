@@ -1,26 +1,8 @@
 {
+    "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+    "include": ["electron.vite.config.*", "src/main/**/*", "src/preload/**/*", "src/renderer/src/lib/i18n.ts"],
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "moduleDetection": "force",
-        "moduleResolution": "Bundler",
-        "lib": ["ESNext"],
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "isolatedModules": true,
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
-        "composite": true,
-        "strict": true,
-        "noUnusedParameters": true,
-        "noUnusedLocals": true,
-        "noEmit": true,
-        "noEmitOnError": true,
-        "forceConsistentCasingInFileNames": true,
-        "noFallthroughCasesInSwitch": true
-    },
-    "include": [
-        "./tailwind.config.ts",
-        "./drizzle.config.ts"
-    ]
-}
+      "composite": true,
+      "types": ["electron-vite/node"]
+    }
+  }

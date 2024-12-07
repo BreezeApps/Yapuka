@@ -20,7 +20,7 @@
   "Modify_the_List": "Modifier la liste",
   "Add_a_Task": "Ajouter une tâche",
   "Delete_list": "Supprimer la liste",
-  "app_config": "Paramètres",
+  "app_config": "Réglages",
   "db_enable": "Activer la base de données Mysql",
   "db_host": "Hôte de la base de données",
   "db_port": "Port de la base de données",

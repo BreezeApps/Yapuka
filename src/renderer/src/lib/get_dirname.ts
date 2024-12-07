@@ -5,4 +5,4 @@ function getDirname(importMetaUrl) {
   const filename = fileURLToPath(importMetaUrl);
   return dirname(filename);
 }
-const __dirname = getDirname(import.meta.url);
+export const __dirname = getDirname(import.meta.url);
