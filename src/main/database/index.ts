@@ -138,7 +138,7 @@ export const setTheme = async (theme: number ) => {
 // Board
 
 export const fetchOneBoard = async (id: number) => {
-  return await db.selectFrom('boards').where('id', '=', id).executeTakeFirst()
+  return await db.selectFrom('boards').selectAll().where('id', '=', id).executeTakeFirst()
     // const request = db.prepare(`SELECT * FROM boards WHERE id = ?`)
     // return request.get(id)
 }

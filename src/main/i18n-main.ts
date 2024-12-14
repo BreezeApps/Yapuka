@@ -7,13 +7,13 @@ export const initializeI18n = () => {
   i18n
     .use(Backend)
     .init({
-      lng: 'en', // Langue par défaut
-      fallbackLng: 'en',
+      lng: 'fr', // Langue par défaut
+      fallbackLng: 'fr',
       debug: false,
       backend: {
         // Chemin absolu pour charger les fichiers de traduction
         // loadPath: path.join(app.getAppPath(), 'locales/{{lng}}.json'),
-        loadPath: './locales/{{lng}}.json',
+        loadPath: './src/main/locales/{{lng}}.json',
       },
       interpolation: {
         escapeValue: false,

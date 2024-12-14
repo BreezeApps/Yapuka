@@ -2,10 +2,11 @@ import dotenv from "dotenv"
 dotenv.config()
 
 import path from "node:path"
-import { app, BrowserWindow, ipcMain } from "electron"
+import { app, BrowserWindow } from "electron"
 import { getPreferredPositionX, getPreferredPositionY, getPreferredWidthResolution, getPreferredHeightResolution, setPreferredWidthResolution, setPreferredHeightResolution } from "./database"
 import { setupAutoUpdater } from "./updater"
 import { initializeI18n } from "./i18n-main"
+import "./ipc"
 
 let mainWindow: BrowserWindow | undefined
 

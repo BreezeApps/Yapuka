@@ -1,6 +1,15 @@
 // import { ipcRenderer } from "electron";
 import { getTranslation, getTranslationWithVar, updateContent } from "./i18n";
 import Sortable from "sortablejs";
+update(
+
+)
+function update() {
+  updateContent()
+  setTimeout(() => {
+    update()
+  }, 500);
+}
 
 // ipcRenderer.on('inject-code', (_event, code) => {
 //   try {
@@ -144,13 +153,14 @@ window.onload = async () => {
   await checkUpdate()
   const tabs = await window.ipc.getTabs()
   if (getURLParameter("tab") === null) {
-    document.body.id = tabs[0].id.toString();
+    document.body.id = await tabs[0].id.toString();
+    console.log(await tabs[0].id.toString())
   } else {
     const verif_tab = await window.ipc.getTab(await getURLParameter("tab"))
-    if (verif_tab[0] === null) {
-      document.body.id = tabs[0].id.toString();
+    if (verif_tab !== null) {
+      document.body.id = await tabs[0].id.toString();
     } else {
-      document.body.id = getURLParameter("tab")?.toString()!;
+      document.body.id = await getURLParameter("tab");
     }
   }
   let list_tabs = document.createElement("select");
@@ -178,21 +188,21 @@ window.onload = async () => {
     list_tabs.appendChild(list_tab);
   });
   tabsElement?.appendChild(list_tabs)
-  const lists = window.ipc.getLists(document.body.id)
-  const blur = window.ipc.getBlur();
-  if (blur[0].value === "1") {
+  const lists = await window.ipc.getLists(document.body.id)
+  const blur = await window.ipc.getBlur();
+  if (blur.value === "1") {
     document.getElementById("blur")?.classList.add("backdrop-blur-md");
   } else {
     document.getElementById("blur")?.classList.add("backdrop-blur-none");
   }
   lists.forEach(async (list) => {
     const listElement = addNewList(list.name, list.color, list.id);
-    const tasks = window.ipc.getTasks(list.id.toString());
+    const tasks = await window.ipc.getTasks(list.id.toString());
     tasks.forEach((task) => {
       addNewTask(listElement, task.name, task.id);
     });
   });
-  let theme = window.ipc.getTheme().value;
+  let theme = await window.ipc.getTheme().value;
   localStorage.setItem("theme", theme);
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
@@ -220,7 +230,7 @@ async function getURLParameter(sParam) {
   for (let i = 0; i < sURLVariables.length; i++) {
     const sParameterName = sURLVariables[i].split("=");
     if (sParameterName[0] === sParam) {
-      return decodeURIComponent(sParameterName[1] || "");
+      return await decodeURIComponent(sParameterName[1] || "");
     }
   }
   return "null";
