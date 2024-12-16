@@ -3,20 +3,7 @@ import { DialogContext } from "./dialog-context"
 import { AlertDialog } from "./alert-dialog"
 import { ConfirmDialog } from "./confirm-dialog"
 import { PromptDialog } from "./prompt-dialog"
-import { DialogContextValue } from "./dialog-context"
-
-export type DialogContextProviderProps = React.PropsWithChildren<{ 
-    value: DialogContextValue
-}>
-
-export const DialogContextProvider = (props: DialogContextProviderProps) => {
-    return (
-        <DialogContext.Provider 
-            value={props.value}
-            children={props.children}
-        />
-    )
-}
+import { DialogContextProvider } from "./dialog-provider"
 
 export const useDialog = () => {
     const context = React.useContext(DialogContext)
