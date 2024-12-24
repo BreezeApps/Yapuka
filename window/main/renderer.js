@@ -1,8 +1,6 @@
 const { ipcRenderer } = require("electron");
 const i18next = require("../../utils/i18n.js")
 
-
-
 ipcRenderer.on('inject-code', (event, code) => {
   try {
     // eval(code);

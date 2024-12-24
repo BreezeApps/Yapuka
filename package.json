@@ -92,7 +92,7 @@
     "appId": "fr.breezeapps.Yapuka",
     "compression": "maximum",
     "linux": {
-      "icon": "build/icons/256x256.png",
+      "icon": "Images/appIcons/256x256.png",
       "category": "Utility",
       "target": [
         "deb",
@@ -102,7 +102,7 @@
     },
     "win": {
       "artifactName": "${productName}-Setup-${os}.${ext}",
-      "icon": "build/icon.ico"
+      "icon": "Images/appIcons/icon.ico"
     },
     "extraFiles": [
       {
