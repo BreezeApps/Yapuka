@@ -1,5 +1,5 @@
 {
-  "name": "Yapuka",
+  "name": "yapuka",
   "version": "1.0.0",
   "icons": [
     {
@@ -92,7 +92,7 @@
     "appId": "fr.breezeapps.Yapuka",
     "compression": "maximum",
     "linux": {
-      "icon": "build/icons/64x64.png",
+      "icon": "build/icons/256x256.png",
       "category": "Utility",
       "target": [
         "deb",
