@@ -5,7 +5,8 @@ const i18next = require("../../utils/i18n.js")
 
 ipcRenderer.on('inject-code', (event, code) => {
   try {
-    eval(code);
+    // eval(code);
+    return
   } catch (error) {
     console.error("Erreur lors de l'injection de code du plugin :", error);
   }
@@ -460,7 +461,7 @@ function addNewList(name, color, id) {
     "relative flex flex-col rounded-lg bg-gray-300 shadow-sm border border-slate-200 min-w-[240px] gap-1 p-1.5 list float-left inline m-3";
 
     const printListIcon = document.createElement("img")
-    printListIcon.setAttribute("src", "../../build/img/icons/print-icon.svg")
+    printListIcon.setAttribute("src", "../../Images/Icones/print-icon.svg")
     printListIcon.classList.add("h-6");
   
     const printListBtn = document.createElement("button");
@@ -472,7 +473,7 @@ function addNewList(name, color, id) {
     });
 
   const modifyListIcon = document.createElement("img")
-  modifyListIcon.src = "../../build/img/icons/modify.svg"
+  modifyListIcon.src = "../../Images/Icones/modify.svg"
   modifyListIcon.classList.add("w-6", "h-6")
 
   const modifyListBtn = document.createElement("button");
@@ -585,7 +586,7 @@ function addNewTask(listElement, taskName, taskId) {
   newTask.innerText = taskName;
 
   const modifyTaskIcon = document.createElement("img")
-  modifyTaskIcon.src = "../../build/img/icons/modify.svg"
+  modifyTaskIcon.src = "../../Images/Icones/modify.svg"
   modifyTaskIcon.classList.add("w-6", "h-6")
 
   const modifyTaskBtn = document.createElement("button");
@@ -610,7 +611,7 @@ function addNewTask(listElement, taskName, taskId) {
   });
 
   const deleteTaskIcon = document.createElement("img")
-  deleteTaskIcon.src = "../../build/img/icons/delete.svg"
+  deleteTaskIcon.src = "../../Images/Icones/delete.svg"
   deleteTaskIcon.classList.add("w-6", "h-6")
 
   const deleteTaskBtn = document.createElement("button");

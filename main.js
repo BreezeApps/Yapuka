@@ -86,7 +86,7 @@ async function createWindow() {
     height: parseInt(saved_height[0].value) || defaultHeight,
     x: parseInt(saved_x[0].value),
     y: parseInt(saved_y[0].value),
-    icon: path.join(__dirname, "build/icons/64x64.png"),
+    icon: path.join(__dirname, "build/icons/256x256.png"),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "utils", "preload.js"),
@@ -169,6 +169,7 @@ async function createWindow() {
   win.webContents.on("did-finish-load", () => {
     loadPlugins();
   });
+  win.show()
   // win.webContents.openDevTools();
 }
 
@@ -254,7 +255,7 @@ app.on("window-all-closed", () => {
   }
 });
 
-app.once("ready-to-show", () => {
+win.webContents.on('did-finish-load',function(){
   autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
 });
@@ -266,7 +267,7 @@ autoUpdater.on("update-downloaded", () => {
 ipcMain.handle("get-plugins-list", async () => {
   try {
     const response = await axios.get(
-      "https://raw.githubusercontent.com/Marvideo2009/Yapuka/refs/heads/master/plugins.json",
+      "https://raw.githubusercontent.com/BreezeApps/Yapuka/refs/heads/master/plugins.json",
     );
     return response.data;
   } catch (error) {
