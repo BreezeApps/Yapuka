@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../../style.css" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+    />
   </head>
   <body class="m-0">
     <div id="notification" class="hidden">
@@ -64,7 +68,14 @@
        Class="hover:bg-indigo-200"
        type="button"
        ><img src="../../Images/Icones/ajouter.png" alt="+" height="30" width="30">
-      </button>        
+      </button>
+
+      <button
+       id="add-list-btn"
+       Class="hover:bg-indigo-200"
+       type="button"
+       ><img src="../../Images/Icones/ajouter.png" alt="+" height="30" width="30">
+      </button>
       <!--Bouton Modifier
       <button
       id="modify-tab-btn"

@@ -86,7 +86,7 @@ async function createWindow() {
     height: parseInt(saved_height[0].value) || defaultHeight,
     x: parseInt(saved_x[0].value),
     y: parseInt(saved_y[0].value),
-    icon: path.join(__dirname, "build/icon.ico"),
+    icon: path.join(__dirname, "build/icons/64x64.png"),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "utils", "preload.js"),

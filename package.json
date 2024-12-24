@@ -89,9 +89,10 @@
     "tailwindcss": "^3.4.13"
   },
   "build": {
-    "appId": "fr.breezeapps.yapuka",
+    "appId": "fr.breezeapps.Yapuka",
     "compression": "maximum",
     "linux": {
+      "icon": "build/icons/64x64.png",
       "category": "Utility",
       "target": [
         "deb",
@@ -100,7 +101,8 @@
       "artifactName": "${productName}-Setup-${os}.${ext}"
     },
     "win": {
-      "artifactName": "${productName}-Setup-${os}.${ext}"
+      "artifactName": "${productName}-Setup-${os}.${ext}",
+      "icon": "build/icon.ico"
     },
     "extraFiles": [
       {
