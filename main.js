@@ -8,7 +8,7 @@ const {
   generate_list,
   generate_tab,
 } = require("./print_template/generate_file.js");
-const { startPrint } = require("./printer/index.js");
+// const { startPrint } = require("./printer/index.js");
 const AdmZip = require("adm-zip");
 const axios = require("axios");
 
@@ -165,11 +165,11 @@ async function createWindow() {
     shell.openExternal(url);
     return { action: "deny" };
   });
-  win.loadFile("window/main/index.html");
+  win.loadFile(path.join(__dirname, "window","main","index.html"));
   win.webContents.on("did-finish-load", () => {
     loadPlugins();
   });
-  win.show()
+  // win.show()
   // win.webContents.openDevTools();
 }
 
@@ -238,14 +238,22 @@ function loadPlugins() {
   });
 }
 
-app.whenReady().then(() => {
+// app.whenReady().then(() => {
+//   createWindow();
+//   app.on("activate", () => {
+//     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+//   });
+//   autoUpdater.autoDownload = false;
+//   autoUpdater.checkForUpdatesAndNotify();
+// });
+app.on('ready', () => {
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
   autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
-});
+})
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

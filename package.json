@@ -1,39 +1,39 @@
 {
-  "name": "yapuka",
+  "name": "Yapuka",
   "version": "1.0.0",
   "icons": [
     {
-      "src": "build/icons/16x16.png",
+      "src": "Images/appIcons/16x16.png",
       "type": "image/png",
       "sizes": "16x16"
     },
     {
-      "src": "build/icons/32x32.png",
+      "src": "Images/appIcons/32x32.png",
       "type": "image/png",
       "sizes": "32x32"
     },
     {
-      "src": "build/icons/64x64.png",
+      "src": "Images/appIcons/64x64.png",
       "type": "image/png",
       "sizes": "64x64"
     },
     {
-      "src": "build/icons/128x128.png",
+      "src": "Images/appIcons/128x128.png",
       "type": "image/png",
       "sizes": "128x128"
     },
     {
-      "src": "build/icons/256x256.png",
+      "src": "Images/appIcons/256x256.png",
       "type": "image/png",
       "sizes": "256x256"
     },
     {
-      "src": "build/icons/512x512.png",
+      "src": "Images/appIcons/512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "build/icons/1024x1024.png",
+      "src": "Images/appIcons/1024x1024.png",
       "type": "image/png",
       "sizes": "1024x1024"
     }
@@ -64,7 +64,7 @@
     "email": "marvideomc.pro@gmail.com",
     "url": "https://github.com/Marvideo2009"
   },
-  "license": "ISC",
+  "license": "Creative Commons Attribution Non Commercial 4.0 International",
   "dependencies": {
     "adm-zip": "^0.5.16",
     "axios": "^1.7.9",
@@ -91,6 +91,12 @@
   "build": {
     "appId": "fr.breezeapps.Yapuka",
     "compression": "maximum",
+    "files": [
+      "main.js",
+      "window/**/*",
+      "utils/**/*",
+      "print_template/*"
+    ],
     "linux": {
       "icon": "Images/appIcons/256x256.png",
       "category": "Utility",
@@ -113,6 +119,23 @@
         ]
       }
     ],
+    "extraResources": [
+      {
+        "from": "Images",
+        "to": "app/Images",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "plugins",
+        "to": "app/plugins",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "asar": false,
     "publish": [
       {
         "provider": "github",
