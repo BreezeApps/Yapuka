@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 function get_link() {
-  const file = JSON.parse(fs.readFileSync("Yapuka_Data/db.json", 'utf8'))
+  const file = JSON.parse(fs.readFileSync(path.join(__dirname, "Yapuka_Data", "db.json"), 'utf8'))
   if (file.link === "Yapuka_Data") {
     file.link = path.join(__dirname, "Yapuka_Data")
   }
@@ -13,18 +13,18 @@ function get_link() {
 
 // Chemin du fichier de base de données
 // const dbPath = path.resolve(__dirname, 'tasks.db');
-if (!fs.existsSync("Yapuka_Data/db.json")) {
-  if(!fs.existsSync("Yapuka_Data")) {
-    fs.mkdirSync("Yapuka_Data")
+if (!fs.existsSync(path.join(__dirname, "Yapuka_Data", "db.json"))) {
+  if(!fs.existsSync(path.join(__dirname, "Yapuka_Data"))) {
+    fs.mkdirSync(path.join(__dirname, "Yapuka_Data"))
   }
-  fs.writeFileSync("Yapuka_Data/db.json", JSON.stringify({ link: "Yapuka_Data" }))
+  fs.writeFileSync(path.join(__dirname, "Yapuka_Data", "db.json"), JSON.stringify({ link: "Yapuka_Data" }))
 }
 const file = get_link()
 if (!fs.existsSync(path.join(file, "Database.db"))) {
   try {
     fs.mkdirSync(file)
   } catch (error) {
-    file.path = "Database.db"
+    file_path = "Database.db"
   }
 }
 const dbPath = path.join(file, "Database.db");

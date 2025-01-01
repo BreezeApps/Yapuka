@@ -27,9 +27,14 @@ async function load() {
   new i18next()
   i18next.init()
   var options = "<option value='system' id='options-system-lang' data-i18n='system_theme'></option>"
-  const languages = i18next.getLanguages()
+  const languages = await i18next.getLanguages()
+  const selectedLang = await i18next.getCurrentLanguage()
   languages.forEach(element => {
-    options += "<option value='" + element.short + "' id='options-" + element.short + "' >";
+    if (element.short === selectedLang) {
+      options += "<option value='" + element.short + "' id='options-" + element.short + "' selected >";
+    } else {
+      options += "<option value='" + element.short + "' id='options-" + element.short + "' >";
+    }
     options += element.full;
     options += "</option>";
   });

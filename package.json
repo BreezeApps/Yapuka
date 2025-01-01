@@ -110,15 +110,6 @@
       "artifactName": "${productName}-Setup-${os}.${ext}",
       "icon": "Images/appIcons/icon.ico"
     },
-    "extraFiles": [
-      {
-        "from": "Yapuka_Data",
-        "to": "Yapuka_Data",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
     "extraResources": [
       {
         "from": "Images",

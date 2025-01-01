@@ -503,7 +503,7 @@ function addNewList(name, color, id) {
         i18next.getTranslationWithVar("Are_Sure", { title: name.toUpperCase(), type: i18next.getTranslation("list") }),
       ) == true
     ) {
-      const tasks = await ipcRenderer.invoke("get-task", id)
+      const tasks = await ipcRenderer.invoke("get-tasks", id)
       tasks.forEach(async task => {
         await ipcRenderer.invoke("delete-task", task.id)
       })
