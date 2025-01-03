@@ -6,11 +6,13 @@ const { make_backup, get_latest_backup, get_link } = require("../../utils/databa
 
 document.getElementById('data_link').value = get_link()
 
-document.getElementById('DB_file').addEventListener('click', (e) => {
+document.getElementById('DB_file').addEventListener('click', async (e) => {
   e.preventDefault
-  window.postMessage({
-    type: 'select-dirs'
-  })
+  await ipcRenderer.invoke("select-dirs");
+  // window.postMessage({
+  //   type: 'select-dirs'
+  // })
+  console.log("clicked")
 })
 
 document.getElementById("backup-button").addEventListener("click", (e) => {

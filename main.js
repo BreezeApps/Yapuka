@@ -662,13 +662,29 @@ ipcMain.handle("config-window", (event) => {
     icon: path.join(__dirname, "build/icon.ico"),
     autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      // preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
       contextIsolation: false,
     },
   });
-  ipcMain.on("select-dirs", async (event, arg) => {
+  win2.on("closed", function () {
+    win2 = null;
+    if (reload === true) {
+      win.webContents.reload();
+    }
+  });
+  win2.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith("file://")) {
+      return { action: "allow" };
+    }
+    // open url in a browser and prevent default
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+
+  ipcMain.handle("select-dirs", async (event, arg) => {
+    console.log("select-dirs");
     const result = await dialog.showOpenDialog(win2, {
       properties: ["openDirectory"],
     });
@@ -691,20 +707,7 @@ ipcMain.handle("config-window", (event) => {
       app.exit();
     }
   });
-  win2.on("closed", function () {
-    win2 = null;
-    if (reload === true) {
-      win.webContents.reload();
-    }
-  });
-  win2.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("file://")) {
-      return { action: "allow" };
-    }
-    // open url in a browser and prevent default
-    shell.openExternal(url);
-    return { action: "deny" };
-  });
+  
   win2.loadFile("window/config/config.html");
 });
 
@@ -713,7 +716,7 @@ ipcMain.handle("plugin-window", (event) => {
     width: 600,
     height: 400,
     webPreferences: {
-      preload: path.join(__dirname, "utils", "preload.js"),
+      // preload: path.join(__dirname, "utils", "preload.js"),
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
       contextIsolation: false,
