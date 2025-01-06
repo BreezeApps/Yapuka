@@ -86,7 +86,7 @@ async function createWindow() {
     height: parseInt(saved_height[0].value) || defaultHeight,
     x: parseInt(saved_x[0].value),
     y: parseInt(saved_y[0].value),
-    icon: path.join(__dirname, "Images" , "appIcons", "256x256.png"),
+    icon: path.join(__dirname, "Images", "appIcons", "256x256.png"),
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "utils", "preload.js"),
@@ -165,7 +165,7 @@ async function createWindow() {
     shell.openExternal(url);
     return { action: "deny" };
   });
-  win.loadFile(path.join(__dirname, "window","main","index.html"));
+  win.loadFile(path.join(__dirname, "window", "main", "index.html"));
   win.webContents.on("did-finish-load", () => {
     loadPlugins();
   });
@@ -246,14 +246,14 @@ function loadPlugins() {
 //   autoUpdater.autoDownload = false;
 //   autoUpdater.checkForUpdatesAndNotify();
 // });
-app.on('ready', () => {
+app.on("ready", () => {
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
   autoUpdater.autoDownload = false;
   autoUpdater.checkForUpdatesAndNotify();
-})
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -652,8 +652,8 @@ ipcMain.handle("printer", async (event, type, id) => {
   // startPrint({htmlString :html},undefined)
 });
 
+let win2;
 ipcMain.handle("config-window", (event) => {
-  let win2;
   win2 = new BrowserWindow({
     width: 660,
     height: 600,
@@ -669,7 +669,7 @@ ipcMain.handle("config-window", (event) => {
     },
   });
   win2.on("closed", function () {
-    win2 = null;
+    win2 = undefined;
     if (reload === true) {
       win.webContents.reload();
     }
@@ -683,8 +683,11 @@ ipcMain.handle("config-window", (event) => {
     return { action: "deny" };
   });
 
-  ipcMain.handle("select-dirs", async (event, arg) => {
-    console.log("select-dirs");
+  win2.loadFile("window/config/config.html");
+});
+
+ipcMain.handle("select-dirs", async (event, arg) => {
+  if (win2 != null) {
     const result = await dialog.showOpenDialog(win2, {
       properties: ["openDirectory"],
     });
@@ -706,9 +709,7 @@ ipcMain.handle("config-window", (event) => {
       app.relaunch();
       app.exit();
     }
-  });
-  
-  win2.loadFile("window/config/config.html");
+  }
 });
 
 ipcMain.handle("plugin-window", (event) => {
