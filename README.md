@@ -24,7 +24,7 @@ Assurez-vous d’avoir [Git](https://git-scm.com) et [Node.js](https://nodejs.or
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/Marvideo/Yapuka.git
+git clone https://github.com/BreezeApps/Yapuka.git
 
 # Aller dans le répertoire du projet
 cd Yapuka
