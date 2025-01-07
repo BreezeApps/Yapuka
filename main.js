@@ -695,12 +695,16 @@ ipcMain.handle("select-dirs", async (event, arg) => {
       return null;
     } else {
       const dir = path.join(result.filePaths[0], "Yapuka_Data");
-      fs.mkdirSync(dir);
-      fs.copyFileSync(
-        path.join(get_link(), "Database.db"),
-        path.join(dir, "Database.db"),
-        fs.constants.COPYFILE_EXCL,
-      );
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+      }
+      if (!fs.existsSync(path.join(dir, "Database.db"))) {
+        fs.copyFileSync(
+          path.join(get_link(), "Database.db"),
+          path.join(dir, "Database.db"),
+          fs.constants.COPYFILE_EXCL,
+        );
+      }
       fs.writeFileSync(
         path.join(__dirname, "utils", "Yapuka_Data", "db.json"),
         JSON.stringify({ link: dir }),
