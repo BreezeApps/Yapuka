@@ -12,12 +12,6 @@ pnpm-debug.log*
 # TypeScript build files
 *.tsbuildinfo
 
-# Tauri build output
-/src-tauri/target/
-/src-tauri/Cargo.lock
-/src-tauri/bundle/
-/src-tauri/tauri.conf.json
-
 # Rust build artifacts
 /target/
 **/*.rs.bk
