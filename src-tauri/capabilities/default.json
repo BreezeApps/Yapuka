@@ -10,6 +10,12 @@
     "opener:default",
     "sql:default",
     "sql:allow-execute",
+    "dialog:default",
+    "dialog:allow-ask",
+    "dialog:allow-message",
+    "updater:default",
+    "updater:allow-check",
+    "updater:allow-download-and-install",
     {
       "identifier": "http:default",
       "all": true,

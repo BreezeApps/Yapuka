@@ -12,7 +12,11 @@
   "plugins": {
     "sql": {
       "preload": ["sqlite:tasks.db"]
-    }
+    },
+    "updater": {
+        "endpoints": ["RAW GITHUB URL OF THE latest.json FILE OR RAW URL OF THE GITHUB GIST"],
+        "pubkey": "THE_PUBLIC_KEY_GENERATED_BY_UPDATER"
+      }
   },
   "app": {
     "windows": [
