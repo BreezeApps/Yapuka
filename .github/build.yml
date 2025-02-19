@@ -61,24 +61,24 @@ jobs:
           prerelease: false
           args: ${{ matrix.args }}
 
-update-json:
-  needs: build
-  runs-on: ubuntu-latest
+  update-json:
+    needs: build
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Generate updater JSON
-      run: |
-        node scripts/generate-updater-json.js
+      - name: Generate updater JSON
+        run: |
+          node scripts/generate-updater-json.js
 
-    - name: Commit and push updater JSON
-      run: |
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-        git add src-tauri/updater.json
-        git commit -m "Update updater.json for ${{ github.ref_name }}"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push updater JSON
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add src-tauri/updater.json
+          git commit -m "Update updater.json for ${{ github.ref_name }}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
