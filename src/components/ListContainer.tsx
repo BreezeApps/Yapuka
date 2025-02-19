@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { ModalForm } from "./Modal/ModalForm";
 
 export function ListContainer({ boardId, reloadList, setReloadList, currentBoard }: { boardId: number, reloadList: boolean, setReloadList: (reload: boolean) => void , currentBoard: number}) {
+  let tt = currentBoard;
+  tt = tt
   const { t } = useTranslation();
   const [board, setBoard] = useState<{ id: number; name: string }>({
     id: 0,
@@ -14,7 +16,7 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
     { id: number;
       board_id: number;
       name: string;
-      color: number | null; }[]
+      color: string | null; }[]
   >([]);
   const [tasks, setTasks] = useState<
     {
@@ -26,7 +28,6 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
       due_date: string | null;
     }[]
   >([]);
-  const [test, setTest] = useState<string>("");
 
   //const webService = new WebService("http://192.168.1.38/yapuka/api/")
 
@@ -49,10 +50,6 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
 
         setCollections(collections);
         setTasks(allTasks);
-
-        // const tt = await webService.getAllBoards()
-
-        // setTest(tt);
 
       } catch (error) {
         alert("Erreru : " + error)
@@ -120,7 +117,6 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
     <div className="p-6">
       <h1 className="text-2xl font-bold">{board.name} {/*<img src="/icons/refresh.svg" className="h-6 w-6" onClick={() => setReload(true)} />*/}</h1>
       <div>
-        {test}
         {collections
           .filter((collection) => collection.board_id === boardId)
           .map((collection) => (

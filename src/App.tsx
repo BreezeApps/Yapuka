@@ -8,7 +8,7 @@ import { ModalForm } from "./components/Modal/ModalForm";
 import { DatabaseService } from "./lib/dbClass";
 import { setupOptions } from "./lib/setupOptions";
 import ErrorBoundary from "./components/ErrorBondary";
-import { emit } from '@tauri-apps/api/event';
+import { checkForAppUpdates } from "./lib/Update";
 
 function App() {
   const dbService = new DatabaseService()
@@ -51,6 +51,7 @@ function App() {
 
   useEffect(() => {
     const initBoards = async () => {
+      await checkForAppUpdates(false)
       setAllBoards(await dbService.getAllBoards())
     }
     initBoards()

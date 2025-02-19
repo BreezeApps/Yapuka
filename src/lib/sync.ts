@@ -1,4 +1,4 @@
-import {DatabaseService} from './dbClass';
+/* import {DatabaseService} from './dbClass';
 import { WebService } from './webClass';
 import { emit, listen } from '@tauri-apps/api/event';
 
@@ -76,4 +76,4 @@ listen('manual_sync', () => {
 
 syncAll();
 
-export { syncAll, syncBoards, syncCollections, syncTasks };
+export { syncAll, syncBoards, syncCollections, syncTasks }; */

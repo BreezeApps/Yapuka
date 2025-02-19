@@ -14,8 +14,8 @@
       "preload": ["sqlite:tasks.db"]
     },
     "updater": {
-        "endpoints": ["RAW GITHUB URL OF THE latest.json FILE OR RAW URL OF THE GITHUB GIST"],
-        "pubkey": "THE_PUBLIC_KEY_GENERATED_BY_UPDATER"
+        "endpoints": ["https://github.com/BreezeApps/Yapuka/raw/refs/heads/master/latest.json"],
+        "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ1QkFCNDI4OUE2QTYyNjMKUldSalltcWFLTFM2MVhrTTR4ZkZZZFhZWWVlMVN6b2J0dUw0b05IS3NhSVlHbHpTbER4dWFpaUsK"
       }
   },
   "app": {
