@@ -1,8 +1,3 @@
-// import { useState } from "react";
-// import { invoke } from "@tauri-apps/api/core";
-// import {
-//   go_config_window,
-// } from "./lib/function"
 import { useTranslation } from "react-i18next";
 
 import "./App.css";
@@ -10,15 +5,18 @@ import { ConfigPage } from "./components/ConfigPage";
 import { useEffect, useState } from "react";
 import { ListContainer } from "./components/ListContainer";
 import { ModalForm } from "./components/Modal/ModalForm";
-import { dbService } from "./lib/dbClass";
+import { DatabaseService } from "./lib/dbClass";
+import { setupOptions } from "./lib/setupOptions";
+import ErrorBoundary from "./components/ErrorBondary";
+import { emit } from '@tauri-apps/api/event';
 
 function App() {
+  const dbService = new DatabaseService()
   const { t } = useTranslation();
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [currentBoard, setCurrentBoard] = useState<number>(1);
   const [reloadList, setReloadList] = useState<boolean>(false);
   const [firstReload, setFirstReload] = useState<boolean>(true);
-  const [blur, setBlur] = useState<boolean>(true);
   const [allBoards, setAllBoards] = useState<{ id: number, name: string }[]>([{ id: 0, name: "test"}]);
 
   document.documentElement.classList.toggle(
@@ -69,13 +67,16 @@ function App() {
   if (firstReload === true) {
     setTimeout(() => {
       setReloadList(true);
+      setupOptions()
       setFirstReload(false);
     }, 500);
   }
 
   return (
     <div className="w-full h-full bg-gray-100 dark:bg-gray-900">
-      <ConfigPage show={showConfig} setShow={setShowConfig} blur={blur} setBlur={setBlur} />
+      <ErrorBoundary>
+        <ConfigPage show={showConfig} setShow={setShowConfig} />
+      </ErrorBoundary>
       <h1 className="text-gray-900 dark:text-white">{t("Language_Name")}</h1>
       <div
         id="notification"
@@ -117,7 +118,7 @@ function App() {
         <select
           onChange={(e) => {setCurrentBoard(parseInt(e.target.value)); setReloadList(true)}}
           defaultValue={currentBoard}
-          className="mt-1 block rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer dark:text-white"
         >
           {allBoards.map((board) => (
             <option key={board.id} value={board.id}>
@@ -125,8 +126,8 @@ function App() {
             </option>
           ))}
         </select>
-        <ModalForm blur={blur} type="board" onCreate={handleCreateBoard} />
-        <ModalForm blur={blur} type="collection" onCreate={handleCreateCollection} />
+        <ModalForm type="board" onCreate={handleCreateBoard} />
+        <ModalForm type="collection" onCreate={handleCreateCollection} />
         {/* <button
           id="modify-tab-btn"
           className="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
@@ -162,10 +163,10 @@ function App() {
         className="mt-16 w-full bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white"
       >
         <ListContainer
-          blur={blur}
           boardId={currentBoard}
           reloadList={reloadList}
           setReloadList={setReloadList}
+          currentBoard={currentBoard}
         />
       </div>
       <img

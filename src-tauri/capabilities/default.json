@@ -9,6 +9,12 @@
     "core:default",
     "opener:default",
     "sql:default",
-    "sql:allow-execute"
+    "sql:allow-execute",
+    {
+      "identifier": "http:default",
+      "all": true,
+      "allow": [{ "url": "http://*" }, { "url": "https://" }],
+      "deny": [{ "url": "https://private.tauri.app" }]
+    }
   ]
 }

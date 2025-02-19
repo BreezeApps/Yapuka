@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS boards (
 CREATE TABLE IF NOT EXISTS collections (
     id INTEGER PRIMARY KEY,
     board_id INTEGER,
-    name TEXT NOT NULL,
+    names TEXT NOT NULL,
     color TEXT,
     FOREIGN KEY (board_id) REFERENCES boards(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -22,9 +22,19 @@ CREATE TABLE IF NOT EXISTS collections (
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY,
     collection_id INTEGER,
-    "order" INTEGER NOT NULL,
+    task_order INTEGER NOT NULL,
     name TEXT,
-    description TEXT,
+    descriptions TEXT,
     due_date TEXT,
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS changelog (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    action TEXT NOT NULL,
+    table_name TEXT NOT NULL, 
+    row_id INTEGER,
+    old_data TEXT,
+    new_data TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

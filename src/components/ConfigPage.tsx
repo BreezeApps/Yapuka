@@ -1,47 +1,77 @@
 import { useTranslation } from "react-i18next";
 import { changeLanguage, getCurrentLanguage, getLanguages } from "../lib/i18n";
+import { useEffect, useState } from "react";
+import { DatabaseService } from "../lib/dbClass";
 
 type props = {
   show: boolean;
   setShow: (show: boolean) => void;
-  blur: boolean;
-  setBlur: (blur: boolean) => void;
 };
 
-export function ConfigPage({ show, setShow, blur, setBlur }: props) {
+export function ConfigPage({ show, setShow }: props) {
+  const [checkedSync, setCheckedSync] = useState(false);
+  const [urlSync, setUrlSync] = useState<string | null>("");
+  const [firstReload, setFirstReload] = useState<boolean>(true);
   const { t } = useTranslation();
   const languages = getLanguages();
+  const dbService = new DatabaseService()
 
   function changeTheme(theme: string) {
     if (theme === "none") {
       localStorage.removeItem("theme");
     } else {
-      localStorage.theme = theme;
+      localStorage.theme = theme ?? "system";
     }
   }
+
+  useEffect(() => {
+    if (!firstReload) return;
+    setFirstReload(false);
+    async function firstload() {
+      await dbService.init();
+      setCheckedSync(
+        (await dbService.getOptionByKey("syncActive")) === "true" ? true : false
+      );
+      setUrlSync(await dbService.getOptionByKey("syncUrl"));
+    }
+    firstload();
+  }, [firstReload]);
+
+  useEffect(() => {
+    async function updateOptions() {
+      await dbService.init();
+      await dbService.updateOption(
+        "syncActive",
+        checkedSync === true ? "true" : "false"
+      );
+      await dbService.updateOption("syncUrl", urlSync === null ? "" : urlSync);
+    }
+    updateOptions();
+  }, [checkedSync, urlSync]);
 
   return (
     <div
       hidden={!show}
-      className={`z-[2000] h-full w-full absolute ${
-        blur === true ? "backdrop-blur-[5px]" : "bg-black/50"
-      }`}
+      className={`z-[2000] h-full w-full absolute bg-black/50`}
     >
-      <button className={`absolute text-2xl ml-2 ${ blur === true ? "text-black" : "text-white"}`} onClick={() => setShow(false)}>
-        X
+      <button
+        className={`absolute text-2xl ml-2`}
+        onClick={() => setShow(false)}
+      >
+        <img className="h-6 dark:invert" src="/icons/fermer.svg" />
       </button>
-      <h1 className={`mb-8 text-center text-3xl font-bold ${ blur === true ? "text-black" : "text-white"}`}>
+      <h1 className={`mb-8 text-center text-3xl font-bold dark:text-white`}>
         {t("app_config")}
       </h1>
       <form
         name="config"
-        className="space-y-6 rounded-lg bg-white p-6 shadow-lg md:p-8 lg:p-10"
+        className="space-y-6 rounded-lg bg-white dark:bg-gray-900 p-6 shadow-lg md:p-8 lg:p-10"
       >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-2">
             <label
               htmlFor="theme"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-white"
             >
               {t("theme")}
             </label>
@@ -60,7 +90,7 @@ export function ConfigPage({ show, setShow, blur, setBlur }: props) {
           <div className="space-y-2">
             <label
               htmlFor="language"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-white"
             >
               {t("Language")}
             </label>
@@ -80,24 +110,48 @@ export function ConfigPage({ show, setShow, blur, setBlur }: props) {
           </div>
         </div>
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-700">
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
             {t("Feature_Toggles")}
           </h2>
+          <div className="space-y-2">
+            <label htmlFor="Test" className="block text-sm font-medium text-gray-700 dark:text-white" >Activer Sync PHP</label>
+            <input
+              type="checkbox"
+              checked={checkedSync}
+              onChange={(e) => {
+                setCheckedSync(e.target.checked);
+              }}
+              name="Test"
+              id="tt"
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label htmlFor="url" className="block text-sm font-medium text-gray-700 dark:text-white">PHP Sync URL</label>
+            <input
+              disabled={!checkedSync}
+              placeholder="https://example.com/"
+              value={urlSync === null ? "" : urlSync}
+              onChange={(e) => setUrlSync(e.target.value)}
+              type="text"
+              name="url"
+              id="url"
+              className="text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
         </div>
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-700">
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
             {t("Advanced_Settings")}
           </h2>
           <div>
             <div className="space-y-2">
-              <button
+              {/*<button
                 type="button"
                 id="plugin-button"
                 // onClick="go_plugin_window()"
                 className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
               >
                 {t("GoPlugin")}
-              </button>
+              </button>*/}
               <button
                 id="DB_file"
                 name="DB_file"
@@ -112,20 +166,6 @@ export function ConfigPage({ show, setShow, blur, setBlur }: props) {
                 id="data_link"
                 className="text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">
-                {t("Blur")}
-              </span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  id="blur"
-                  checked={blur}
-                  onChange={(e) => setBlur(e.target.checked)}
-                />
-                <span className="slider round"></span>
-              </label>
             </div>
             <div id="backup-dir" className="flex space-x-4">
               <button
@@ -142,4 +182,3 @@ export function ConfigPage({ show, setShow, blur, setBlur }: props) {
     </div>
   );
 }
-

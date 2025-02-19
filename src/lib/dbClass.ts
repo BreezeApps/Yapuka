@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 
-class DatabaseService {
+export class DatabaseService {
   private db: Database;
 
   constructor() {
@@ -59,13 +59,13 @@ class DatabaseService {
 
   /* ==================== COLLECTIONS ==================== */
   async createCollection(boardId: number, name: string, color?: string): Promise<number> {
-    await this.db.execute("INSERT INTO collections (board_id, name, color) VALUES (?, ?, ?);", [boardId, name, color ?? null]);
+    await this.db.execute("INSERT INTO collections (board_id, names, color) VALUES (?, ?, ?);", [boardId, name, color ?? null]);
     const result: { id: number }[] = await this.db.select("SELECT last_insert_rowid() AS id;");
     return result[0].id;
   }
 
-  async updateCollection(id: number, newName: string, newColor?: number): Promise<void> {
-    await this.db.execute("UPDATE collections SET name = ?, color = ? WHERE id = ?;", [newName, newColor ?? null, id]);
+  async updateCollection(id: number, newName: string, newColor?: string): Promise<void> {
+    await this.db.execute("UPDATE collections SET names = ?, color = ? WHERE id = ?;", [newName, newColor ?? null, id]);
   }
 
   async removeCollection(id: number): Promise<void> {
@@ -77,18 +77,18 @@ class DatabaseService {
     return result.length > 0 ? result[0] : null;
   }
 
-  async getAllCollections(): Promise<{ id: number; board_id: number; name: string; color: number | null }[]> {
+  async getAllCollections(): Promise<{ id: number; board_id: number; name: string; color: string | null }[]> {
     return await this.db.select("SELECT * FROM collections;");
   }
 
   async getCollectionsByBoard(boardId: number): Promise<{ id: number; name: string; color: number | null }[]> {
-    return await this.db.select("SELECT id, name, color FROM collections WHERE board_id = ?;", [boardId]);
+    return await this.db.select("SELECT * FROM collections WHERE board_id = ?;", [boardId]);
   }
 
   /* ==================== TASKS ==================== */
   async createTask(collectionId: number, order: number, name?: string, description?: string, dueDate?: string): Promise<number> {
     await this.db.execute(
-      "INSERT INTO tasks (collection_id, 'order', name, description, due_date) VALUES (?, ?, ?, ?, ?);",
+      "INSERT INTO tasks (collection_id, task_order, names, descriptions, due_date) VALUES (?, ?, ?, ?, ?);",
       [collectionId, order, name ?? null, description ?? null, dueDate ?? null]
     );
     const result: { id: number }[] = await this.db.select("SELECT last_insert_rowid() AS id;");
@@ -97,8 +97,15 @@ class DatabaseService {
 
   async updateTask(id: number, newName?: string, newDescription?: string, newDueDate?: string): Promise<void> {
     await this.db.execute(
-      "UPDATE tasks SET name = ?, description = ?, due_date = ? WHERE id = ?;",
+      "UPDATE tasks SET names = ?, descriptions = ?, due_date = ? WHERE id = ?;",
       [newName ?? null, newDescription ?? null, newDueDate ?? null, id]
+    );
+  }
+
+  async updateTaskOrder(id: number, order: string): Promise<void> {
+    await this.db.execute(
+      "UPDATE tasks SET task_order = ? WHERE id = ?;",
+      [order, id]
     );
   }
 
@@ -116,8 +123,6 @@ class DatabaseService {
   }
 
   async getTasksByCollection(collectionId: number): Promise<{ id: number; order: number; name: string | null; description: string | null; due_date: string | null }[]> {
-    return await this.db.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY 'order';", [collectionId]);
+    return await this.db.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY task_order;", [collectionId]);
   }
 }
-
-export const dbService = new DatabaseService();
