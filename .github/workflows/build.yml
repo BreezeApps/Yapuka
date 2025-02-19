@@ -93,7 +93,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git add src-tauri/updater.json
+          git add latest.json
           git commit -m "Update updater.json for ${{ github.ref_name }}"
           git push
         env:
