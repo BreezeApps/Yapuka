@@ -24,6 +24,11 @@ jobs:
             args: ''
           - platform: 'windows-latest'
             args: ''
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -33,7 +38,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          
+
       - uses: pnpm/action-setup@v4
 
       - name: install Rust stable
@@ -71,6 +76,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: install frontend dependencies
+        run: npm install
 
       - name: Generate updater JSON
         run: |
