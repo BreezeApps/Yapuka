@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DatabaseService } from "../lib/dbClass";
 import { useTranslation } from "react-i18next";
 import { ModalForm } from "./Modal/ModalForm";
+import InfoModal from "./Modal/InfoModal";
+import Sortable from 'sortablejs';
 
 export function ListContainer({ boardId, reloadList, setReloadList, currentBoard }: { boardId: number, reloadList: boolean, setReloadList: (reload: boolean) => void , currentBoard: number}) {
   let tt = currentBoard;
@@ -15,19 +17,20 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
   const [collections, setCollections] = useState<
     { id: number;
       board_id: number;
-      name: string;
+      names: string;
       color: string | null; }[]
   >([]);
   const [tasks, setTasks] = useState<
     {
       id: number;
       collection_id: number;
-      order: number;
-      name: string | null;
-      description: string | null;
+      task_order: number;
+      names: string | null;
+      descriptions: string | null;
       due_date: string | null;
     }[]
   >([]);
+  const listRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   //const webService = new WebService("http://192.168.1.38/yapuka/api/")
 
@@ -67,7 +70,8 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
   const handleCreateTask = async (name: string, description?: string, date?: string, color?: string, collection_id?: string) => {
     color = color
     if (collection_id !== undefined) {
-      const newCreateId = await dbService.createTask(parseInt(collection_id), 0, name, description, date);
+      const task_order = await dbService.getTasksByCollection(parseInt(collection_id))
+      const newCreateId = await dbService.createTask(parseInt(collection_id), task_order.length, name, description, date);
       console.log("Tache créée avec ID:", newCreateId);
       setReloadList(true)
     } else {
@@ -102,16 +106,21 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
     setReloadList(true);
   };
 
-  const handleUpdateTask = async (name: string, description?: string, date?: string, color?: string, collection_id?: string, id?: number) => {
-    color = color
-    if (collection_id !== undefined) {
-      const newCreateId = await dbService.updateTask(id === undefined ? 0 : id, name, description, date);
-      console.log("Tache créée avec ID:", newCreateId);
-      setReloadList(true)
-    } else {
-      alert("Une erreur ses produite")
-    }
-  };
+  useEffect(() => {
+    collections.forEach((_, index) => {
+      if (!listRefs.current[index]) return;
+        new Sortable(listRefs.current[index]!, {
+          group: "shared",
+          animation: 150,
+          onEnd: async (evt) => {
+            const newCollection = parseInt(evt.to.id.replace("collection-", ""));
+            const newPosition = evt.newIndex;
+            const taskId = parseInt(evt.item.id.replace("task-", ""));
+            await dbService.updateTaskOrder(taskId, newPosition === undefined ? 0 : newPosition, newCollection)
+          },
+        });
+    });
+  }, [reloadList]);
 
   return (
     <div className="p-6">
@@ -119,7 +128,7 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
       <div>
         {collections
           .filter((collection) => collection.board_id === boardId)
-          .map((collection) => (
+          .map((collection, index) => (
           <div
             key={collection.id}
             className="relative flex-col rounded-lg bg-gray-300 dark:bg-blue-950 shadow-sm border border-slate-200 dark:border-blue-700 min-w-[240px] gap-1 p-1.5 list float-left inline m-3"
@@ -130,37 +139,24 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
                 backgroundColor: collection.color !== null ? collection.color.toString() : ''
               }}
             >
-              {collection.name}
+              {collection.names}
               {/* <button className="place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
                 <img src="/icons/print-icon.svg" className="h-6" alt="" />
               </button> */}
-              {/*<button className="place-self-end inline-block ml-auto place-items-center rounded-md border border-transparent p-2.5 text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
-                <img src="/icons/modify.svg" className="w-6 h-6" alt="" />
-              </button>*/}
-              <ModalForm type="collection" onCreate={handleUpdateCollection} previousData={ { id: collection.id, name:collection.name, color:collection.color?.toString() } } />
+              <ModalForm type="collection" onCreate={handleUpdateCollection} previousData={ { id: collection.id, name:collection.names, color:collection.color?.toString() } } />
               <div className="overflow-hidden">
-                <button onClick={() => deleteList(collection.name, collection.id)} className="bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-l float-left inline">
+                <button onClick={() => deleteList(collection.names, collection.id)} className="bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-l float-left inline">
                   <img className="h-6" src="/icons/supprimer.svg" />
                 </button>
                 <ModalForm type="task" collectionId={collection.id.toString()} onCreate={handleCreateTask} />
               </div>
             </h3>
-            <div>
+            <div id={`collection-${collection.id}`} ref={(el) => (listRefs.current[index] = el)}>
               {tasks
                 .filter((task) => task.collection_id === collection.id)
+                .sort((a, b) => a.task_order - b.task_order)
                 .map((task) => (
-                  <div
-                    key={task.id}
-                    id={`task-${task.id}`}
-                    className="text-slate-800 dark:text-white flex w-full items-center rounded-md transition-all hover:bg-slate-100 dark:hover:bg-blue-600 focus:bg-slate-100 active:bg-slate-100"
-                    role="button"
-                  >
-                    {task.name}
-                    <ModalForm type="task" onCreate={handleUpdateTask} previousData={ { id: task.id, name:task.name === null ? "" : task.name, date:task.due_date === null ? "" : task.due_date, description:task.description === null ? "" : task.description } } />
-                    {/*<button className="inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
-                      <img src="/icons/modify.svg" className="w-6 h-6" alt="" />
-                    </button>*/}
-                  </div>
+                  <InfoModal task={task} reloadList={false} setReloadList={setReloadList} />
                 ))}
             </div>
           </div>
