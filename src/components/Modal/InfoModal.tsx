@@ -2,7 +2,6 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useTranslation } from "react-i18next";
 import { DatabaseService } from "../../lib/dbClass";
 import { ModalForm } from "./ModalForm";
-import { useState } from "react";
 
 interface InfoModalProps {
   task: {
@@ -18,18 +17,15 @@ interface InfoModalProps {
 }
 
 const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
-  const [openMainModal, setOpenMainModal] = useState<boolean>(false);
-  const [openSubModal, setOpenSubModal] = useState<boolean>(false);
   const { t } = useTranslation();
   const dbService = new DatabaseService();
+  let date = null
 
-  const handleOpenModal = () => {
-      setOpenMainModal(false)
-    setOpenSubModal(true)
-    setTimeout(() => {
-        setOpenMainModal(false)
-    }, 500);
+  if(task.due_date !== "") {
+    date = task.due_date !== null ? new Date(task.due_date) : null
   }
+
+  const dateText = date === null ? "Non définie" : `${date.getDay()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
 
   const handleUpdateTask = async (
     name: string,
@@ -55,12 +51,13 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
   };
   return (
     <div className="text-slate-800 dark:text-white flex w-full items-center rounded-md transition-all hover:bg-slate-100 dark:hover:bg-blue-600 focus:bg-slate-100 active:bg-slate-100">
-        <Dialog.Root open={openMainModal} onOpenChange={setOpenMainModal}>
+        <Dialog.Root>
         <Dialog.Trigger asChild>
             <div
             key={task.id}
             id={`task-${task.id}`}
             role="button"
+            className="w-full cursor-pointer"
             >
             {task.names}
             {/*<button className="inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
@@ -74,21 +71,19 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
             <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-96">
             <div className="flex justify-between items-center">
                 <Dialog.Title className="text-lg font-semibold">
-                Informations
+                {task.names ?? "Non spécifié"}
                 </Dialog.Title>
             </div>
 
             <div className="mt-4">
                 <p>
-                <strong>Nom :</strong> {task.names ?? "Non spécifié"}
-                </p>
-                <p>
                 <strong>Description :</strong>{" "}
-                {task.descriptions ?? "Aucune description"}
+                <br></br>
+                {task.descriptions === "" ? "Aucune description" : task.descriptions}
                 </p>
                 <p>
                 <strong>Date d'échéance :</strong>{" "}
-                {task.due_date ?? "Non définie"}
+                {dateText}
                 </p>
             </div>
 
@@ -100,9 +95,9 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
             </Dialog.Content>
         </Dialog.Portal>
         </Dialog.Root>
-        <div onClick={handleOpenModal} className={"inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"} >
+        {/* <div onClick={handleOpenModal} className={"inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"} >
             <img className="h-6" src={"/icons/modify.svg"} />
-          </div>
+          </div> */}
           <ModalForm
             type="task"
             onCreate={handleUpdateTask}
@@ -112,8 +107,6 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
               date: task.due_date === null ? "" : task.due_date,
               description: task.descriptions === null ? "" : task.descriptions,
             }}
-            open={openSubModal}
-            setOpen={setOpenSubModal}
           />
     </div>
   );
