@@ -50,7 +50,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
     }
   };
   return (
-    <div className="text-slate-800 dark:text-white flex w-full items-center rounded-md transition-all hover:bg-slate-100 dark:hover:bg-blue-600 focus:bg-slate-100 active:bg-slate-100">
+    <div id={`task-${task.id}`} key={task.id} className="text-slate-800 dark:text-white flex w-full items-center rounded-md transition-all hover:bg-slate-100 dark:hover:bg-blue-600 focus:bg-slate-100 active:bg-slate-100">
         <Dialog.Root>
         <Dialog.Trigger asChild>
             <div

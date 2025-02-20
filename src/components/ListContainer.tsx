@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DatabaseService } from "../lib/dbClass";
 import { useTranslation } from "react-i18next";
 import { ModalForm } from "./Modal/ModalForm";
 import InfoModal from "./Modal/InfoModal";
+import Sortable from 'sortablejs';
 
 export function ListContainer({ boardId, reloadList, setReloadList, currentBoard }: { boardId: number, reloadList: boolean, setReloadList: (reload: boolean) => void , currentBoard: number}) {
   let tt = currentBoard;
@@ -29,6 +30,7 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
       due_date: string | null;
     }[]
   >([]);
+  const listRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   //const webService = new WebService("http://192.168.1.38/yapuka/api/")
 
@@ -68,7 +70,8 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
   const handleCreateTask = async (name: string, description?: string, date?: string, color?: string, collection_id?: string) => {
     color = color
     if (collection_id !== undefined) {
-      const newCreateId = await dbService.createTask(parseInt(collection_id), 0, name, description, date);
+      const task_order = await dbService.getTasksByCollection(parseInt(collection_id))
+      const newCreateId = await dbService.createTask(parseInt(collection_id), task_order.length, name, description, date);
       console.log("Tache créée avec ID:", newCreateId);
       setReloadList(true)
     } else {
@@ -103,13 +106,29 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
     setReloadList(true);
   };
 
+  useEffect(() => {
+    collections.forEach((_, index) => {
+      if (!listRefs.current[index]) return;
+        new Sortable(listRefs.current[index]!, {
+          group: "shared",
+          animation: 150,
+          onEnd: async (evt) => {
+            const newCollection = parseInt(evt.to.id.replace("collection-", ""));
+            const newPosition = evt.newIndex;
+            const taskId = parseInt(evt.item.id.replace("task-", ""));
+            await dbService.updateTaskOrder(taskId, newPosition === undefined ? 0 : newPosition, newCollection)
+          },
+        });
+    });
+  }, [reloadList]);
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">{board.name} {/*<img src="/icons/refresh.svg" className="h-6 w-6" onClick={() => setReload(true)} />*/}</h1>
       <div>
         {collections
           .filter((collection) => collection.board_id === boardId)
-          .map((collection) => (
+          .map((collection, index) => (
           <div
             key={collection.id}
             className="relative flex-col rounded-lg bg-gray-300 dark:bg-blue-950 shadow-sm border border-slate-200 dark:border-blue-700 min-w-[240px] gap-1 p-1.5 list float-left inline m-3"
@@ -132,9 +151,10 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
                 <ModalForm type="task" collectionId={collection.id.toString()} onCreate={handleCreateTask} />
               </div>
             </h3>
-            <div>
+            <div id={`collection-${collection.id}`} ref={(el) => (listRefs.current[index] = el)}>
               {tasks
                 .filter((task) => task.collection_id === collection.id)
+                .sort((a, b) => a.task_order - b.task_order)
                 .map((task) => (
                   <InfoModal task={task} reloadList={false} setReloadList={setReloadList} />
                 ))}
