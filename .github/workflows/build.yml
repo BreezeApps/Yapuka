@@ -62,39 +62,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'App v__VERSION__'
+          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
+          includeUpdaterJson: true
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
-
-  update-json:
-    needs: publish-tauri
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      - name: install frontend dependencies
-        run: npm install
-
-      - name: Generate updater JSON
-        run: |
-          node scripts/generate-updater-json.js
-
-      - name: Commit and push updater JSON
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add latest.json
-          git commit -m "Update updater.json for ${{ github.ref_name }}"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

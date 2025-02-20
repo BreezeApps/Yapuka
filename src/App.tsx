@@ -50,8 +50,11 @@ function App() {
   };
 
   useEffect(() => {
+    checkForAppUpdates(false);
+}, []);
+
+  useEffect(() => {
     const initBoards = async () => {
-      await checkForAppUpdates(false)
       setAllBoards(await dbService.getAllBoards())
     }
     initBoards()
