@@ -84,18 +84,18 @@ Les builds seront créés dans le dossier `dist`.
 
 ## 🖼️ Aperçu
 
-<img src="https://breezeapps.github.io/Yapuka/assets/screenshots.png" width="1000"/>
+<img src="https://github.com/BreezeApps/Yapuka/blob/site/assets/screenshots.png?raw=true" width="1000"/>
 
 ## 🔗 Liens utiles
 
 - **Site web :** [https://yapuka.marvideo.fr](https://yapuka.marvideo.fr)
-- **Documentation :** [https://github.com/Marvideo2009/Yapuka/wiki](https://github.com/Marvideo2009/Yapuka/wiki)
-- **Communauté :** [https://github.com/Marvideo2009/Yapuka/discussions](https://github.com/Marvideo2009/Yapuka/discussions)
+- **Documentation :** [https://github.com/BreezeApps/Yapuka/wiki](https://github.com/BreezeApps/Yapuka/wiki)
+- **Communauté :** [https://github.com/BreezeApps/Yapuka/discussions](https://github.com/BreezeApps/Yapuka/discussions)
 
 ## 🛠️ Technologies utilisées
 
-![JavaScript](https://img.shields.io/badge/JavaScript-%23F7DF1E.svg?style=flat-square&logo=javascript&logoColor=black)
-![Electron](https://img.shields.io/badge/Electron-47848F?style=flat-square&logo=electron&logoColor=white)
+![TypeScriptTauri](https://img.shields.io/badge/TypeScript-white?style=flat-square&logo=typescript&logoColor=black)
+![Tauri](https://img.shields.io/badge/Tauri-47848F?style=flat-square&logo=tauri&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-%23E34F26.svg?style=flat-square&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-%231572B6.svg?style=flat-square&logo=css3&logoColor=white)
 
