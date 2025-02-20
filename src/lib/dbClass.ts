@@ -72,16 +72,16 @@ export class DatabaseService {
     await this.db.execute("DELETE FROM collections WHERE id = ?;", [id]);
   }
 
-  async getCollectionById(id: number): Promise<{ id: number; board_id: number; name: string; color: number | null } | null> {
-    const result: { id: number; board_id: number; name: string; color: number | null }[] = await this.db.select("SELECT * FROM collections WHERE id = ?;", [id]);
+  async getCollectionById(id: number): Promise<{ id: number; board_id: number; names: string; color: number | null } | null> {
+    const result: { id: number; board_id: number; names: string; color: number | null }[] = await this.db.select("SELECT * FROM collections WHERE id = ?;", [id]);
     return result.length > 0 ? result[0] : null;
   }
 
-  async getAllCollections(): Promise<{ id: number; board_id: number; name: string; color: string | null }[]> {
+  async getAllCollections(): Promise<{ id: number; board_id: number; names: string; color: string | null }[]> {
     return await this.db.select("SELECT * FROM collections;");
   }
 
-  async getCollectionsByBoard(boardId: number): Promise<{ id: number; name: string; color: number | null }[]> {
+  async getCollectionsByBoard(boardId: number): Promise<{ id: number; names: string; color: number | null }[]> {
     return await this.db.select("SELECT * FROM collections WHERE board_id = ?;", [boardId]);
   }
 
@@ -113,16 +113,16 @@ export class DatabaseService {
     await this.db.execute("DELETE FROM tasks WHERE id = ?;", [id]);
   }
 
-  async getTaskById(id: number): Promise<{ id: number; collection_id: number; order: number; name: string | null; description: string | null; due_date: string | null } | null> {
-    const result: { id: number; collection_id: number; order: number; name: string | null; description: string | null; due_date: string | null }[] = await this.db.select("SELECT * FROM tasks WHERE id = ?;", [id]);
+  async getTaskById(id: number): Promise<{ id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null } | null> {
+    const result: { id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null }[] = await this.db.select("SELECT * FROM tasks WHERE id = ?;", [id]);
     return result.length > 0 ? result[0] : null;
   }
 
-  async getAllTasks(): Promise<{ id: number; collection_id: number; order: number; name: string | null; description: string | null; due_date: string | null }[]> {
+  async getAllTasks(): Promise<{ id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null }[]> {
     return await this.db.select("SELECT * FROM tasks;");
   }
 
-  async getTasksByCollection(collectionId: number): Promise<{ id: number; order: number; name: string | null; description: string | null; due_date: string | null }[]> {
+  async getTasksByCollection(collectionId: number): Promise<{ id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null }[]> {
     return await this.db.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY task_order;", [collectionId]);
   }
 }

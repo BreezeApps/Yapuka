@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY,
     collection_id INTEGER,
     task_order INTEGER NOT NULL,
-    name TEXT,
+    names TEXT,
     descriptions TEXT,
     due_date TEXT,
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON UPDATE CASCADE ON DELETE CASCADE
