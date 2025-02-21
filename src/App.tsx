@@ -8,7 +8,7 @@ import { ModalForm } from "./components/Modal/ModalForm";
 import { DatabaseService } from "./lib/dbClass";
 import { setupOptions } from "./lib/setupOptions";
 import ErrorBoundary from "./components/ErrorBondary";
-import { checkForAppUpdates } from "./lib/Update";
+import { checkForAppUpdates } from "./lib/checkForUpdate";
 
 function App() {
   const dbService = new DatabaseService()
@@ -50,7 +50,7 @@ function App() {
   };
 
   useEffect(() => {
-    checkForAppUpdates(false);
+    checkForAppUpdates(true);
 }, []);
 
   useEffect(() => {
@@ -166,7 +166,6 @@ function App() {
         id="lists-container"
         className="mt-16 w-full bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white"
       >
-        Test
         <ListContainer
           boardId={currentBoard}
           reloadList={reloadList}

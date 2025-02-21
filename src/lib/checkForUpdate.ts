@@ -2,7 +2,7 @@ import { check } from "@tauri-apps/plugin-updater";
 import { ask, message } from "@tauri-apps/plugin-dialog";
 import { relaunch } from "@tauri-apps/plugin-process";
 
-export async function checkForAppUpdates(onUserClick: false) {
+export async function checkForAppUpdates(onUserClick: boolean) {
   const update = await check();
   if (!update?.available) {
     console.log("No update available");
