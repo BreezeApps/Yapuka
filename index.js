@@ -1,5 +1,5 @@
 async function fetchYear() {
-    const apiURL = "https://api.github.com/repos/Marvideo2009/Yapuka/releases/latest";
+    const apiURL = "https://api.github.com/repos/BreezeApps/Yapuka/releases/latest";
     
     try {
         const response = await fetch(apiURL);
@@ -14,7 +14,8 @@ async function fetchYear() {
 }
 
 async function fetchLatestRelease() {
-    const apiURL = "https://api.github.com/repos/Marvideo2009/Yapuka/releases/latest";
+    const apiURL = "https://api.github.com/repos/BreezeApps/Yapuka/releases/latest";
+    const releaseURL = "https://github.com/BreezeApps/Yapuka/releases/latest";
     
     try {
         const response = await fetch(apiURL);
@@ -24,17 +25,16 @@ async function fetchLatestRelease() {
 
         const assets = data.assets;
         assets.forEach(asset => {
-            if (asset.name.includes("win.exe") && !asset.name.includes(".blockmap")) {
+            if (asset.name.includes(".exe") && !asset.name.includes(".sig")) {
                 document.getElementById("downloadWindows").href = asset.browser_download_url;
-            } else if (asset.name.includes("linux.AppImage")) {
-                document.getElementById("downloadLinuxAppImage").href = asset.browser_download_url;
-            } else if (asset.name.includes("linux.deb")) {
+            } else if (asset.name.includes("deb") && !asset.name.includes(".sig")) {
                 document.getElementById("downloadLinuxDeb").href = asset.browser_download_url;
             }
         });
     } catch (error) {
         console.error("Erreur lors de la récupération de la dernière version:", error);
     }
+    document.getElementById("releaseUrl").href = releaseURL;
 }
 
 // Appel de la fonction lors du chargement de la page
