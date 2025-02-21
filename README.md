@@ -2,17 +2,17 @@
 
 # <p align="center">Yapuka</p>
 
-![Electron](https://img.shields.io/badge/Electron-%5E21.0.1-blue?style=flat-square&logo=electron)
+![Tauri](https://img.shields.io/badge/Tauri-47848F?style=flat-square&logo=tauri&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey?style=flat-square)
-![Release](https://img.shields.io/github/v/release/Marvideo2009/Yapuka?style=flat-square)
-![Website](https://img.shields.io/badge/Website-https://yapuka.marvideo.fr-0a0a0a?style=flat-square&logo=google-chrome&link=https://yapuka.marvideo.fr)
-![GitHub Downloads](https://img.shields.io/github/downloads/Marvideo2009/Yapuka/total?label=Number%20of%20downloads)
+![Release](https://img.shields.io/github/v/release/BreezeApps/Yapuka?style=flat-square)
+![Website](https://img.shields.io/badge/Website-https://breezeapps.github.io/Yapuka-0a0a0a?style=flat-square&logo=google-chrome&link=https://breezeapps.github.io/Yapuka/)
+![GitHub Downloads](https://img.shields.io/github/downloads/BreezeApps/Yapuka/total?label=Number%20of%20downloads)
 
 **Yapuka** est une application développée en **Electron** qui permet de créer et gérer simplement des listes de tâches. L’application est disponible pour Windows et Linux.
 
 ## 📥 Installation
 
-Pour utiliser l'application, rendez-vous directement sur [yapuka.marvideo.fr](https://yapuka.marvideo.fr) pour télécharger la version adaptée à votre système.
+Pour utiliser l'application, rendez-vous directement sur [https://breezeapps.github.io/Yapuka/](https://breezeapps.github.io/Yapuka/) ou sur [Github Release](https://github.com/BreezeApps/Yapuka/releases/latest) pour télécharger la version adaptée à votre système.
 
 ## 🤝 Contribuer
 
@@ -20,7 +20,8 @@ Nous accueillons les contributions ! Suivez les étapes ci-dessous pour mettre e
 
 ### Cloner le projet
 
-Assurez-vous d’avoir [Git](https://git-scm.com) et [Node.js](https://nodejs.org/fr/) installés.
+Assurez-vous d’avoir [Git](https://git-scm.com) et [Node.js](https://nodejs.org/fr/)  et [Tauri](https://v2.tauri.app/start/prerequisites/) installés.
+Et les [prerequis](https://v2.tauri.app/start/prerequisites/#configure-for-mobile-targets) pour mobile si vous le souhaiter.
 
 ```bash
 # Cloner le dépôt
@@ -37,9 +38,12 @@ pnpm install
 
 ```bash
 # Lancer l'application en mode développement
-pnpm run dev
-# OR
-pnpm start
+pnpm tauri dev
+
+# Pour Mobile
+pnpm tauri android dev
+# OU
+pnpm tauri ios dev
 ```
 
 ### Créer des builds de développement
@@ -47,17 +51,16 @@ pnpm start
 Pour générer des builds de l'application pour différentes plateformes en local :
 
 ```bash
-# Build pour Windows
-pnpm run build:
+# Build pour votre Syteme :
+pnpm tauri build
 
-# Build pour MacOS
-pnpm run build:macOS
-
-# Build pour Linux
-pnpm run build:Linux
+# Build pour mobile :
+pnpm tauri android build
+# OU
+pnpm tauri ios build
 ```
 
-Les builds seront créés dans le dossier `dist`.
+Les builds seront créés dans le dossier `src-tauri/target/release/bundle`.
 
 ## 🚀 Fonctionnalités
 
