@@ -16,7 +16,7 @@
   "Create_a_Task": "Create new task",
   "Modify_Task": "Modify the task",
   "Create_the_Task": "Create task",
-  "Task_Description": "Task Description",
+  "Description": "Description",
   "Modify_List": "Modify List",
   "Modify_the_List": "Modify the list",
   "Add_the_Task": "Add task",
@@ -86,5 +86,6 @@
   "Unhide": "Unhide",
   "Quit": "Quit",
   "Zoom": "Zoom",
-  "Bring all to front": "Bring all to front"
+  "Bring all to front": "Bring all to front",
+  "Duedate": "Due date"
 }

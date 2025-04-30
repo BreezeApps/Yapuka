@@ -1,8 +1,8 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-import enTranslation from "./locales/en.json";
-import frTranslation from "./locales/fr.json";
+import enTranslation from "./locales/en-US.json";
+import frTranslation from "./locales/fr-FR.json";
 import deTranslation from "./locales/de.json";
 import esTranslation from "./locales/es.json";
 
@@ -10,13 +10,13 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { translation: enTranslation },
-      fr: { translation: frTranslation },
-      de: { translation: deTranslation },
-      es: { translation: esTranslation },
+      'en-US': { translation: enTranslation },
+      'fr-FR': { translation: frTranslation },
+      'de': { translation: deTranslation },
+      'es': { translation: esTranslation },
     },
-    lng: "fr", // Langue par défaut
-    supportedLngs: ["fr", "en", "de", "es"],
+    lng: "fr-FR", // Langue par défaut
+    supportedLngs: ["fr-FR", "en-US", "de", "es"],
     load: "all",
     fallbackLng: "en",
     saveMissing: true,
@@ -26,6 +26,43 @@ i18n
 export function getCurrentLanguage() {
   return i18n.language
 }
+
+export function getDate(date: Date) {
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+  
+  const formatteur = new Intl.DateTimeFormat(i18n.language, options);
+  return formatteur.format(date);
+}
+
+export function getRelativeTime(targetDate: Date) {
+  const now = new Date();
+  const diffMs = targetDate.getTime() - now.getTime();
+
+  const seconds = Math.round(diffMs / 1000);
+  const minutes = Math.round(diffMs / (1000 * 60));
+  const hours = Math.round(diffMs / (1000 * 60 * 60));
+  const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+  const rtf = new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' });
+
+  if (Math.abs(seconds) < 60) {
+    return rtf.format(Math.round(seconds), 'second');
+  } else if (Math.abs(minutes) < 60) {
+    return rtf.format(minutes, 'minute');
+  } else if (Math.abs(hours) < 24) {
+    return rtf.format(hours, 'hour');
+  } else {
+    return rtf.format(days, 'day');
+  }
+}
+
 
 export function getLanguages() {
   const languages = Object.keys(i18n.options.resources || {});

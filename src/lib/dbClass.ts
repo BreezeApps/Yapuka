@@ -1,4 +1,4 @@
-import Database, { QueryResult } from "@tauri-apps/plugin-sql";
+import Database from "@tauri-apps/plugin-sql";
 
 export class DatabaseService {
   private db: Database;
@@ -102,8 +102,8 @@ export class DatabaseService {
     );
   }
 
-  async updateTaskOrder(id: number, order: number, collection_id: number): Promise<QueryResult> {
-    return await this.db.execute(
+  async updateTaskOrder(id: number, order: number, collection_id: number): Promise<void> {
+    await this.db.execute(
       "UPDATE tasks SET task_order = ?, collection_id = ? WHERE id = ?;",
       [order, collection_id, id]
     );

@@ -2,6 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useTranslation } from "react-i18next";
 import { DatabaseService } from "../../lib/dbClass";
 import { ModalForm } from "./ModalForm";
+import { getDate, getRelativeTime } from "../../lib/i18n";
 
 interface InfoModalProps {
   task: {
@@ -25,7 +26,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
     date = task.due_date !== null ? new Date(task.due_date) : null
   }
 
-  const dateText = date === null ? "Non définie" : `${date.getDay()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
+  const dateText = (date !== null) ? `${getRelativeTime(date)} (${getDate(date)})` : "Non définie"  // (date === null) ? "Non définie" : `${day} ${date.getDate()} ${month} ${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
 
   const handleUpdateTask = async (
     name: string,
@@ -47,6 +48,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
       setReloadList(true);
     } else {
       alert("Une erreur ses produite");
+      console.log(collection_id)
     }
   };
   return (
@@ -77,13 +79,13 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
 
             <div className="mt-4">
                 <p>
-                <strong>Description :</strong>{" "}
+                <strong>{t("Description")} :</strong>{" "}
                 <br></br>
                 {task.descriptions === "" ? "Aucune description" : task.descriptions}
                 </p>
                 <p>
-                <strong>Date d'échéance :</strong>{" "}
-                {dateText}
+                <strong>{t("Duedate")} :</strong>{" "}
+                <span className="capitalize">{dateText}</span>
                 </p>
             </div>
 
@@ -101,6 +103,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ task, setReloadList }) => {
           <ModalForm
             type="task"
             onCreate={handleUpdateTask}
+            collectionId={task.collection_id.toString()}
             previousData={{
               id: task.id,
               name: task.names === null ? "" : task.names,

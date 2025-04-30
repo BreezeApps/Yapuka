@@ -122,7 +122,7 @@ function App() {
         <select
           onChange={(e) => {setCurrentBoard(parseInt(e.target.value)); setReloadList(true)}}
           defaultValue={currentBoard}
-          className="bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer dark:text-white"
+          className="bg-white hover:bg-slate-100 placeholder:text-slate-400 text-slate-700 text-sm border border-blue-950 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer dark:text-black"
         >
           {allBoards.map((board) => (
             <option key={board.id} value={board.id}>
