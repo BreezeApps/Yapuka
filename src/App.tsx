@@ -43,7 +43,7 @@ function App() {
         window.matchMedia("(prefers-color-scheme: dark)").matches)
   );
 
-  const handleCreateBoard = async (name: string) => {
+  const handleCreateBoard = async (_type: "board" | "collection" | "task", name: string) => {
     await dbService.createBoard(name);
     window.location.reload();
   };

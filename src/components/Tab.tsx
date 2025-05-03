@@ -4,7 +4,7 @@ type props = {
   tabs: { id: number; name: string }[];
   currentBoard: number;
   setCurrentBoard: (id: number) => void;
-  handleCreateBoard: (name: string) => void;
+  handleCreateBoard: (type: "board" | "collection" | "task", name: string) => void;
   reloadList?: boolean;
   setReloadList: (reload: boolean) => void;
   contextMenu: (e: React.MouseEvent, boardId: number) => void;
