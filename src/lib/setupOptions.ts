@@ -6,6 +6,9 @@ export async function setupOptions() {
 
     if (await dbService.getOptionByKey("theme") === null) {
         try {
+            await dbService.createOption("version", "")
+        } catch { console.log("Error createOptions version") }
+        try {
             await dbService.createOption("lang", "fr")
         } catch { console.log("Error createOptions lang") }
         try {
@@ -17,5 +20,8 @@ export async function setupOptions() {
         try {
             await dbService.createOption("syncUrl", "")
         } catch { console.log("Error createOptions syncUrl") }
+        try {
+            await dbService.createOption("notifications", "")
+        } catch { console.log("Error createOptions notifications") }
     }
 }

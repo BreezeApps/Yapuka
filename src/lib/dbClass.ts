@@ -1,5 +1,11 @@
 import Database from "@tauri-apps/plugin-sql";
 
+type Migration = {
+  from: string;
+  to: string;
+  migrate: (db: Database) => Promise<void>;
+};
+
 export class DatabaseService {
   private db: Database;
 
@@ -9,6 +15,7 @@ export class DatabaseService {
 
   async init() {
     await this.db.execute("PRAGMA foreign_keys = ON;");
+    await this.runMigrations()
   }
 
   /* ==================== OPTIONS ==================== */
@@ -32,6 +39,15 @@ export class DatabaseService {
   async getAllOptions(): Promise<{ key: string; value: string }[]> {
     return await this.db.select("SELECT * FROM options;");
   }
+
+  async getCurrentDbVersion(): Promise<string> {
+    const result = await this.getOptionByKey("version");
+    return result || "1";
+  };
+    
+  async setDbVersion(version: string) {
+    await this.updateOption("version", version);
+  };
 
   /* ==================== BOARDS ==================== */
   async createBoard(name: string): Promise<number> {
@@ -88,17 +104,17 @@ export class DatabaseService {
   /* ==================== TASKS ==================== */
   async createTask(collectionId: number, order: number, name?: string, description?: string, dueDate?: string): Promise<number> {
     await this.db.execute(
-      "INSERT INTO tasks (collection_id, task_order, names, descriptions, due_date) VALUES (?, ?, ?, ?, ?);",
-      [collectionId, order, name ?? null, description ?? null, dueDate ?? null]
+      "INSERT INTO tasks (collection_id, task_order, names, descriptions, due_date, status) VALUES (?, ?, ?, ?, ?, ?);",
+      [collectionId, order, name ?? null, description ?? null, dueDate ?? null, "pending"]
     );
     const result: { id: number }[] = await this.db.select("SELECT last_insert_rowid() AS id;");
     return result[0].id;
   }
 
-  async updateTask(id: number, newName?: string, newDescription?: string, newDueDate?: string): Promise<void> {
+  async updateTask(id: number, newName?: string, newDescription?: string, newDueDate?: string, status?: string): Promise<void> {
     await this.db.execute(
-      "UPDATE tasks SET names = ?, descriptions = ?, due_date = ? WHERE id = ?;",
-      [newName ?? null, newDescription ?? null, newDueDate ?? null, id]
+      "UPDATE tasks SET names = ?, descriptions = ?, due_date = ?, status = ? WHERE id = ?;",
+      [newName ?? null, newDescription ?? null, newDueDate ?? null, status ?? null, id]
     );
   }
 
@@ -113,16 +129,43 @@ export class DatabaseService {
     await this.db.execute("DELETE FROM tasks WHERE id = ?;", [id]);
   }
 
-  async getTaskById(id: number): Promise<{ id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null } | null> {
-    const result: { id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null }[] = await this.db.select("SELECT * FROM tasks WHERE id = ?;", [id]);
+  async getTaskById(id: number): Promise<{ id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; status : string;due_date: string | null } | null> {
+    const result: { id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; status : string; due_date: string | null }[] = await this.db.select("SELECT * FROM tasks WHERE id = ?;", [id]);
     return result.length > 0 ? result[0] : null;
   }
 
-  async getAllTasks(): Promise<{ id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null }[]> {
+  async getAllTasks(): Promise<{ id: number; collection_id: number; task_order: number; names: string | null; descriptions: string | null; status : string; due_date: string | null }[]> {
     return await this.db.select("SELECT * FROM tasks ORDER BY task_order;");
   }
 
-  async getTasksByCollection(collectionId: number): Promise<{ id: number; task_order: number; names: string | null; descriptions: string | null; due_date: string | null }[]> {
+  async getTasksByCollection(collectionId: number): Promise<{ id: number; task_order: number; names: string | null; descriptions: string | null; status : string; due_date: string | null }[]> {
     return await this.db.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY task_order;", [collectionId]);
   }
+
+  /* ==================== MIGRATIONS ==================== */
+
+  migrations: Migration[] = [
+    {
+      from: "0.1.0",
+      to: "1",
+      migrate: async (db) => {
+        await db.execute("ALTER TABLE tasks ADD COLUMN status TEXT DEFAULT 'pending'");
+      },
+    }
+  ];
+
+  async runMigrations() {
+    let currentVersion = await this.getCurrentDbVersion();
+
+    for (const migration of this.migrations) {
+      if (migration.from === currentVersion) {
+        console.log(`Migration de ${migration.from} vers ${migration.to}`);
+        await migration.migrate(this.db);
+        await this.setDbVersion(migration.to);
+        currentVersion = migration.to;
+      }
+    }
+
+    console.log("Base de données à jour !");
+  };
 }

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { DatabaseService } from "../lib/dbClass";
-import { useTranslation } from "react-i18next";
 import { ModalForm } from "./Modal/ModalForm";
 // import Sortable from 'sortablejs';
 import { ReactSortable } from "react-sortablejs";
 import InfoModal from "./Modal/InfoModal";
+import { startTaskMonitoring } from "../lib/notify";
 
 type Task = {
   id: number;
@@ -12,13 +12,11 @@ type Task = {
   task_order: number;
   names: string | null;
   descriptions: string | null;
+  status: string;
   due_date: string | null;
 }
 
-export function ListContainer({ boardId, reloadList, setReloadList, currentBoard }: { boardId: number, reloadList: boolean, setReloadList: (reload: boolean) => void , currentBoard: number}) {
-  let tt = currentBoard;
-  tt = tt
-  const { t } = useTranslation();
+export function ListContainer({ boardId, reloadList, setReloadList, currentBoard, contextMenu }: { boardId: number, reloadList: boolean, setReloadList: (reload: boolean) => void , currentBoard: number, contextMenu: (e: React.MouseEvent, id: number) => void }) {
   const [board, setBoard] = useState<{ id: number; name: string }>({
     id: 0,
     name: "",
@@ -56,6 +54,10 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
         setCollections(collections);
         setTasks(allTasks);
 
+        if (await dbService.getOptionByKey("notification") === "true") {
+          startTaskMonitoring(allTasks)
+        }
+
       } catch (error) {
         alert("Erreur : " + error)
         console.error(
@@ -68,12 +70,6 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
     initDatabase();
     setReloadList(false)
   }, [reloadList]);
-
-  const groupedItems = tasks.reduce<Record<number, Task[]>>((acc, item) => {
-    acc[item.collection_id] = acc[item.collection_id] || [];
-    acc[item.collection_id].push(item);
-    return acc;
-  }, {});
 
   const handleSetList = async (collectionId: number, newList: Task[]) => {
     setTasks((prev) => {
@@ -90,42 +86,30 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
     }
   };
 
-  const handleCreateTask = async (name: string, description?: string, date?: string, color?: string, collection_id?: string) => {
-    color = color
+  const handleCreateTask = async (_type: "board" | "collection" | "task", name: string, description?: string, date?: string, _color?: string, collection_id?: string) => {
     if (collection_id !== undefined) {
       const task_order = await dbService.getTasksByCollection(parseInt(collection_id))
-      const newCreateId = await dbService.createTask(parseInt(collection_id), task_order.length, name, description, date);
-      console.log("Tache créée avec ID:", newCreateId);
+      await dbService.createTask(parseInt(collection_id), task_order.length, name, description, date);
       setReloadList(true)
     } else {
       alert("Une erreur ses produite")
     }
   };
 
-  const deleteList = ( collectionListName: string, collectionListId: number) => {
-    if (confirm(`${t("Are_Sure", { type:t("list"),  title:collectionListName })}`)) {
-      dbService.removeCollection(collectionListId)
-      setReloadList(true)
-    }
-  }
-
-  const handleUpdateCollection = async (
+  const handleCreateCollection = async (
+    _type: "board" | "collection" | "task",
     name: string,
-    description?: string | undefined,
-    date?: string | undefined,
-    color?: string | undefined,
-    collection_id?: string | undefined,
-    id?: number | undefined
+    _description?: string,
+    _date?: string,
+    color?: string,
+    _collection_id?: string,
+    _id?: number
   ) => {
-    date = date
-    description = description;
-    collection_id = collection_id;
-    const newCollectionId = await dbService.updateCollection(
-      id === undefined ? 0 : id,
+    await dbService.createCollection(
+      currentBoard,
       name,
       color
     );
-    console.log("Collection créée avec ID:", newCollectionId);
     setReloadList(true);
   };
 
@@ -173,23 +157,24 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold">{board.name} {/*<img src="/icons/refresh.svg" className="h-6 w-6" onClick={() => setReload(true)} />*/}</h1>
-      {Object.entries(groupedItems).filter(([collectionIdStr]) => Number(collections.find((c) => c.id === Number(collectionIdStr))?.board_id) === boardId).map(([collectionIdStr, list]) => {
-        const collection = collections.find((c) => c.id === Number(collectionIdStr));
+      <h1 className="text-2xl font-bold">{board.name} <ModalForm type="collection" onCreate={handleCreateCollection} /></h1>
+      {collections
+        .filter((collection) => collection.board_id === board.id)
+        .map((collection) => {
+        const list = tasks.filter((task) => task.collection_id === collection.id)
+        // const collection = collections.find((c) => c.id === Number(collectionIdStr));
         return (
           <div key={collection?.id} className="relative flex-col rounded-lg bg-gray-300 dark:bg-blue-950 shadow-sm border border-slate-200 dark:border-blue-700 min-w-[240px] gap-1 p-1.5 list float-left inline m-3">
             <h3
+              onContextMenu={(e) => {contextMenu(e, collection.id)}}
               className={`rounded capitalize text-center p-2 font-bold ${collection?.color === null ? "bg-[#d1d5dc] dark:bg-blue-900" : ""}`}
               style={{ 
                 backgroundColor: collection?.color !== null ? collection?.color.toString() : ''
               }}
             >
               {collection?.names}
-              <ModalForm type="collection" onCreate={handleUpdateCollection} previousData={ { id: collection?.id === undefined ? 0 : collection?.id, name: collection?.names === undefined ? "Error" : collection?.names, color:collection?.color?.toString() } } />
+              {/* <ModalForm type="collection" onCreate={handleUpdateCollection} previousData={ { id: collection?.id === undefined ? 0 : collection?.id, name: collection?.names === undefined ? "Error" : collection?.names, color:collection?.color?.toString() } } /> */}
               <div className="overflow-hidden">
-                <button onClick={() => deleteList(collection?.names === undefined ? "Error" : collection?.names, collection?.id === undefined ? 0 : collection?.id)} className="bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-l float-left inline">
-                  <img className="h-6" src="/icons/supprimer.svg" />
-                </button>
                 <ModalForm type="task" collectionId={collection?.id.toString()} onCreate={handleCreateTask} />
               </div>
             </h3>

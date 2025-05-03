@@ -80,7 +80,7 @@ export function ConfigPage({ show, setShow }: props) {
               name="theme"
               onChange={(e) => changeTheme(e.target.value)}
               defaultValue={localStorage.theme}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="text-gray-700 bg-white mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             >
               <option value="light">{t("light_theme")}</option>
               <option value="dark">{t("dark_theme")}</option>
@@ -99,7 +99,7 @@ export function ConfigPage({ show, setShow }: props) {
               name="language"
               onChange={(e) => changeLanguage(e.target.value)}
               defaultValue={getCurrentLanguage()}
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="text-gray-700 bg-white mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             >
               {languages.map((lang) => (
                 <option key={lang.key} value={lang.value}>
@@ -123,7 +123,7 @@ export function ConfigPage({ show, setShow }: props) {
               }}
               name="Test"
               id="tt"
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              className="dark:text-white w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             />
             <label htmlFor="url" className="block text-sm font-medium text-gray-700 dark:text-white">PHP Sync URL</label>
             <input
@@ -134,7 +134,7 @@ export function ConfigPage({ show, setShow }: props) {
               type="text"
               name="url"
               id="url"
-              className="text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="text-gray-700 dark:text-white text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
         </div>
@@ -164,7 +164,7 @@ export function ConfigPage({ show, setShow }: props) {
                 disabled
                 name="data-link"
                 id="data_link"
-                className="text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="text-gray-700 dark:text-white text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
             </div>
             <div id="backup-dir" className="flex space-x-4">
