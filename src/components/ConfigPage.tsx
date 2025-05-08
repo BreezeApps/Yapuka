@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { changeLanguage, getCurrentLanguage, getLanguages } from "../lib/i18n";
 import { useEffect, useState } from "react";
 import { DatabaseService } from "../lib/dbClass";
+import { message } from "@tauri-apps/plugin-dialog";
+import FeatureComingSoon from "./FeatureComingSoon";
 
 type props = {
   show: boolean;
@@ -52,7 +54,8 @@ export function ConfigPage({ show, setShow }: props) {
   return (
     <div
       hidden={!show}
-      className={`z-[2000] h-full w-full absolute bg-black/50`}
+      
+      className={`z-[2000] top-0 h-full w-full absolute bg-black/50`}
     >
       <button
         className={`absolute text-2xl ml-2`}
@@ -66,6 +69,9 @@ export function ConfigPage({ show, setShow }: props) {
       <form
         name="config"
         className="space-y-6 rounded-lg bg-white dark:bg-gray-900 p-6 shadow-lg md:p-8 lg:p-10"
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
       >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-2">
@@ -113,30 +119,34 @@ export function ConfigPage({ show, setShow }: props) {
           <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
             {t("Feature_Toggles")}
           </h2>
-          <div className="space-y-2">
-            <label htmlFor="Test" className="block text-sm font-medium text-gray-700 dark:text-white" >Activer Sync PHP</label>
-            <input
-              type="checkbox"
-              checked={checkedSync}
-              onChange={(e) => {
-                setCheckedSync(e.target.checked);
-              }}
-              name="Test"
-              id="tt"
-              className="dark:text-white w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-            />
-            <label htmlFor="url" className="block text-sm font-medium text-gray-700 dark:text-white">PHP Sync URL</label>
-            <input
-              disabled={!checkedSync}
-              placeholder="https://example.com/"
-              value={urlSync === null ? "" : urlSync}
-              onChange={(e) => setUrlSync(e.target.value)}
-              type="text"
-              name="url"
-              id="url"
-              className="text-gray-700 dark:text-white text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
+          <FeatureComingSoon message={t("Future_Function")}>
+            <div className="space-y-2 overflow-hidden">
+              <label htmlFor="Test" className="block text-sm font-medium text-gray-700 dark:text-white" >Activer Sync PHP</label>
+              <input
+                type="checkbox"
+                checked={checkedSync}
+                onChange={(e) => {
+                  message(t("Future_Function"), { kind: "warning"})
+                  e.target.checked = false;
+                  // setCheckedSync(e.target.checked);
+                }}
+                name="Test"
+                id="tt"
+                className="dark:text-white w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label htmlFor="url" className="block text-sm font-medium text-gray-700 dark:text-white">PHP Sync URL</label>
+              <input
+                disabled={!checkedSync}
+                placeholder="https://example.com/"
+                value={urlSync === null ? "" : urlSync}
+                onChange={(e) => setUrlSync(e.target.value)}
+                type="text"
+                name="url"
+                id="url"
+                className="text-gray-700 dark:text-white text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+          </FeatureComingSoon>
         </div>
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
@@ -152,28 +162,39 @@ export function ConfigPage({ show, setShow }: props) {
               >
                 {t("GoPlugin")}
               </button>*/}
-              <button
-                id="DB_file"
-                name="DB_file"
-                className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-              >
-                {t("data_file")}
-              </button>
-              <input
-                type="text"
-                disabled
-                name="data-link"
-                id="data_link"
-                className="text-gray-700 dark:text-white text-sm overflow-x-scroll mt-1 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
             </div>
             <div id="backup-dir" className="flex space-x-4">
               <button
                 type="button"
                 id="backup-button"
+                onClick={async () => {
+                  const isValid = await dbService.createBackup()
+                  if (isValid) {
+                    message(t("Backup_Success_Title"), {
+                      title: t("Backup_Success"),
+                      kind: "info",
+                    })
+                  } else {
+                    message(t("Backup_Error_Title"), {
+                      title: t("Backup_Error"),
+                      kind: "error",
+                    })
+                  }
+                }}
                 className="rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 transition-colors duration-300 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 {t("Make_Backup")}
+              </button>
+              <button
+                type="button"
+                id="backup-import-button"
+                // onClick={async () => {console.log(await dbService.importBackup())}}
+                onClick={() => {
+                  message(t("Future_Function"), { kind: "warning"})
+                }}
+                className="rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 transition-colors duration-300 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                {t("Backup_Import")}
               </button>
             </div>
           </div>

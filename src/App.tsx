@@ -7,26 +7,32 @@ import { DatabaseService } from "./lib/dbClass";
 import { setupOptions } from "./lib/setupOptions";
 import ErrorBoundary from "./components/ErrorBondary";
 import { checkForAppUpdates } from "./lib/checkForUpdate";
+import * as path from '@tauri-apps/api/path';
 import { Tabs } from "./components/Tab";
 import {
   isPermissionGranted,
   requestPermission,
 } from '@tauri-apps/plugin-notification';
 import {
-  Menu,
-  Item,
   useContextMenu,
   ItemParams
 } from "react-contexify";
 
-import { confirm, message } from '@tauri-apps/plugin-dialog';
+import { confirm, message, save } from '@tauri-apps/plugin-dialog';
 
 import "react-contexify/dist/ReactContexify.css";
 import { t } from "i18next";
+import { pdf } from "@react-pdf/renderer";
+import { CollectionPDF } from "./components/pdf/Collection";
+import { writeFile } from '@tauri-apps/plugin-fs';
+import { BoardPDF } from "./components/pdf/Board";
+import ContextMenu from "./components/contextMenu";
+import { OnBoarding } from "./components/onBoarding";
 
 function App() {
   const dbService = new DatabaseService()
   const [showConfig, setShowConfig] = useState<boolean>(false);
+  const [runBoarding, setRunBoarding] = useState<boolean>(false);
   const [currentBoard, setCurrentBoard] = useState<number>(1);
   const [reloadList, setReloadList] = useState<boolean>(false);
   const [firstReload, setFirstReload] = useState<boolean>(true);
@@ -44,24 +50,21 @@ function App() {
   );
 
   const handleCreateBoard = async (_type: "board" | "collection" | "task", name: string) => {
-    await dbService.createBoard(name);
-    window.location.reload();
+    await dbService.createBoard({ id: 0, name: name});
+    setReloadList(true);
   };
 
   const handleModify = async (type: "board" | "collection" | "task", name: string, description?: string | undefined, date?: string | undefined, color?: string | undefined, _collection_id?: string | undefined, id?: number | undefined) => {
     if (type === "board") {
-      await dbService.updateBoard(id === undefined ? 0 : id, name);
-      window.location.reload();
+      await dbService.updateBoard({ id: id === undefined ? 0 : id, name: name });
     } else if (type === "collection") {
-      await dbService.updateCollection(id === undefined ? 0 : id, name, color);
-      setReloadList(true);
+      await dbService.updateCollection({ id: id === undefined ? 0 : id, board_id: 0 , names: name, color: color === undefined ? null : color });
     } else if (type === "task") {
       await dbService.getTaskById(id === undefined ? 0 : id).then(async (task) => {
-        await dbService.updateTask(id === undefined ? 0 : id, name, description, date, task?.status);
+        await dbService.updateTask({ id: id === undefined ? 0 : id, names: name, descriptions: description === undefined ? null : description, due_date: date === undefined ? null : date, status: task?.status === undefined ? "pending" : task?.status, collection_id: 0, task_order: 0 });
       });
-      setReloadList(true);
     }
-    window.location.reload();
+    setReloadList(true);
   };
 
 
@@ -96,6 +99,24 @@ function App() {
         await dbService.removeBoard(boardId);
         window.location.reload();
       }
+    } else if (id === "print") {
+      const board = await dbService.getBoardById(boardId);
+      const collections = await dbService.getCollectionsByBoard(boardId);
+      const tasks = await dbService.getAllTasks();
+      const filePath = await save({
+        filters: [
+          { name: "PDF", extensions: ["pdf"] },
+        ],
+        defaultPath: (await path.downloadDir()) + "/" + `${t("PdfTab")}_${board?.name}.pdf`,
+      });
+      if (!filePath) return false;
+      const pdfDoc = <BoardPDF boardName={board?.name === undefined ? "" : board.name} collections={collections} tasks={tasks} />;
+      const blob = await pdf(pdfDoc).toBlob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      await writeFile(filePath, uint8Array);
+      return true;
     }
   }
 
@@ -120,12 +141,60 @@ function App() {
         await dbService.removeCollection(collection_id);
         setReloadList(true);
       }
+    } else if (id === "print") {
+      const collection = await dbService.getCollectionById(collection_id);
+      const tasks = await dbService.getTasksByCollection(collection_id);
+      const filePath = await save({
+        filters: [
+          { name: "PDF", extensions: ["pdf"] },
+        ],
+        defaultPath: (await path.downloadDir()) + "/" + `${t("PdfList")}_${collection?.names}.pdf`,
+      });
+      if (!filePath) return false;
+      const pdfDoc = <CollectionPDF collectionName={collection?.names === undefined ? "" : collection.names} tasks={tasks} />;
+      const blob = await pdf(pdfDoc).toBlob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      await writeFile(filePath, uint8Array);
+      return true;
+    }
+  }
+
+  function displayTaskMenu(e: React.MouseEvent, task_id: number) {
+    show({
+      id: "task-menu",
+      props: { task_id },
+      event: e,
+    });
+  }
+
+  async function handleTaskItemClick({id, props }: ItemParams<any, any>) {
+    const task_id = props.task_id;
+    if (id === "edit") {
+      const task = await dbService.getTaskById(task_id);
+      setInfoType("task")
+      setEditInfo({
+        id: task_id,
+        name: task?.names === null ? "" : task?.names === undefined ? "" : task?.names,
+        description: task?.descriptions === null ? "" : task?.descriptions === undefined ? "" : task?.descriptions,
+        status: task?.status === null ? "" : task?.status === undefined ? "" : task?.status,
+        date: task?.due_date === null ? "" : task?.due_date === undefined ? "" : task?.due_date,
+        collection_id: task?.collection_id === undefined ? "0" : task?.collection_id.toString(),
+      });
+      setShowModal(true);
+    } else if (id === "delete") {
+      const deleteConfirm = await confirm(t("Are_Sure", { "type": t("task"), "title": await dbService.getTaskById(task_id).then((task) => task?.names) }));
+      if(deleteConfirm) {
+        await dbService.removeTask(task_id);
+        setReloadList(true);
+      }
     }
   }
 
   useEffect(() => {
     async function handleNotificationPermission() {
-      await checkForAppUpdates(true);
+      // await checkForAppUpdates(true);
       let permissionGranted = await isPermissionGranted();
       if (!permissionGranted) {
         const permission = await requestPermission();
@@ -154,46 +223,33 @@ function App() {
   // localStorage.theme = "dark";
 
   if (firstReload === true) {
-    setTimeout(() => {
+    setTimeout(async () => {
       setReloadList(true);
       setupOptions()
       setFirstReload(false);
+      setRunBoarding(await dbService.getOptionByKey("firstStart") === "true" ? true : false);
     }, 500);
   }
 
   return (
-    <div className="w-full h-full bg-gray-100 dark:bg-gray-900">
+    <div className="w-full h-full bg-gray-100 dark:bg-gray-900 top-0 absolute">
+      <OnBoarding run={runBoarding} setRun={setRunBoarding} />
       <ErrorBoundary>
         <ConfigPage show={showConfig} setShow={setShowConfig} />
       </ErrorBoundary>
-      <div className="fixed left-0 top-0 flex w-full justify-between pt-4 text-center shadow-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+      <div id="one-step" className="fixed left-0 top-0 flex w-full justify-between pt-4 text-center shadow-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
         <Tabs
           currentBoard={currentBoard}
-          tabs={allBoards}
+          reloadList={reloadList}
           setReloadList={setReloadList}
           setCurrentBoard={setCurrentBoard}
           handleCreateBoard={handleCreateBoard}
           contextMenu={displayBoardMenu}
+          setShowConfig={setShowConfig}
         />
-        {/* <button
-          id="print-tab-btn"
-          className="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
-          type="button"
-          >
-          {t("Print")}
-          </button> */}
-        <span
-          onClick={() => {
-            setShowConfig(true);
-          }}
-          className="flex h-7 w-7 cursor-pointer flex-row-reverse justify-self-end"
-        >
-          <img src="/icons/config.svg" alt="" className="dark:invert" />
-        </span>
       </div>
       <ModalForm type={infoType === null ? "task" : infoType} onCreate={handleModify} previousData={editInfo} open={showModal} setOpen={setShowModal} />
       <div
-        id="lists-container"
         className="mt-13 w-full bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white"
       >
         <ListContainer
@@ -201,27 +257,13 @@ function App() {
           reloadList={reloadList}
           setReloadList={setReloadList}
           currentBoard={currentBoard}
-          contextMenu={displayCollectionMenu}
+          contextMenuCollection={displayCollectionMenu}
+          contextMenuTask={displayTaskMenu}
         />
       </div>
-      <Menu id={"board-menu"} animation="scale">
-        <Item onClick={handleBoardItemClick} id="edit">
-          {t("Modify_the_Tab")}
-        </Item>
-        <Item onClick={handleBoardItemClick} id="delete">
-          {t("Delete_the_Tab")}
-        </Item>
-      </Menu>
-      <Menu id={"collection-menu"} animation="scale">
-        <Item onClick={handleCollectionItemClick} id="edit">
-          {t("Modify_the_List")}
-        </Item>
-        <Item onClick={handleCollectionItemClick} id="delete">
-          {t("Delete_The_List")}
-        </Item>
-      </Menu>
+      <ContextMenu handleBoardItemClick={handleBoardItemClick} handleCollectionItemClick={handleCollectionItemClick} handleTaskItemClick={handleTaskItemClick} />
       <img
-        src="/CC BY-NC-SA.png"
+        src="/CC_BY-NC-SA.png"
         alt="Creative Commons BY-NC-SA"
         className="absolute bottom-0 right-0 z-50"
         width="100"
