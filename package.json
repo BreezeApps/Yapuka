@@ -51,6 +51,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
       "esbuild"
     ]
   },

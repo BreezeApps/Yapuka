@@ -27,7 +27,7 @@ import { CollectionPDF } from "./components/pdf/Collection";
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { BoardPDF } from "./components/pdf/Board";
 import ContextMenu from "./components/contextMenu";
-import { OnBoarding } from "./components/onBoarding";
+import { OnBoarding } from "./components/OnBoarding";
 
 function App() {
   const dbService = new DatabaseService()
