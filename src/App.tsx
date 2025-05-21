@@ -6,7 +6,7 @@ import { ModalForm } from "./components/Modal/ModalForm";
 import { DatabaseService } from "./lib/dbClass";
 import { setupOptions } from "./lib/setupOptions";
 import ErrorBoundary from "./components/ErrorBondary";
-import { checkForAppUpdates } from "./lib/checkForUpdate";
+// import { checkForAppUpdates } from "./lib/checkForUpdate";
 import * as path from '@tauri-apps/api/path';
 import { Tabs } from "./components/Tab";
 import {

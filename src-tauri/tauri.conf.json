@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "yapuka",
+  "productName": "Yapuka",
   "version": "0.1.0",
   "identifier": "fr.breezeapps.yapuka",
   "build": {
@@ -37,6 +37,30 @@
     }
   },
   "bundle": {
+    "active": true,
+    "targets": ["deb", "rpm", "appimage", "nsis", "msi", "app", "dmg"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "Utility",
+    "shortDescription": "Gestionnaire de tâches moderne et rapide.",
+    "longDescription": "Yapuka est une application open-source permettant de gérer facilement ses tâches avec une interface moderne et fluide.",
+    "linux": {
+      "deb": {
+        "depends": ["libwebkit2gtk-4.0-37", "libgtk-3-0"],
+        "desktopTemplate": "icons/yapuka.desktop"
+      },
+      "appimage": {
+        "bundleMediaFramework": false
+      }
+    },
+    "externalBin": [],
+    "copyright": "Copyright © 2025 BreezeApps",
+    "license": "",
     "createUpdaterArtifacts": true,
     "windows": {
       "allowDowngrades": true,
@@ -53,15 +77,6 @@
       "wix": {
         "language": "fr-FR"
       }
-    },
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ]
+    }
   }
 }
