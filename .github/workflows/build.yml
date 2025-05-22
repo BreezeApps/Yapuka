@@ -1,4 +1,4 @@
-name: 'publish'
+name: "publish"
 
 on:
   push:
@@ -16,15 +16,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
-            args: ''
-          - platform: 'windows-latest'
-            args: ''
-
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+            args: "--target aarch64-apple-darwin"
+          - platform: "macos-latest" # for Intel based macs.
+            args: "--target x86_64-apple-darwin"
+          - platform: "ubuntu-22.04" # for Tauri v1 you could replace this with ubuntu-20.04.
+            args: ""
+          - platform: "windows-latest"
+            args: ""
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -48,22 +47,62 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-        # webkitgtk 4.0 is for Tauri v1 - webkitgtk 4.1 is for Tauri v2.
-        # You can remove the one that doesn't apply to your app to speed up the workflow a bit.
 
       - name: install frontend dependencies
-        run: pnpm install # change this to npm, pnpm or bun depending on which one you use.
+        run: pnpm install
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SIGN: 1
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
+          releaseName: "v__VERSION__"
+          releaseBody: "Améliorations, nouvelles fonctionnalités et corrections de bugs."
           includeUpdaterJson: true
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
+
+  deploy-updates:
+    needs: publish-tauri
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
+    steps:
+      - name: ⬇️ Checkout current repo
+        uses: actions/checkout@v4
+
+      - name: 📥 Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: 🚀 Clone tauri-updates
+        run: |
+          git clone https://github.com/BreezeApps/updater.git
+
+      - name: 🗂️ Copy update files
+        run: |
+          mkdir -p updates/yapuka
+          cp -r src-tauri/target/release/bundle/**/*.AppImage updates/yapuka/ || true
+          cp -r src-tauri/target/release/bundle/**/*.msi updates/yapuka/ || true
+          cp -r src-tauri/target/release/bundle/**/*.zip updates/yapuka/ || true
+          cp -r src-tauri/target/release/bundle/**/*.deb updates/yapuka/ || true
+          cp -r src-tauri/target/release/bundle/**/*.sig updates/yapuka/ || true
+          cp -r src-tauri/target/release/bundle/**/latest.json updates/yapuka/
+
+      - name: 📝 Commit and push
+        shell: bash
+        env:
+          CI_COMMIT_MESSAGE: update file for update
+          CI_COMMIT_AUTHOR: github-actions[bot]
+          CI_COMMIT_EMAIL: breezeapps@users.noreply.github.com
+        run: |
+          cd updates
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
+          git add yapuka
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git push
