@@ -69,7 +69,6 @@ jobs:
   deploy-updates:
     needs: publish-tauri
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/release'
     steps:
       - name: ⬇️ Checkout current repo
         uses: actions/checkout@v4
