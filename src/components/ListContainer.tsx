@@ -2,11 +2,34 @@ import { useEffect, useState } from "react";
 import { DatabaseService } from "../lib/dbClass";
 import { ModalForm } from "./Modal/ModalForm";
 import { ReactSortable } from "react-sortablejs";
-import InfoModal from "./Modal/InfoModal";
 import { startTaskMonitoring } from "../lib/notify";
 import { Task } from "../lib/types/Task";
+import { t } from "i18next";
+import { getDate, getRelativeTime } from "../lib/i18n";
 
-export function ListContainer({ boardId, reloadList, setReloadList, currentBoard, contextMenuCollection, contextMenuTask }: { boardId: number, reloadList: boolean, setReloadList: (reload: boolean) => void , currentBoard: number, contextMenuCollection: (e: React.MouseEvent, id: number) => void, contextMenuTask: (e: React.MouseEvent, id: number) => void }) {
+export function ListContainer(
+  { 
+    boardId,
+    reloadList,
+    setReloadList,
+    currentBoard,
+    contextMenuCollection,
+    contextMenuTask,
+    setDescription,
+    setDuedate,
+    setShowTaskInfo
+  }:
+  {
+    boardId: number,
+    reloadList: boolean,
+    setReloadList: (reload: boolean) => void ,
+    currentBoard: number,
+    contextMenuCollection: (e: React.MouseEvent, id: number) => void,
+    contextMenuTask: (e: React.MouseEvent, id: number) => void,
+    setShowTaskInfo: (show: boolean) => void,
+    setDescription: (description: string) => void,
+    setDuedate: (description: string) => void
+  }) {
   const [board, setBoard] = useState<{ id: number; name: string }>({
     id: 0,
     name: "",
@@ -96,6 +119,15 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
     setReloadList(true);
   };
 
+  async function checkedDoneTask(task: Task, checked: boolean) {
+    if (checked) {
+      await dbService.updateTask({ id: task.id, names: task.names === null ? "" : task.names, descriptions: task.descriptions === null ? "" : task.descriptions, due_date: task.due_date === null ? "" : task.due_date, collection_id: 0, task_order: 0, status: "done" });
+    } else {
+      await dbService.updateTask({ id: task.id, names: task.names === null ? "" : task.names, descriptions: task.descriptions === null ? "" : task.descriptions, due_date: task.due_date === null ? "" : task.due_date, collection_id: 0, task_order: 0, status: "pending" });
+    }
+    setReloadList(true)
+  }
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">{board.name} <ModalForm id="three-step" type="collection" onCreate={handleCreateCollection} /></h1>
@@ -124,7 +156,7 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
               animation={200}
               forceFallback={true}
             >
-              {list.map((task) => (
+              {/* {list.map((task) => (
                 <InfoModal
                   key={task.id}
                   id="seven-step"
@@ -132,6 +164,42 @@ export function ListContainer({ boardId, reloadList, setReloadList, currentBoard
                   reloadList={false}
                   contextMenuTask={contextMenuTask}
                 />
+              ))} */}
+              {list.map((task) => (
+                <div
+                  key={task.id}
+                  id={"seven-step"}
+                  role="button"
+                  className={`${task.status === "done" ? "bg-gray-200 dark:bg-blue-950 text-slate-500 dark:text-blue-400" : "bg-gray-300 dark:bg-blue-950 text-slate-800 dark:text-white"} flex w-full h-6 items-center rounded-md transition-all hover:bg-slate-100 dark:hover:bg-blue-600 focus:bg-slate-100 active:bg-slate-100`}
+                  onContextMenu={(e) => {contextMenuTask(e, task.id)}}
+                  onMouseOver={
+                    () => {
+                      setDescription(task.descriptions === null ? "" : task.descriptions)
+                      let date = null
+                      if(task.due_date !== "") {
+                          date = task.due_date !== null ? new Date(task.due_date) : null
+                      }
+                      const dateText = (date !== null) ? `${getRelativeTime(date)} (${getDate(date)})` : t("NoDue")
+                      setDuedate(dateText)
+                      setShowTaskInfo(true)
+                    }}
+                  onMouseOut={() => { setShowTaskInfo(false) }}
+                >
+                  {task.names}
+                  <input
+                    type="checkbox"
+                    checked={task.status === "done"}
+                    onChange={(e) => {
+                      checkedDoneTask(task, e.target.checked);
+                    }}
+                    name="Test"
+                    id="tt"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  {/*<button className="inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+                        <img src="/icons/modify.svg" className="w-6 h-6" alt="" />
+                    </button>*/}
+                </div>
               ))}
             </ReactSortable>
           </div>

@@ -60,13 +60,13 @@ export function Tabs({
                 border: "1px solid gray",
                 borderBottom:
                   currentBoard === board.id
-                    ? "1px solid white"
-                    : "1px solid gray",
+                    ? "1px solid var(--color-gray-800)"
+                    : "1px solid var(--color-gray-950)",
                 borderTopLeftRadius: "6px",
                 borderTopRightRadius: "6px",
-                background: currentBoard === board.id ? "white" : "#F0F0F0",
                 cursor: "pointer",
               }}
+              className={`text-black dark:text-white ${currentBoard === board.id ? "bg-white dark:bg-gray-800" : "bg-[#F0F0F0] dark:bg-gray-950"}`}
             >
               {board.name}
             </button>

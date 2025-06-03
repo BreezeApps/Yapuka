@@ -91,7 +91,7 @@ export function ModalForm({
           id={id !== undefined ? id : ""}
           className={
             type === "board"
-              ? ""
+              ? "bg-[#F0F0F0] dark:bg-gray-800"
               : type !== "task"
               ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
               : previousData !== undefined
@@ -112,14 +112,13 @@ export function ModalForm({
                   borderBottom: "1px solid gray",
                   borderTopLeftRadius: "6px",
                   borderTopRightRadius: "6px",
-                  background: "#F0F0F0",
                   cursor: "pointer",
                 }
               : undefined
           }
         >
           <img
-            className={`h-6`}
+            className={`h-6 dark:invert`}
             src={
               previousData !== undefined
                 ? "/icons/modify.svg"
