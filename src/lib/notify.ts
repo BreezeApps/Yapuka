@@ -1,14 +1,6 @@
 import { sendNotification } from "@tauri-apps/plugin-notification";
+import { Task } from "./types/Task";
 
-type Task = {
-  id: number;
-  collection_id: number;
-  task_order: number;
-  names: string | null;
-  descriptions: string | null;
-  status: string;
-  due_date: string | null;
-};
 export const notifyTaskLate = (taskName: string) => {
   sendNotification({
     title: "⏰ Tâche en retard",
@@ -28,7 +20,7 @@ export const startTaskMonitoring = (tasks: Task[]) => {
     if (task.status !== "pending") return;
 
     const now = Date.now();
-    const due = new Date(task.due_date === null ? "" : task.due_date).getTime();
+    const due = task.due_date === null ? new Date().getTime() : task.due_date.getTime()
 
     // 🔔 Rappel 5 min avant
     const reminderTime = due - 10 * 60 * 1000;

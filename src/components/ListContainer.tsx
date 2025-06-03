@@ -57,8 +57,7 @@ export function ListContainer(
         if (tempboard === null) {
           const tempBoard2 = await dbService.getBoardById(0);
           if (tempBoard2 === null) {
-            const newBoardId = await dbService.createBoard({ id: 0, name: "Premier Onglet"});
-            console.log("Board ajouté avec ID :", newBoardId);
+            dbService.createDbBase()
           }
         }
         const collections = await dbService.getAllCollections()
@@ -92,11 +91,11 @@ export function ListContainer(
     });
     for (let i = 0; i < newList.length; i++) {
       const task = newList[i];
-      await dbService.updateTaskOrder({ id: task.id, task_order: i, collection_id: collectionId, names: "", descriptions: "", status: "pending", due_date: "" })
+      await dbService.updateTaskOrder({ id: task.id, task_order: i, collection_id: collectionId, names: "", descriptions: "", status: "pending", due_date: new Date() })
     }
   };
 
-  const handleCreateTask = async (_type: "board" | "collection" | "task", name: string, description?: string, date?: string, _color?: string, collection_id?: string) => {
+  const handleCreateTask = async (_type: "board" | "collection" | "task", name: string, description?: string, date?: Date, _color?: string, collection_id?: string) => {
     if (collection_id !== undefined) {
       const task_order = await dbService.getTasksByCollection(parseInt(collection_id))
       await dbService.createTask({ collection_id: parseInt(collection_id),  task_order: task_order.length, names: name, descriptions: description === undefined ? null : description, due_date: date === undefined ? null : date, id: 0, status: "pending" });
@@ -110,7 +109,7 @@ export function ListContainer(
     _type: "board" | "collection" | "task",
     name: string,
     _description?: string,
-    _date?: string,
+    _date?: Date,
     color?: string,
     _collection_id?: string,
     _id?: number
@@ -121,9 +120,9 @@ export function ListContainer(
 
   async function checkedDoneTask(task: Task, checked: boolean) {
     if (checked) {
-      await dbService.updateTask({ id: task.id, names: task.names === null ? "" : task.names, descriptions: task.descriptions === null ? "" : task.descriptions, due_date: task.due_date === null ? "" : task.due_date, collection_id: 0, task_order: 0, status: "done" });
+      await dbService.updateTask({ id: task.id, names: task.names === null ? "" : task.names, descriptions: task.descriptions === null ? "" : task.descriptions, due_date: task.due_date === null ? new Date() : task.due_date, collection_id: 0, task_order: 0, status: "done" });
     } else {
-      await dbService.updateTask({ id: task.id, names: task.names === null ? "" : task.names, descriptions: task.descriptions === null ? "" : task.descriptions, due_date: task.due_date === null ? "" : task.due_date, collection_id: 0, task_order: 0, status: "pending" });
+      await dbService.updateTask({ id: task.id, names: task.names === null ? "" : task.names, descriptions: task.descriptions === null ? "" : task.descriptions, due_date: task.due_date === null ? new Date() : task.due_date, collection_id: 0, task_order: 0, status: "pending" });
     }
     setReloadList(true)
   }
@@ -176,9 +175,7 @@ export function ListContainer(
                     () => {
                       setDescription(task.descriptions === null ? "" : task.descriptions)
                       let date = null
-                      if(task.due_date !== "") {
-                          date = task.due_date !== null ? new Date(task.due_date) : null
-                      }
+                      date = task.due_date !== null ? task.due_date : null
                       const dateText = (date !== null) ? `${getRelativeTime(date)} (${getDate(date)})` : t("NoDue")
                       setDuedate(dateText)
                       setShowTaskInfo(true)

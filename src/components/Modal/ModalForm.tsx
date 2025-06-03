@@ -1,6 +1,9 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DatePicker } from 'rsuite';
+
+import 'rsuite/dist/rsuite-no-reset.min.css';
 
 type ModalFormProps = {
   type: "task" | "collection" | "board";
@@ -9,7 +12,7 @@ type ModalFormProps = {
     type: "board" | "collection" | "task",
     name: string,
     description?: string,
-    date?: string,
+    date?: Date,
     color?: string,
     collection_id?: string,
     id?: number
@@ -19,7 +22,7 @@ type ModalFormProps = {
     name: string;
     description?: string;
     status?: string;
-    date?: string;
+    date?: Date;
     color?: string;
     collection_id?: string;
   };
@@ -40,7 +43,7 @@ export function ModalForm({
   const { t } = useTranslation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date());
   const [color, setColor] = useState<string | undefined>(undefined);
   const [firstReload, setFirstReload] = useState<boolean>(true);
 
@@ -51,7 +54,7 @@ export function ModalForm({
       setDescription(
         previousData.description === undefined ? "" : previousData.description
       );
-      setDate(previousData.date === undefined ? "" : previousData.date);
+      setDate(previousData.date === undefined ? new Date() : new Date(previousData.date));
       setColor(previousData.color);
     }
   }
@@ -62,7 +65,7 @@ export function ModalForm({
       setDescription(
         previousData.description === undefined ? "" : previousData.description
       );
-      setDate(previousData.date === undefined ? "" : previousData.date);
+      setDate(previousData.date === undefined ? new Date() : new Date(previousData.date));
       setColor(previousData.color);
     }
   }, [previousData]);
@@ -80,7 +83,7 @@ export function ModalForm({
     );
     setName("");
     setDescription("");
-    setDate("");
+    setDate(new Date());
     setColor(undefined);
   };
 
@@ -184,11 +187,19 @@ export function ModalForm({
           {type === "task" && (
             <div className="mt-4">
               <label className="block text-sm">{t("Date")}</label>
-              <input
+              {/* <input
                 type="datetime-local"
                 className="w-full border p-2 rounded"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+              /> */}
+              <DatePicker
+                oneTap
+                style={{ width: '100%' }}
+                format="MM/dd/yyyy HH:mm"
+                placement="topStart"
+                value={date}
+                onChange={(e) => setDate(e === null ? new Date() : e)}
               />
             </div>
           )}

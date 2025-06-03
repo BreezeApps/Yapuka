@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { ListContainer } from "./components/ListContainer";
 import { ModalForm } from "./components/Modal/ModalForm";
 import { DatabaseService } from "./lib/dbClass";
-import { setupOptions } from "./lib/setupOptions";
 import ErrorBoundary from "./components/ErrorBondary";
 // import { checkForAppUpdates } from "./lib/checkForUpdate";
 import * as path from "@tauri-apps/api/path";
@@ -43,7 +42,7 @@ function App() {
     name: string;
     description?: string;
     status?: string;
-    date?: string;
+    date?: Date;
     color?: string;
     collection_id?: string;
   }
@@ -76,7 +75,7 @@ function App() {
     type: "board" | "collection" | "task",
     name: string,
     description?: string | undefined,
-    date?: string | undefined,
+    date?: Date | undefined,
     color?: string | undefined,
     _collection_id?: string | undefined,
     id?: number | undefined
@@ -277,9 +276,9 @@ function App() {
             : task?.status,
         date:
           task?.due_date === null
-            ? ""
+            ? new Date()
             : task?.due_date === undefined
-            ? ""
+            ? new Date()
             : task?.due_date,
         collection_id:
           task?.collection_id === undefined
@@ -336,7 +335,6 @@ function App() {
   if (firstReload === true) {
     setTimeout(async () => {
       setReloadList(true);
-      setupOptions();
       setFirstReload(false);
       setRunBoarding(
         (await dbService.getOptionByKey("firstStart")) === "true" ? true : false

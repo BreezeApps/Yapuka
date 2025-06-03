@@ -6,6 +6,7 @@ import { copyFile, rename } from '@tauri-apps/plugin-fs';
 import { Board } from "./types/Board";
 import { Collection } from "./types/Collection";
 import { Task } from "./types/Task";
+import { setupOptions } from "./setupOptions";
 
 type Migration = {
   from: string;
@@ -73,6 +74,16 @@ export class DatabaseService {
       return false;
     }
     return true
+  }
+
+  async createDbBase(): Promise<void> {
+    setupOptions()
+    this.createBoard({ id: 0, name: "Premiere Onglet" });
+    this.createBoard({ id: 0, name: "Deuxieme Onglet" });
+    this.createCollection({ id: 0, board_id: 0, names: "Premiere Liste", color: "" })
+    this.createCollection({ id: 0, board_id: 0, names: "Deuxieme Liste", color: "" })
+    this.createTask({ id: 0, collection_id: 0, names: "Premiere Tache", due_date: new Date(), status: "pending", task_order: 0, descriptions: "Ceci est la premiere tache" })
+    this.createTask({ id: 0, collection_id: 0, names: "Deuxieme Tache", due_date: new Date(), status: "pending", task_order: 0, descriptions: "Ceci est la deuxieme tache" })
   }
 
   /* ==================== OPTIONS ==================== */

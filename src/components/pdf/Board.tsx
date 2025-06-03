@@ -85,7 +85,7 @@ function createTableRow(task: Task) {
       </View>
 
       <View style={styles.tableCol}>
-        <Text style={styles.tableCell}>{task.due_date === "" ? t("NoDue") : task.due_date === null ? t("NoDue") : getDate(new Date(task.due_date))}</Text>
+        <Text style={styles.tableCell}>{task.due_date === null ? t("NoDue") : getDate(new Date(task.due_date))}</Text>
       </View>
 
     </View>

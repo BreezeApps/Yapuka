@@ -5,7 +5,7 @@ type Task = {
   names: string | null;
   descriptions: string | null;
   status: "pending" | "done";
-  due_date: string | null;
+  due_date: Date | null;
 };
 
 export type { Task }
