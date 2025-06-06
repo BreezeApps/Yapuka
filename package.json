@@ -10,6 +10,11 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@fullcalendar/bootstrap5": "^6.1.17",
+    "@fullcalendar/core": "^6.1.17",
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/react": "^6.1.17",
+    "@fullcalendar/web-component": "^6.1.17",
     "@radix-ui/react-dialog": "^1.1.6",
     "@react-pdf/renderer": "^4.3.0",
     "@react-pdf/types": "^2.9.0",
@@ -22,6 +27,8 @@
     "@tauri-apps/plugin-process": "^2.2.0",
     "@tauri-apps/plugin-sql": "~2",
     "@tauri-apps/plugin-updater": "^2.5.0",
+    "bootstrap": "^5.3.6",
+    "bootstrap-icons": "^1.13.1",
     "class-variance-authority": "^0.7.1",
     "crypto-js": "^4.2.0",
     "framer-motion": "^12.9.7",

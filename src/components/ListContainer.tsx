@@ -6,6 +6,9 @@ import { startTaskMonitoring } from "../lib/notify";
 import { Task } from "../lib/types/Task";
 import { t } from "i18next";
 import { getDate, getRelativeTime } from "../lib/i18n";
+import { Checkbox } from "rsuite";
+import { EventSourceInput } from "@fullcalendar/core/index.js";
+import { db2events } from "../lib/bd2events";
 
 export function ListContainer(
   { 
@@ -17,7 +20,8 @@ export function ListContainer(
     contextMenuTask,
     setDescription,
     setDuedate,
-    setShowTaskInfo
+    setShowTaskInfo,
+    setEvents
   }:
   {
     boardId: number,
@@ -28,7 +32,8 @@ export function ListContainer(
     contextMenuTask: (e: React.MouseEvent, id: number) => void,
     setShowTaskInfo: (show: boolean) => void,
     setDescription: (description: string) => void,
-    setDuedate: (description: string) => void
+    setDuedate: (description: string) => void,
+    setEvents: (events: EventSourceInput) => void
   }) {
   const [board, setBoard] = useState<{ id: number; name: string }>({
     id: 0,
@@ -65,6 +70,7 @@ export function ListContainer(
 
         setCollections(collections);
         setTasks(allTasks);
+        setEvents(await db2events(allTasks))
 
         if (await dbService.getOptionByKey("notification") === "true") {
           startTaskMonitoring(allTasks)
@@ -174,15 +180,13 @@ export function ListContainer(
                   onMouseOver={
                     () => {
                       setDescription(task.descriptions === null ? "" : task.descriptions)
-                      let date = null
-                      date = task.due_date !== null ? task.due_date : null
-                      const dateText = (date !== null) ? `${getRelativeTime(date)} (${getDate(date)})` : t("NoDue")
+                      const dateText = ( task.due_date !== null ? `${getRelativeTime(task.due_date)} (${getDate(task.due_date)})` : t("NoDue"))
                       setDuedate(dateText)
                       setShowTaskInfo(true)
                     }}
                   onMouseOut={() => { setShowTaskInfo(false) }}
                 >
-                  {task.names}
+                  {/* {task.names}
                   <input
                     type="checkbox"
                     checked={task.status === "done"}
@@ -192,7 +196,16 @@ export function ListContainer(
                     name="Test"
                     id="tt"
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
+                  /> */}
+                  <Checkbox
+                    indeterminate={task.status !== "done"}
+                    checked={task.status === "done"}
+                    color="blue"
+                    onChange={(_value, e) => {
+                      checkedDoneTask(task, e);
+                    }}
+                  ></Checkbox>
+                  {task.names}
                   {/*<button className="inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
                         <img src="/icons/modify.svg" className="w-6 h-6" alt="" />
                     </button>*/}

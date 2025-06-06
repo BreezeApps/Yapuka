@@ -28,6 +28,7 @@ export function getCurrentLanguage() {
 }
 
 export function getDate(date: Date) {
+  date = new Date(date)
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
@@ -43,6 +44,7 @@ export function getDate(date: Date) {
 
 export function getRelativeTime(targetDate: Date) {
   const now = new Date();
+  targetDate = new Date(targetDate)
   const diffMs = targetDate.getTime() - now.getTime();
 
   const seconds = Math.round(diffMs / 1000);

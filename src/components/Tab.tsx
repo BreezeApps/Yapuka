@@ -13,6 +13,7 @@ type props = {
   setReloadList: (reload: boolean) => void;
   contextMenu: (e: React.MouseEvent, boardId: number) => void;
   setShowConfig: (show: boolean) => void;
+  setShowCalendar: (show: boolean) => void;
 };
 
 export function Tabs({
@@ -22,7 +23,8 @@ export function Tabs({
   handleCreateBoard,
   contextMenu,
   setShowConfig,
-  reloadList
+  reloadList,
+  setShowCalendar
 }: props) {
   const dbService = new DatabaseService()
   const [allBoards, setAllBoards] = useState<{ id: number, name: string }[]>([{ id: 0, name: "test"}]);
@@ -81,6 +83,14 @@ export function Tabs({
         className="flex h-7 w-7 cursor-pointer flex-row-reverse justify-self-end"
       >
         <img src="/icons/config.svg" className="dark:invert" />
+      </span>
+      <span
+        onClick={() => {
+          setShowCalendar(true);
+        }}
+        className="flex h-7 w-7 ml-2 mr-2 cursor-pointer flex-row-reverse justify-self-end"
+      >
+        <img src="/icons/calendar.svg" className="dark:invert" />
       </span>
     </>
   );

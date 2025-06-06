@@ -22,7 +22,6 @@ fn main() {
                 )
                 .build(),
         )
-        // .invoke_handler(tauri::generate_handler![get_path])
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");
     yapuka_lib::run()

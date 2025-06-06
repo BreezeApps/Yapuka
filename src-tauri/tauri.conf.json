@@ -26,7 +26,7 @@
   "app": {
     "windows": [
       {
-        "devtools": false,
+        "devtools": true,
         "title": "Yapuka",
         "width": 800,
         "height": 600

@@ -121,7 +121,7 @@ export function ModalForm({
           }
         >
           <img
-            className={`h-6 dark:invert`}
+            className={`h-6 ${type === "board" ? "dark:invert" : ""}`}
             src={
               previousData !== undefined
                 ? "/icons/modify.svg"

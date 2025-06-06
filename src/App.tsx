@@ -24,10 +24,13 @@ import { writeFile } from "@tauri-apps/plugin-fs";
 import { BoardPDF } from "./components/pdf/Board";
 import ContextMenu from "./components/contextMenu";
 import { OnBoarding } from "./components/OnBoarding";
+import { CalendarPage } from "./components/CalendarPage";
+import { EventSourceInput } from "@fullcalendar/core/index.js";
 
 function App() {
   const dbService = new DatabaseService();
   const [showConfig, setShowConfig] = useState<boolean>(false);
+  const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [runBoarding, setRunBoarding] = useState<boolean>(false);
   const [currentBoard, setCurrentBoard] = useState<number>(1);
   const [reloadList, setReloadList] = useState<boolean>(false);
@@ -54,6 +57,7 @@ function App() {
   const [showTaskInfo, setShowTaskInfo] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
   const [dueDate, setDueDate] = useState<string>("");
+  const [events, setEvents] = useState<EventSourceInput>([]);
   const { show } = useContextMenu();
   
   document.documentElement.classList.toggle(
@@ -347,6 +351,7 @@ function App() {
       <OnBoarding run={runBoarding} setRun={setRunBoarding} />
       <ErrorBoundary>
         <ConfigPage show={showConfig} setShow={setShowConfig} />
+        <CalendarPage show={showCalendar} setShow={setShowCalendar} events={events} />
       </ErrorBoundary>
       <div
         id="one-step"
@@ -360,6 +365,7 @@ function App() {
           handleCreateBoard={handleCreateBoard}
           contextMenu={displayBoardMenu}
           setShowConfig={setShowConfig}
+          setShowCalendar={setShowCalendar}
         />
       </div>
       <ModalForm
@@ -380,9 +386,10 @@ function App() {
           setDescription={setDescription}
           setDuedate={setDueDate}
           setShowTaskInfo={setShowTaskInfo}
+          setEvents={setEvents}
         />
       </div>
-      <div className={`p-4 rounded-2xl fixed top-0 right-0 bg-[#cecece] dark:bg-gray-800 ${showTaskInfo === true ? "" : "hidden"}`}>
+      <div className={`p-4 rounded-2xl fixed top-0 right-0 bg-[#cecece] dark:bg-gray-400 ${showTaskInfo === true ? "" : "hidden"}`}>
         <p>
           <strong>{t("Description")} :</strong> <br></br>
           {description}
