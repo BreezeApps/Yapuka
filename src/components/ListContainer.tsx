@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { DatabaseService } from "../lib/dbClass";
+import { DatabaseService } from "../lib/db/dbClass";
 import { ModalForm } from "./Modal/ModalForm";
 import { ReactSortable } from "react-sortablejs";
 import { startTaskMonitoring } from "../lib/notify";
 import { Task } from "../lib/types/Task";
 import { t } from "i18next";
 import { getDate, getRelativeTime } from "../lib/i18n";
-import { Checkbox } from "rsuite";
+import { Checkbox } from "./ui/checkbox";
 import { EventSourceInput } from "@fullcalendar/core/index.js";
 import { db2events } from "../lib/bd2events";
 
 export function ListContainer(
   { 
+    dbService,
     boardId,
     reloadList,
     setReloadList,
@@ -24,6 +25,7 @@ export function ListContainer(
     setEvents
   }:
   {
+    dbService: DatabaseService
     boardId: number,
     reloadList: boolean,
     setReloadList: (reload: boolean) => void ,
@@ -39,7 +41,6 @@ export function ListContainer(
     id: 0,
     name: "",
   });
-  const dbService = new DatabaseService()
   const [collections, setCollections] = useState<
     { id: number;
       board_id: number;
@@ -55,8 +56,6 @@ export function ListContainer(
   useEffect(() => {
     const initDatabase = async () => {
       try {
-        await dbService.init();
-
         const tempboard = await dbService.getBoardById(boardId);
         const allTasks = await dbService.getAllTasks()
         if (tempboard === null) {
@@ -70,7 +69,7 @@ export function ListContainer(
 
         setCollections(collections);
         setTasks(allTasks);
-        setEvents(await db2events(allTasks))
+        setEvents(await db2events(allTasks, dbService))
 
         if (await dbService.getOptionByKey("notification") === "true") {
           startTaskMonitoring(allTasks)
@@ -136,10 +135,10 @@ export function ListContainer(
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">{board.name} <ModalForm id="three-step" type="collection" onCreate={handleCreateCollection} /></h1>
-      {collections
+      {Array.isArray(collections) && collections
         .filter((collection) => collection.board_id === board.id)
         .map((collection) => {
-        const list = tasks.filter((task) => task.collection_id === collection.id)
+        const list = Array.isArray(tasks) && tasks.filter((task) => task.collection_id === collection.id)
         return (
           <div id="five-step" key={collection?.id} className="relative flex-col rounded-lg bg-gray-300 dark:bg-blue-950 shadow-sm border border-slate-200 dark:border-blue-700 min-w-[240px] gap-1 p-1.5 list float-left inline m-3">
             <h3
@@ -170,7 +169,7 @@ export function ListContainer(
                   contextMenuTask={contextMenuTask}
                 />
               ))} */}
-              {list.map((task) => (
+              {Array.isArray(list) && list.map((task) => (
                 <div
                   key={task.id}
                   id={"seven-step"}
@@ -198,13 +197,12 @@ export function ListContainer(
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   /> */}
                   <Checkbox
-                    indeterminate={task.status !== "done"}
                     checked={task.status === "done"}
-                    color="blue"
-                    onChange={(_value, e) => {
-                      checkedDoneTask(task, e);
+
+                    onChange={(e) => {
+                      checkedDoneTask(task, e.currentTarget.value === "on");
                     }}
-                  ></Checkbox>
+                  />
                   {task.names}
                   {/*<button className="inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
                         <img src="/icons/modify.svg" className="w-6 h-6" alt="" />

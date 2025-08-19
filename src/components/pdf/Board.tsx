@@ -92,18 +92,17 @@ function createTableRow(task: Task) {
   );
 };
 
-export const BoardPDF = ({ boardName, collections, tasks }: { boardName: string, collections: Collection[], tasks: Task[] }) => (
+export const BoardPDF = ({ boardName, collections, tasks }: { boardName: string, collections: Collection[] | undefined, tasks: Task[] | undefined }) => (
   <Document author='Yapuka' subject='Onglet PDF' title={boardName}>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
         <Text style={styles.title}>{boardName}</Text>
-        {collections.map((collection, index) => (
+        {collections?.map((collection, index) => (
           <View key={index} style={styles.section}>
             <Text style={styles.title}>{collection.names}</Text>
             <View style={styles.table}>
               {createTableHeader()}
-              {tasks
-                .filter((task) => task.collection_id === collection.id)
+              {tasks?.filter((task) => task.collection_id === collection.id)
                 .map((task, index) => (
                 <View key={index}>
                   {createTableRow(task)}

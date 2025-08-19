@@ -3,27 +3,37 @@ import * as path from '@tauri-apps/api/path';
 import { save, open } from "@tauri-apps/plugin-dialog";
 import { copyFile, rename } from '@tauri-apps/plugin-fs';
 
-import { Board } from "./types/Board";
-import { Collection } from "./types/Collection";
-import { Task } from "./types/Task";
-import { setupOptions } from "./setupOptions";
-
-type Migration = {
-  from: string;
-  to: string;
-  migrate: (db: Database) => Promise<void>;
-};
+import { Board } from "../types/Board";
+import { Collection } from "../types/Collection";
+import { Task } from "../types/Task";
+import { setupOptions } from "../setupOptions";
+import { getDbPath } from "./dbManager";
+import { Migrations } from "./migrations";
 
 export class DatabaseService {
-  private db: Database;
+  private db: Database | undefined;
 
   constructor() {
-    this.db = new Database("sqlite:tasks.db");
+    // Initialization must be called manually after construction
+    // or use DatabaseService.create() static method below
+  }
+
+  static async create(): Promise<DatabaseService> {
+    const instance = new DatabaseService();
+    await instance.init();
+    return instance;
   }
 
   async init() {
-    await this.db.execute("PRAGMA foreign_keys = ON;");
-    await this.runMigrations()
+    const dbPath = "sqlite:" + await getDbPath();
+    this.db = await Database.load(dbPath)
+    const migrations = new Migrations(this.db)
+    await this.db?.execute("PRAGMA foreign_keys = ON;");
+    await migrations.runMigrations()
+  }
+
+  async close() {
+    await this.db?.close()
   }
 
   async createBackup(): Promise<boolean> {
@@ -33,7 +43,7 @@ export class DatabaseService {
     });
     if (!filePath) return false;
     try {
-      await this.db.execute(`VACUUM INTO '${filePath.replace(/\.yapdb$/, ".db")}';`);
+      await this.db?.execute(`VACUUM INTO '${filePath.replace(/\.yapdb$/, ".db")}';`);
       rename(filePath.replace(/\.yapdb$/, ".db"), filePath.replace(/\.db$/, ".yapdb"));
     } catch (error) {
       console.error("Error creating backup:", error);
@@ -62,13 +72,13 @@ export class DatabaseService {
       return false;
     }
     try {
-      await this.db.execute(`ATTACH DATABASE '${await path.join(await path.appConfigDir(), "backup.db")}' AS 'backup';`);
-      // await this.db.execute("INSERT OR REPLACE INTO boards SELECT * FROM backup.boards;");
-      // await this.db.execute("INSERT OR REPLACE INTO collections SELECT * FROM backup.collcetions;");
-      // await this.db.execute("INSERT OR REPLACE INTO tasks SELECT * FROM backup.tasks;");
-      console.log(await this.db.execute("SELECT * FROM backup.boards;"));
-      await this.db.execute("DETACH DATABASE backup;");
-      // await this.db.execute("VACUUM;");
+      await this.db?.execute(`ATTACH DATABASE '${await path.join(await path.appConfigDir(), "backup.db")}' AS 'backup';`);
+      // await this.db?.execute("INSERT OR REPLACE INTO boards SELECT * FROM backup.boards;");
+      // await this.db?.execute("INSERT OR REPLACE INTO collections SELECT * FROM backup.collcetions;");
+      // await this.db?.execute("INSERT OR REPLACE INTO tasks SELECT * FROM backup.tasks;");
+      console.log(await this.db?.execute("SELECT * FROM backup.boards;"));
+      await this.db?.execute("DETACH DATABASE backup;");
+      // await this.db?.execute("VACUUM;");
     } catch (error) {
       console.error("Error importing backup:", error);
       return false;
@@ -88,146 +98,110 @@ export class DatabaseService {
 
   /* ==================== OPTIONS ==================== */
   async createOption(key: string, value: string): Promise<void> {
-    await this.db.execute("INSERT INTO options (key, value) VALUES (?, ?);", [key, value]);
+    await this.db?.execute("INSERT INTO options (key, value) VALUES (?, ?);", [key, value]);
   }
 
   async updateOption(key: string, newValue: string): Promise<void> {
-    await this.db.execute("UPDATE options SET value = ? WHERE key = ?;", [newValue, key]);
+    await this.db?.execute("UPDATE options SET value = ? WHERE key = ?;", [newValue, key]);
   }
 
   async removeOption(key: string): Promise<void> {
-    await this.db.execute("DELETE FROM options WHERE key = ?;", [key]);
+    await this.db?.execute("DELETE FROM options WHERE key = ?;", [key]);
   }
 
   async getOptionByKey(key: string): Promise<string | null> {
-    const result: { value: string }[] = await this.db.select("SELECT value FROM options WHERE key = ?;", [key]);
+    const result: { value: string }[] = await this.db?.select("SELECT value FROM options WHERE key = ?;", [key]);
     return result.length > 0 ? result[0].value : null;
   }
 
   async getAllOptions(): Promise<{ key: string; value: string }[]> {
-    return await this.db.select("SELECT * FROM options;");
+    return await this.db?.select("SELECT * FROM options;");
   }
-
-  async getCurrentDbVersion(): Promise<string> {
-    const result = await this.getOptionByKey("version");
-    return result || "1";
-  };
-    
-  async setDbVersion(version: string) {
-    await this.updateOption("version", version);
-  };
 
   /* ==================== BOARDS ==================== */
   async createBoard(board: Board): Promise<void> {
-    await this.db.execute("INSERT INTO boards (name) VALUES (?);", [board.name]);
+    await this.db?.execute("INSERT INTO boards (name) VALUES (?);", [board.name]);
   }
 
   async updateBoard(board: Board): Promise<void> {
-    await this.db.execute("UPDATE boards SET name = ? WHERE id = ?;", [board.name, board.id]);
+    await this.db?.execute("UPDATE boards SET name = ? WHERE id = ?;", [board.name, board.id]);
   }
 
   async removeBoard(id: number): Promise<void> {
-    await this.db.execute("DELETE FROM boards WHERE id = ?;", [id]);
+    await this.db?.execute("DELETE FROM boards WHERE id = ?;", [id]);
   }
 
   async getBoardById(id: number): Promise<Board | null> {
-    const result: Board[] = await this.db.select("SELECT * FROM boards WHERE id = ?;", [id]);
+    const result: Board[] = await this.db?.select("SELECT * FROM boards WHERE id = ?;", [id]);
     return result.length > 0 ? result[0] : null;
   }
 
   async getAllBoards(): Promise<Board[]> {
-    return await this.db.select("SELECT * FROM boards;");
+    return await this.db?.select("SELECT * FROM boards;");
   }
 
   /* ==================== COLLECTIONS ==================== */
   async createCollection(collection: Collection): Promise<void> {
-    await this.db.execute("INSERT INTO collections (board_id, names, color) VALUES (?, ?, ?);", [collection.board_id, collection.names, collection.color ?? null]);
+    await this.db?.execute("INSERT INTO collections (board_id, names, color) VALUES (?, ?, ?);", [collection.board_id, collection.names, collection.color ?? null]);
   }
 
   async updateCollection(collection: Collection): Promise<void> {
-    await this.db.execute("UPDATE collections SET names = ?, color = ? WHERE id = ?;", [collection.names, collection.color ?? null, collection.id]);
+    await this.db?.execute("UPDATE collections SET names = ?, color = ? WHERE id = ?;", [collection.names, collection.color ?? null, collection.id]);
   }
 
   async removeCollection(id: number): Promise<void> {
-    await this.db.execute("DELETE FROM collections WHERE id = ?;", [id]);
+    await this.db?.execute("DELETE FROM collections WHERE id = ?;", [id]);
   }
 
   async getCollectionById(id: number): Promise<Collection | null> {
-    const result: Collection[] = await this.db.select("SELECT * FROM collections WHERE id = ?;", [id]);
+    const result: Collection[] = await this.db?.select("SELECT * FROM collections WHERE id = ?;", [id]);
     return result.length > 0 ? result[0] : null;
   }
 
   async getAllCollections(): Promise<Collection[]> {
-    return await this.db.select("SELECT * FROM collections;");
+    return await this.db?.select("SELECT * FROM collections;");
   }
 
   async getCollectionsByBoard(boardId: number): Promise<Collection[]> {
-    return await this.db.select("SELECT * FROM collections WHERE board_id = ?;", [boardId]);
+    return await this.db?.select("SELECT * FROM collections WHERE board_id = ?;", [boardId]);
   }
 
   /* ==================== TASKS ==================== */
   async createTask(task: Task): Promise<void> {
-    await this.db.execute(
+    await this.db?.execute(
       "INSERT INTO tasks (collection_id, task_order, names, descriptions, due_date, status) VALUES (?, ?, ?, ?, ?, ?);",
       [task.collection_id, task.task_order, task.names ?? null, task.descriptions ?? null, task.due_date ?? null, "pending"]
     );
   }
 
   async updateTask(task: Task): Promise<void> {
-    await this.db.execute(
+    await this.db?.execute(
       "UPDATE tasks SET names = ?, descriptions = ?, due_date = ?, status = ? WHERE id = ?;",
       [task.names ?? null, task.descriptions ?? null, task.due_date ?? null, task.status ?? null, task.id]
     );
   }
 
   async updateTaskOrder(task: Task): Promise<void> {
-    await this.db.execute(
+    await this.db?.execute(
       "UPDATE tasks SET task_order = ?, collection_id = ? WHERE id = ?;",
       [task.task_order, task.collection_id, task.id]
     );
   }
 
   async removeTask(id: number): Promise<void> {
-    await this.db.execute("DELETE FROM tasks WHERE id = ?;", [id]);
+    await this.db?.execute("DELETE FROM tasks WHERE id = ?;", [id]);
   }
 
   async getTaskById(id: number): Promise<Task | null> {
-    const result: Task[] = await this.db.select("SELECT * FROM tasks WHERE id = ?;", [id]);
+    const result: Task[] = await this.db?.select("SELECT * FROM tasks WHERE id = ?;", [id]);
     return result.length > 0 ? result[0] : null;
   }
 
   async getAllTasks(): Promise<Task[]> {
-    return await this.db.select("SELECT * FROM tasks ORDER BY task_order;");
+    return await this.db?.select("SELECT * FROM tasks ORDER BY task_order;");
   }
 
   async getTasksByCollection(collectionId: number): Promise<Task[]> {
-    return await this.db.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY task_order;", [collectionId]);
+    return await this.db?.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY task_order;", [collectionId]);
   }
-
-  /* ==================== MIGRATIONS ==================== */
-
-  migrations: Migration[] = [
-    {
-      from: "0.1.0",
-      to: "1",
-      migrate: async (db) => {
-        await db.execute("ALTER TABLE tasks ADD COLUMN status TEXT DEFAULT 'pending'");
-      },
-    }
-  ];
-
-  async runMigrations() {
-    let currentVersion = await this.getCurrentDbVersion();
-
-    for (const migration of this.migrations) {
-      if (migration.from === currentVersion) {
-        console.log(`Migration de ${migration.from} vers ${migration.to}`);
-        await migration.migrate(this.db);
-        await this.setDbVersion(migration.to);
-        currentVersion = migration.to;
-      }
-    }
-
-    console.log("Base de données à jour !");
-  };
 }

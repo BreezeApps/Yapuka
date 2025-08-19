@@ -91,14 +91,14 @@ function createTableRow(task: Task) {
   );
 };
 
-export const CollectionPDF = ({ collectionName, tasks }: { collectionName: string, tasks: Task[] }) => (
+export const CollectionPDF = ({ collectionName, tasks }: { collectionName: string, tasks: Task[] | undefined }) => (
   <Document author='Yapuka' subject='List PDF' title={collectionName}>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
         <Text style={styles.title}>{collectionName}</Text>
         <View style={styles.table}>
           {createTableHeader()}
-          {tasks.map((task, index) => (
+          {tasks?.map((task, index) => (
             <View key={index}>
               {createTableRow(task)}
             </View>

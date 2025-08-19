@@ -1,6 +1,6 @@
 import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
 import { useSetState } from "react-use";
-import { DatabaseService } from "../lib/dbClass";
+import { DatabaseService } from "../lib/db/dbClass";
 import { useTranslation } from "react-i18next";
 
 interface State {
@@ -8,13 +8,14 @@ interface State {
 }
 
 export function OnBoarding({
+  dbService,
   run,
   setRun,
 }: {
+  dbService: DatabaseService
   run: boolean;
   setRun: (run: boolean) => void;
 }) {
-  const dbService = new DatabaseService();
   const { t } = useTranslation();
   const [{ steps }] = useSetState<State>({
     steps: [

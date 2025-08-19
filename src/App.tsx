@@ -3,7 +3,7 @@ import { ConfigPage } from "./components/ConfigPage";
 import React, { useEffect, useState } from "react";
 import { ListContainer } from "./components/ListContainer";
 import { ModalForm } from "./components/Modal/ModalForm";
-import { DatabaseService } from "./lib/dbClass";
+import { DatabaseService } from "./lib/db/dbClass";
 import ErrorBoundary from "./components/ErrorBondary";
 // import { checkForAppUpdates } from "./lib/checkForUpdate";
 import * as path from "@tauri-apps/api/path";
@@ -27,8 +27,7 @@ import { OnBoarding } from "./components/OnBoarding";
 import { CalendarPage } from "./components/CalendarPage";
 import { EventSourceInput } from "@fullcalendar/core/index.js";
 
-function App() {
-  const dbService = new DatabaseService();
+function App({ dbService, reloadDb }: { dbService: DatabaseService, reloadDb: Promise<void> }) {
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [runBoarding, setRunBoarding] = useState<boolean>(false);
@@ -37,19 +36,19 @@ function App() {
   const [firstReload, setFirstReload] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [infoType, setInfoType] = useState<
-  "board" | "collection" | "task" | null
+    "board" | "collection" | "task" | null
   >(null);
   const [editInfo, setEditInfo] = useState<
-  | {
-    id: number;
-    name: string;
-    description?: string;
-    status?: string;
-    date?: Date;
-    color?: string;
-    collection_id?: string;
-  }
-  | undefined
+    | {
+        id: number;
+        name: string;
+        description?: string;
+        status?: string;
+        date?: Date;
+        color?: string;
+        collection_id?: string;
+      }
+    | undefined
   >(undefined);
   const [allBoards, setAllBoards] = useState<{ id: number; name: string }[]>([
     { id: 0, name: "test" },
@@ -59,7 +58,7 @@ function App() {
   const [dueDate, setDueDate] = useState<string>("");
   const [events, setEvents] = useState<EventSourceInput>([]);
   const { show } = useContextMenu();
-  
+
   document.documentElement.classList.toggle(
     "dark",
     localStorage.theme === "dark" ||
@@ -71,7 +70,7 @@ function App() {
     _type: "board" | "collection" | "task",
     name: string
   ) => {
-    await dbService.createBoard({ id: 0, name: name });
+    await dbService?.createBoard({ id: 0, name: name });
     setReloadList(true);
   };
 
@@ -85,12 +84,12 @@ function App() {
     id?: number | undefined
   ) => {
     if (type === "board") {
-      await dbService.updateBoard({
+      await dbService?.updateBoard({
         id: id === undefined ? 0 : id,
         name: name,
       });
     } else if (type === "collection") {
-      await dbService.updateCollection({
+      await dbService?.updateCollection({
         id: id === undefined ? 0 : id,
         board_id: 0,
         names: name,
@@ -98,7 +97,7 @@ function App() {
       });
     } else if (type === "task") {
       await dbService
-        .getTaskById(id === undefined ? 0 : id)
+        ?.getTaskById(id === undefined ? 0 : id)
         .then(async (task) => {
           await dbService.updateTask({
             id: id === undefined ? 0 : id,
@@ -150,13 +149,13 @@ function App() {
         })
       );
       if (deleteConfirm) {
-        await dbService.removeBoard(boardId);
+        await dbService?.removeBoard(boardId);
         window.location.reload();
       }
     } else if (id === "print") {
-      const board = await dbService.getBoardById(boardId);
-      const collections = await dbService.getCollectionsByBoard(boardId);
-      const tasks = await dbService.getAllTasks();
+      const board = await dbService?.getBoardById(boardId);
+      const collections = await dbService?.getCollectionsByBoard(boardId);
+      const tasks = await dbService?.getAllTasks();
       const filePath = await save({
         filters: [{ name: "PDF", extensions: ["pdf"] }],
         defaultPath:
@@ -169,7 +168,7 @@ function App() {
         <BoardPDF
           boardName={board?.name === undefined ? "" : board.name}
           collections={collections}
-          tasks={tasks}
+          tasks={tasks ?? []}
         />
       );
       const blob = await pdf(pdfDoc).toBlob();
@@ -195,7 +194,7 @@ function App() {
   }: ItemParams<any, any>) {
     const collection_id = props.collection_id;
     if (id === "edit") {
-      const collection = await dbService.getCollectionById(collection_id);
+      const collection = await dbService?.getCollectionById(collection_id);
       setInfoType("collection");
       setEditInfo({
         id: collection_id,
@@ -209,17 +208,17 @@ function App() {
         t("Are_Sure", {
           type: t("list"),
           title: await dbService
-            .getCollectionById(collection_id)
+            ?.getCollectionById(collection_id)
             .then((collection) => collection?.names),
         })
       );
       if (deleteConfirm) {
-        await dbService.removeCollection(collection_id);
+        await dbService?.removeCollection(collection_id);
         setReloadList(true);
       }
     } else if (id === "print") {
-      const collection = await dbService.getCollectionById(collection_id);
-      const tasks = await dbService.getTasksByCollection(collection_id);
+      const collection = await dbService?.getCollectionById(collection_id);
+      const tasks = await dbService?.getTasksByCollection(collection_id);
       const filePath = await save({
         filters: [{ name: "PDF", extensions: ["pdf"] }],
         defaultPath:
@@ -256,7 +255,7 @@ function App() {
   async function handleTaskItemClick({ id, props }: ItemParams<any, any>) {
     const task_id = props.task_id;
     if (id === "edit") {
-      const task = await dbService.getTaskById(task_id);
+      const task = await dbService?.getTaskById(task_id);
       setInfoType("task");
       setEditInfo({
         id: task_id,
@@ -295,12 +294,12 @@ function App() {
         t("Are_Sure", {
           type: t("task"),
           title: await dbService
-            .getTaskById(task_id)
+            ?.getTaskById(task_id)
             .then((task) => task?.names),
         })
       );
       if (deleteConfirm) {
-        await dbService.removeTask(task_id);
+        await dbService?.removeTask(task_id);
         setReloadList(true);
       }
     }
@@ -315,7 +314,7 @@ function App() {
         permissionGranted = permission === "granted";
       }
       if (permissionGranted) {
-        await dbService.updateOption("notification", "true");
+        await dbService?.updateOption("notification", "true");
       }
     }
     handleNotificationPermission();
@@ -323,7 +322,7 @@ function App() {
 
   useEffect(() => {
     const initBoards = async () => {
-      setAllBoards(await dbService.getAllBoards());
+      setAllBoards((await dbService?.getAllBoards()) ?? []);
     };
     initBoards();
   }, [reloadList]);
@@ -341,23 +340,38 @@ function App() {
       setReloadList(true);
       setFirstReload(false);
       setRunBoarding(
-        (await dbService.getOptionByKey("firstStart")) === "true" ? true : false
+        (await dbService?.getOptionByKey("firstStart")) === "true"
+          ? true
+          : false
       );
     }, 500);
   }
 
   return (
     <div className="w-full h-full bg-gray-100 dark:bg-gray-900 top-0 absolute">
-      <OnBoarding run={runBoarding} setRun={setRunBoarding} />
+      <OnBoarding
+        dbService={dbService}
+        run={runBoarding}
+        setRun={setRunBoarding}
+      />
       <ErrorBoundary>
-        <ConfigPage show={showConfig} setShow={setShowConfig} />
-        <CalendarPage show={showCalendar} setShow={setShowCalendar} events={events} />
+        <ConfigPage
+          dbService={dbService}
+          show={showConfig}
+          setShow={setShowConfig}
+        />
+        <CalendarPage
+          show={showCalendar}
+          setShow={setShowCalendar}
+          events={events}
+        />
       </ErrorBoundary>
       <div
         id="one-step"
         className="fixed left-0 top-0 flex w-full justify-between pt-4 text-center shadow-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
       >
         <Tabs
+          dbService={dbService}
           currentBoard={currentBoard}
           reloadList={reloadList}
           setReloadList={setReloadList}
@@ -377,6 +391,7 @@ function App() {
       />
       <div className="mt-13 w-full bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white">
         <ListContainer
+          dbService={dbService}
           boardId={currentBoard}
           reloadList={reloadList}
           setReloadList={setReloadList}
@@ -389,14 +404,19 @@ function App() {
           setEvents={setEvents}
         />
       </div>
-      <div className={`p-4 rounded-2xl fixed top-0 right-0 bg-[#cecece] dark:bg-gray-400 ${showTaskInfo === true ? "" : "hidden"}`}>
+      <div
+        className={`p-4 rounded-2xl fixed top-0 right-0 bg-[#cecece] dark:bg-gray-400 ${
+          showTaskInfo === true ? "" : "hidden"
+        }`}
+      >
         <p>
           <strong>{t("Description")} :</strong> <br></br>
           {description}
           {/* {task.descriptions === "" ? t("NoDescription") : task.descriptions} */}
         </p>
         <p>
-          <strong>{t("Duedate")} :</strong><br></br>
+          <strong>{t("Duedate")} :</strong>
+          <br></br>
           <span className="capitalize">{dueDate}</span>
         </p>
       </div>

@@ -1,41 +1,75 @@
-import { DatabaseService } from "./dbClass";
+import Database from "@tauri-apps/plugin-sql";
 
-export async function setupOptions() {
-    const dbService = new DatabaseService()
-    await dbService.init();
-    if (await dbService.getOptionByKey("version") === undefined) {
-        try {
-            await dbService.createOption("version", "")
-        } catch { console.log("Error createOptions version") }
+export async function setupOptions(db: Database) {
+  if ((await getOptionByKey("version", db)) === undefined) {
+    try {
+      await createOption("version", "", db);
+    } catch {
+      console.log("Error createOptions version");
     }
-    if (await dbService.getOptionByKey("lang") === undefined) {
-        try {
-            await dbService.createOption("lang", "fr")
-        } catch { console.log("Error createOptions lang") }
+  }
+  if ((await getOptionByKey("lang", db)) === undefined) {
+    try {
+      await createOption("lang", "fr", db);
+    } catch {
+      console.log("Error createOptions lang");
     }
-    if (await dbService.getOptionByKey("theme") === undefined) {
-        try {
-            await dbService.createOption("theme", "system")
-        } catch { console.log("Error createOptions theme") }
+  }
+  if ((await getOptionByKey("theme", db)) === undefined) {
+    try {
+      await createOption("theme", "system", db);
+    } catch {
+      console.log("Error createOptions theme");
     }
-    if (await dbService.getOptionByKey("syncActive") === undefined) {
-        try {
-            await dbService.createOption("syncActive", "false")
-        } catch { console.log("Error createOptions syncActive") }
+  }
+  if ((await getOptionByKey("syncActive", db)) === undefined) {
+    try {
+      await createOption("syncActive", "false", db);
+    } catch {
+      console.log("Error createOptions syncActive");
     }
-    if (await dbService.getOptionByKey("syncUrl") === undefined) {
-        try {
-            await dbService.createOption("syncUrl", "")
-        } catch { console.log("Error createOptions syncUrl") }
+  }
+  if ((await getOptionByKey("syncUrl", db)) === undefined) {
+    try {
+      await createOption("syncUrl", "", db);
+    } catch {
+      console.log("Error createOptions syncUrl");
     }
-    if (await dbService.getOptionByKey("notifications") === undefined) {
-        try {
-            await dbService.createOption("notifications", "false")
-        } catch { console.log("Error createOptions notifications") }
+  }
+  if ((await getOptionByKey("notifications", db)) === undefined) {
+    try {
+      await createOption("notifications", "false", db);
+    } catch {
+      console.log("Error createOptions notifications");
     }
-    if (await dbService.getOptionByKey("firstStart") === undefined) {
-        try {
-            await dbService.createOption("firstStart", "true")
-        } catch { console.log("Error createOptions firstStart") }
+  }
+  if ((await getOptionByKey("firstStart", db)) === undefined) {
+    try {
+      await createOption("firstStart", "true", db);
+    } catch {
+      console.log("Error createOptions firstStart");
     }
+  }
+}
+
+async function createOption(
+  key: string,
+  value: string,
+  db: Database
+): Promise<void> {
+  await db.execute("INSERT INTO options (key, value) VALUES (?, ?);", [
+    key,
+    value,
+  ]);
+}
+
+async function getOptionByKey(
+  key: string,
+  db: Database
+): Promise<string | null> {
+  const result: { value: string }[] = await db.select(
+    "SELECT value FROM options WHERE key = ?;",
+    [key]
+  );
+  return result.length > 0 ? result[0].value : null;
 }

@@ -1,9 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DatePicker } from 'rsuite';
+import { DatePicker } from "rsuite";
 
-import 'rsuite/dist/rsuite-no-reset.min.css';
+import "rsuite/dist/rsuite-no-reset.min.css";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
 
 type ModalFormProps = {
   type: "task" | "collection" | "board";
@@ -54,7 +58,11 @@ export function ModalForm({
       setDescription(
         previousData.description === undefined ? "" : previousData.description
       );
-      setDate(previousData.date === undefined ? new Date() : new Date(previousData.date));
+      setDate(
+        previousData.date === undefined
+          ? new Date()
+          : new Date(previousData.date)
+      );
       setColor(previousData.color);
     }
   }
@@ -65,7 +73,11 @@ export function ModalForm({
       setDescription(
         previousData.description === undefined ? "" : previousData.description
       );
-      setDate(previousData.date === undefined ? new Date() : new Date(previousData.date));
+      setDate(
+        previousData.date === undefined
+          ? new Date()
+          : new Date(previousData.date)
+      );
       setColor(previousData.color);
     }
   }, [previousData]);
@@ -166,19 +178,17 @@ export function ModalForm({
           </Dialog.Title>
 
           <div className="mt-4">
-            <label className="block text-sm">{t("Name")}</label>
-            <input
+            <Label>{t("Name")}</Label>
+            <Input
               type="text"
-              className="w-full border p-2 rounded"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
           {type === "task" && (
             <div className="mt-4">
-              <label className="block text-sm">{t("Description")}</label>
-              <textarea
-                className="w-full border p-2 rounded"
+              <Label>{t("Description")}</Label>
+              <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -186,7 +196,7 @@ export function ModalForm({
           )}
           {type === "task" && (
             <div className="mt-4">
-              <label className="block text-sm">{t("Date")}</label>
+              <Label>{t("Date")}</Label>
               {/* <input
                 type="datetime-local"
                 className="w-full border p-2 rounded"
@@ -195,7 +205,7 @@ export function ModalForm({
               /> */}
               <DatePicker
                 oneTap
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 format="MM/dd/yyyy HH:mm"
                 placement="topStart"
                 value={date}
@@ -207,10 +217,9 @@ export function ModalForm({
           {/* Color pour collection uniquement */}
           {type === "collection" && (
             <div className="mt-4">
-              <label className="block text-sm">{t("Color")}</label>
-              <input
+              <Label>{t("Color")}</Label>
+              <Input
                 type="color"
-                className="w-full border h-10 p-2 rounded"
                 value={color ? color : "#000000"}
                 onChange={(e) => setColor(e.target.value)}
               />
@@ -218,20 +227,19 @@ export function ModalForm({
           )}
 
           <div className="mt-4 flex justify-end space-x-2">
-            <Dialog.Close className="bg-gray-300 px-4 py-2 rounded">
-              {t("Cancel")}
+            <Dialog.Close>
+              <Button variant={"secondary"}>{t("Cancel")}</Button>
             </Dialog.Close>
-            <Dialog.Close
-              onClick={handleSubmit}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              {t(
-                type === "task"
-                  ? "Add_the_Task"
-                  : type === "collection"
-                  ? "Add_the_List"
-                  : "Add_the_Tab"
-              )}
+            <Dialog.Close>
+              <Button onClick={handleSubmit}>
+                {t(
+                  type === "task"
+                    ? "Add_the_Task"
+                    : type === "collection"
+                    ? "Add_the_List"
+                    : "Add_the_Tab"
+                )}
+              </Button>
             </Dialog.Close>
           </div>
         </Dialog.Content>
