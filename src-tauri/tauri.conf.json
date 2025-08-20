@@ -51,11 +51,7 @@
     "longDescription": "Yapuka est une application open-source permettant de gérer facilement ses tâches avec une interface moderne et fluide.",
     "linux": {
       "deb": {
-        "depends": ["libwebkit2gtk-4.0-37", "libgtk-3-0"],
-        "desktopTemplate": "icons/yapuka.desktop"
-      },
-      "appimage": {
-        "bundleMediaFramework": false
+        "depends": ["libwebkit2gtk-4.0-37", "libgtk-3-0"]
       }
     },
     "externalBin": [],
