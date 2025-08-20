@@ -18,7 +18,7 @@
         "windows": {
           "installMode": "passive"
         },
-        "endpoints": ["https://breezeapps.marvideo.fr/updates/yapuka/latest.json"],
+        "endpoints": ["https://github.com/BreezeApps/Yapuka/releases/latest/download/latest.json"],
         "dialog": true,
         "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ1QkFCNDI4OUE2QTYyNjMKUldSalltcWFLTFM2MVhrTTR4ZkZZZFhZWWVlMVN6b2J0dUw0b05IS3NhSVlHbHpTbER4dWFpaUsK"
       }
@@ -38,7 +38,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "rpm", "appimage", "nsis", "msi", "app", "dmg"],
+    "targets": ["deb", "rpm", "nsis", "msi", "app", "dmg"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
