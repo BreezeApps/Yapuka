@@ -24,12 +24,16 @@ import { writeFile } from "@tauri-apps/plugin-fs";
 import { BoardPDF } from "./components/pdf/Board";
 import ContextMenu from "./components/contextMenu";
 import { OnBoarding } from "./components/OnBoarding";
-import { CalendarPage } from "./components/CalendarPage";
-import { EventSourceInput } from "@fullcalendar/core/index.js";
+import { changeLanguage } from "./lib/i18n";
 
-function App({ dbService, reloadDb }: { dbService: DatabaseService, reloadDb: Promise<void> }) {
+function App({
+  dbService,
+  reloadDb,
+}: {
+  dbService: DatabaseService;
+  reloadDb: () => Promise<void>;
+}) {
   const [showConfig, setShowConfig] = useState<boolean>(false);
-  const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [runBoarding, setRunBoarding] = useState<boolean>(false);
   const [currentBoard, setCurrentBoard] = useState<number>(1);
   const [reloadList, setReloadList] = useState<boolean>(false);
@@ -56,7 +60,6 @@ function App({ dbService, reloadDb }: { dbService: DatabaseService, reloadDb: Pr
   const [showTaskInfo, setShowTaskInfo] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
   const [dueDate, setDueDate] = useState<string>("");
-  const [events, setEvents] = useState<EventSourceInput>([]);
   const { show } = useContextMenu();
 
   document.documentElement.classList.toggle(
@@ -321,10 +324,21 @@ function App({ dbService, reloadDb }: { dbService: DatabaseService, reloadDb: Pr
   }, []);
 
   useEffect(() => {
+    const initOptions = async () => {
+      const theme = await dbService.getOptionByKey("theme");
+      if (theme === "system") {
+        localStorage.removeItem("theme");
+      } else {
+        localStorage.theme = theme ?? "system";
+      }
+      const lang = await dbService.getOptionByKey("lang");
+      changeLanguage(lang ?? "en_US");
+    };
     const initBoards = async () => {
       setAllBoards((await dbService?.getAllBoards()) ?? []);
     };
     initBoards();
+    initOptions()
   }, [reloadList]);
 
   // const handleCreateTask = async (name: string, description: string) => {
@@ -356,15 +370,16 @@ function App({ dbService, reloadDb }: { dbService: DatabaseService, reloadDb: Pr
       />
       <ErrorBoundary>
         <ConfigPage
+          reloadDb={reloadDb}
           dbService={dbService}
           show={showConfig}
           setShow={setShowConfig}
         />
-        <CalendarPage
+        {/* <CalendarPage
           show={showCalendar}
           setShow={setShowCalendar}
           events={events}
-        />
+        /> */}
       </ErrorBoundary>
       <div
         id="one-step"
@@ -379,7 +394,6 @@ function App({ dbService, reloadDb }: { dbService: DatabaseService, reloadDb: Pr
           handleCreateBoard={handleCreateBoard}
           contextMenu={displayBoardMenu}
           setShowConfig={setShowConfig}
-          setShowCalendar={setShowCalendar}
         />
       </div>
       <ModalForm
@@ -401,7 +415,6 @@ function App({ dbService, reloadDb }: { dbService: DatabaseService, reloadDb: Pr
           setDescription={setDescription}
           setDuedate={setDueDate}
           setShowTaskInfo={setShowTaskInfo}
-          setEvents={setEvents}
         />
       </div>
       <div

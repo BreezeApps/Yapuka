@@ -30,6 +30,9 @@ export class DatabaseService {
     const migrations = new Migrations(this.db)
     await this.db?.execute("PRAGMA foreign_keys = ON;");
     await migrations.runMigrations()
+    if (await this.getBoardById(1) === null) {
+      await this.createDbBase()
+    }
   }
 
   async close() {
@@ -87,13 +90,13 @@ export class DatabaseService {
   }
 
   async createDbBase(): Promise<void> {
-    setupOptions()
-    this.createBoard({ id: 0, name: "Premiere Onglet" });
-    this.createBoard({ id: 0, name: "Deuxieme Onglet" });
-    this.createCollection({ id: 0, board_id: 0, names: "Premiere Liste", color: "" })
-    this.createCollection({ id: 0, board_id: 0, names: "Deuxieme Liste", color: "" })
-    this.createTask({ id: 0, collection_id: 0, names: "Premiere Tache", due_date: new Date(), status: "pending", task_order: 0, descriptions: "Ceci est la premiere tache" })
-    this.createTask({ id: 0, collection_id: 0, names: "Deuxieme Tache", due_date: new Date(), status: "pending", task_order: 0, descriptions: "Ceci est la deuxieme tache" })
+    await setupOptions(this.db!)
+    await this.createBoard({ id: 0, name: "Premiere Onglet" });
+    await this.createBoard({ id: 0, name: "Deuxieme Onglet" });
+    await this.createCollection({ id: 0, board_id: 1, names: "Premiere Liste", color: "" })
+    await this.createCollection({ id: 0, board_id: 1, names: "Deuxieme Liste", color: "" })
+    await this.createTask({ id: 0, collection_id: 1, names: "Premiere Tache", due_date: new Date(), status: "pending", task_order: 0, descriptions: "Ceci est la premiere tache" })
+    await this.createTask({ id: 0, collection_id: 1, names: "Deuxieme Tache", due_date: new Date(), status: "pending", task_order: 0, descriptions: "Ceci est la deuxieme tache" })
   }
 
   /* ==================== OPTIONS ==================== */
@@ -110,12 +113,12 @@ export class DatabaseService {
   }
 
   async getOptionByKey(key: string): Promise<string | null> {
-    const result: { value: string }[] = await this.db?.select("SELECT value FROM options WHERE key = ?;", [key]);
+    const result: { value: string }[] = (await this.db?.select("SELECT value FROM options WHERE key = ?;", [key])) ?? [];
     return result.length > 0 ? result[0].value : null;
   }
 
   async getAllOptions(): Promise<{ key: string; value: string }[]> {
-    return await this.db?.select("SELECT * FROM options;");
+    return (await this.db?.select("SELECT * FROM options;")) ?? [];
   }
 
   /* ==================== BOARDS ==================== */
@@ -132,12 +135,12 @@ export class DatabaseService {
   }
 
   async getBoardById(id: number): Promise<Board | null> {
-    const result: Board[] = await this.db?.select("SELECT * FROM boards WHERE id = ?;", [id]);
+    const result: Board[] = (await this.db?.select("SELECT * FROM boards WHERE id = ?;", [id])) ?? [];
     return result.length > 0 ? result[0] : null;
   }
 
   async getAllBoards(): Promise<Board[]> {
-    return await this.db?.select("SELECT * FROM boards;");
+    return (await this.db?.select("SELECT * FROM boards;")) ?? [];
   }
 
   /* ==================== COLLECTIONS ==================== */
@@ -154,16 +157,16 @@ export class DatabaseService {
   }
 
   async getCollectionById(id: number): Promise<Collection | null> {
-    const result: Collection[] = await this.db?.select("SELECT * FROM collections WHERE id = ?;", [id]);
+    const result: Collection[] = (await this.db?.select("SELECT * FROM collections WHERE id = ?;", [id])) ?? [];
     return result.length > 0 ? result[0] : null;
   }
 
   async getAllCollections(): Promise<Collection[]> {
-    return await this.db?.select("SELECT * FROM collections;");
+    return (await this.db?.select("SELECT * FROM collections;")) ?? [];
   }
 
   async getCollectionsByBoard(boardId: number): Promise<Collection[]> {
-    return await this.db?.select("SELECT * FROM collections WHERE board_id = ?;", [boardId]);
+    return (await this.db?.select("SELECT * FROM collections WHERE board_id = ?;", [boardId])) ?? [];
   }
 
   /* ==================== TASKS ==================== */
@@ -193,15 +196,19 @@ export class DatabaseService {
   }
 
   async getTaskById(id: number): Promise<Task | null> {
-    const result: Task[] = await this.db?.select("SELECT * FROM tasks WHERE id = ?;", [id]);
+    const result: Task[] = (await this.db?.select("SELECT * FROM tasks WHERE id = ?;", [id])) ?? [];
     return result.length > 0 ? result[0] : null;
   }
 
   async getAllTasks(): Promise<Task[]> {
-    return await this.db?.select("SELECT * FROM tasks ORDER BY task_order;");
+    return (await this.db?.select("SELECT * FROM tasks ORDER BY task_order;")) ?? [];
   }
 
   async getTasksByCollection(collectionId: number): Promise<Task[]> {
-    return await this.db?.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY task_order;", [collectionId]);
+    return (await this.db?.select("SELECT * FROM tasks WHERE collection_id = ? ORDER BY task_order;", [collectionId])) ?? [];
+  }
+
+  async getTasksByBoard(boardId: number): Promise<Task[]> {
+    return (await this.db?.select("SELECT * FROM tasks WHERE collection_id IN (SELECT id FROM collections WHERE board_id = ?) ORDER BY task_order;", [boardId])) ?? [];
   }
 }

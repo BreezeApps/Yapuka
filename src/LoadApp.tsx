@@ -31,7 +31,7 @@ export function LoadApp() {
 
   return (
     <ErrorBoundary>
-      <App dbService={dbService} reloadDb={initDatabase()} />
+      <App dbService={dbService} reloadDb={initDatabase} />
     </ErrorBoundary>
   );
 }

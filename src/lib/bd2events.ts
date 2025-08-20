@@ -1,4 +1,3 @@
-import { EventSourceInput } from "@fullcalendar/core";
 import { Task } from "./types/Task";
 import { DatabaseService } from "./db/dbClass";
 
@@ -12,9 +11,9 @@ async function getCollectionColor(dbService: DatabaseService) {
     return allCollection
 }
 
-export async function db2events(events: Task[], dbService: DatabaseService): Promise<EventSourceInput> {
+export async function db2events(events: Task[], dbService: DatabaseService): Promise<Record<string, any>[]> {
     const collectionColors = await getCollectionColor(dbService);
-    const eventsReturn: EventSourceInput = events.map(event => ({
+    const eventsReturn: Record<string, any>[] = events.map(event => ({
             id: event.id.toString(),
             title: event.names === null ? '' : event.names,
             start: event.due_date ? new Date(event.due_date) : new Date(),

@@ -1,49 +1,49 @@
 import Database from "@tauri-apps/plugin-sql";
 
 export async function setupOptions(db: Database) {
-  if ((await getOptionByKey("version", db)) === undefined) {
+  if ((await getOptionByKey("version", db)) === null) {
     try {
       await createOption("version", "", db);
     } catch {
       console.log("Error createOptions version");
     }
   }
-  if ((await getOptionByKey("lang", db)) === undefined) {
+  if ((await getOptionByKey("lang", db)) === null) {
     try {
       await createOption("lang", "fr", db);
     } catch {
       console.log("Error createOptions lang");
     }
   }
-  if ((await getOptionByKey("theme", db)) === undefined) {
+  if ((await getOptionByKey("theme", db)) === null) {
     try {
       await createOption("theme", "system", db);
     } catch {
       console.log("Error createOptions theme");
     }
   }
-  if ((await getOptionByKey("syncActive", db)) === undefined) {
+  if ((await getOptionByKey("syncActive", db)) === null) {
     try {
       await createOption("syncActive", "false", db);
     } catch {
       console.log("Error createOptions syncActive");
     }
   }
-  if ((await getOptionByKey("syncUrl", db)) === undefined) {
+  if ((await getOptionByKey("syncUrl", db)) === null) {
     try {
       await createOption("syncUrl", "", db);
     } catch {
       console.log("Error createOptions syncUrl");
     }
   }
-  if ((await getOptionByKey("notifications", db)) === undefined) {
+  if ((await getOptionByKey("notifications", db)) === null) {
     try {
       await createOption("notifications", "false", db);
     } catch {
       console.log("Error createOptions notifications");
     }
   }
-  if ((await getOptionByKey("firstStart", db)) === undefined) {
+  if ((await getOptionByKey("firstStart", db)) === null) {
     try {
       await createOption("firstStart", "true", db);
     } catch {

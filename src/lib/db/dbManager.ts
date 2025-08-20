@@ -1,9 +1,8 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { writeTextFile, readTextFile, copyFile } from "@tauri-apps/plugin-fs";
 import { BaseDirectory, join, appConfigDir } from "@tauri-apps/api/path";
-import { relaunch } from "@tauri-apps/plugin-process";
 
-export async function chooseDbFolder({  }): Promise<string | null> {
+export async function chooseDbFolder({ reloadDb }: { reloadDb: () => Promise<void> }): Promise<string | null> {
   const prevPath = await getDbPath()
   const folder = await open({
     directory: true,
@@ -18,12 +17,12 @@ export async function chooseDbFolder({  }): Promise<string | null> {
   await writeTextFile(
     "db_config.json",
     JSON.stringify({ dbFolder: folder }),
-    { baseDir: BaseDirectory.AppConfig } // AppData sur Windows, ~/.config sur Linux
+    { baseDir: BaseDirectory.AppConfig }
   );
 
   await copyFile(prevPath, await join(folder, "yapuka.db"));
 
-  await relaunch()
+  await reloadDb()
 
   return folder as string;
 }

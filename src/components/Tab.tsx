@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ModalForm } from "./Modal/ModalForm";
 import { DatabaseService } from "../lib/db/dbClass";
-import { Button } from "./ui/button";
 
 type props = {
   dbService: DatabaseService
@@ -15,7 +14,6 @@ type props = {
   setReloadList: (reload: boolean) => void;
   contextMenu: (e: React.MouseEvent, boardId: number) => void;
   setShowConfig: (show: boolean) => void;
-  setShowCalendar: (show: boolean) => void;
 };
 
 export function Tabs({
@@ -27,7 +25,6 @@ export function Tabs({
   contextMenu,
   setShowConfig,
   reloadList,
-  setShowCalendar,
 }: props) {
   const [allBoards, setAllBoards] = useState<{ id: number; name: string }[]>([
     { id: 0, name: "test" },
@@ -44,7 +41,7 @@ export function Tabs({
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center space-x-2">
           {Array.isArray(allBoards) && allBoards.map((board) => (
-            <Button
+            <button
               id="two_one-step"
               key={board.id}
               onContextMenu={(e) => {
@@ -79,7 +76,7 @@ export function Tabs({
               }`}
             >
               {board.name}
-            </Button>
+            </button>
             /*<button
               id="two_one-step"
               key={board.id}
@@ -123,14 +120,6 @@ export function Tabs({
         className="flex h-7 w-7 cursor-pointer flex-row-reverse justify-self-end"
       >
         <img src="/icons/config.svg" className="dark:invert" />
-      </span>
-      <span
-        onClick={() => {
-          setShowCalendar(true);
-        }}
-        className="flex h-7 w-7 ml-2 mr-2 cursor-pointer flex-row-reverse justify-self-end"
-      >
-        <img src="/icons/calendar.svg" className="dark:invert" />
       </span>
     </>
   );

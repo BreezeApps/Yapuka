@@ -14,9 +14,10 @@ type props = {
   dbService: DatabaseService
   show: boolean;
   setShow: (show: boolean) => void;
+  reloadDb: () => Promise<void>
 };
 
-export function ConfigPage({ dbService, show, setShow }: props) {
+export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
   const [checkedSync, setCheckedSync] = useState(false);
   const [dbPath, setDbPath] = useState("")
   const [urlSync, setUrlSync] = useState<string | null>("");
@@ -25,7 +26,7 @@ export function ConfigPage({ dbService, show, setShow }: props) {
   const languages = getLanguages();
 
   function changeTheme(theme: string) {
-    if (theme === "none") {
+    if (theme === "system") {
       localStorage.removeItem("theme");
     } else {
       localStorage.theme = theme ?? "system";
@@ -83,14 +84,14 @@ export function ConfigPage({ dbService, show, setShow }: props) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="theme">{t("theme")}</Label>
-            <Select onValueChange={(value) => changeTheme(value)} defaultValue={localStorage.theme}>
+            <Select onValueChange={(value) => {changeTheme(value); dbService.updateOption("theme", value)}} defaultValue={localStorage.theme}>
               <SelectTrigger>
                 <SelectValue placeholder={"Theme"}/>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="light">{t("light_theme")}</SelectItem>
                 <SelectItem value="dark">{t("dark_theme")}</SelectItem>
-                <SelectItem value="none">{t("system_theme")}</SelectItem>
+                <SelectItem value="system">{t("system_theme")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -100,7 +101,7 @@ export function ConfigPage({ dbService, show, setShow }: props) {
             >
               {t("Language")}
             </Label>
-            <Select onValueChange={(value) => changeLanguage(value)} defaultValue={getCurrentLanguage()}>
+            <Select onValueChange={(value) => {changeLanguage(value); dbService.updateOption("lang", value) }} defaultValue={getCurrentLanguage()}>
               <SelectTrigger>
                 <SelectValue placeholder={"Languages"} />
               </SelectTrigger>
@@ -168,7 +169,7 @@ export function ConfigPage({ dbService, show, setShow }: props) {
                 {t("GoPlugin")}
               </button>*/}
               <Input value={dbPath} disabled={true} />
-              <Button onClick={() => chooseDbFolder()}>Placer la base de donnes</Button>
+              <Button onClick={() => chooseDbFolder({ reloadDb })}>{t("data_file")}</Button>
             </div>
             <div id="backup-dir" className="flex space-x-4">
               <Button
