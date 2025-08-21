@@ -26,15 +26,6 @@ CREATE TABLE IF NOT EXISTS tasks (
     names TEXT,
     descriptions TEXT,
     due_date TEXT,
+    status TEXT,
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS changelog (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    action TEXT NOT NULL,
-    table_name TEXT NOT NULL, 
-    row_id INTEGER,
-    old_data TEXT,
-    new_data TEXT,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

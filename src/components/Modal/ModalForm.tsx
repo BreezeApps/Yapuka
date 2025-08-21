@@ -1,54 +1,167 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DatePicker } from "rsuite";
+
+import "rsuite/dist/rsuite-no-reset.min.css";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Tooltip, TooltipContent } from "../ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 type ModalFormProps = {
   type: "task" | "collection" | "board";
-  collectionId?: string
-  onCreate: ( name: string, description?: string, date?: string, color?: string, collection_id?: string, id?: number) => void;
-  previousData?: { id: number, name: string, description?: string, date?: string, color?: string, collection_id?: string };
-  open?: boolean,
-  setOpen?: (open: boolean) => void
+  collectionId?: string;
+  onCreate: (
+    type: "board" | "collection" | "task",
+    name: string,
+    description?: string,
+    date?: Date,
+    color?: string,
+    collection_id?: string,
+    id?: number
+  ) => void;
+  previousData?: {
+    id: number;
+    name: string;
+    description?: string;
+    status?: string;
+    date?: Date;
+    color?: string;
+    collection_id?: string;
+  };
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+  id?: string;
 };
 
-export function ModalForm({ type, collectionId, onCreate, previousData, open, setOpen }: ModalFormProps) {
+export function ModalForm({
+  type,
+  collectionId,
+  onCreate,
+  previousData,
+  open,
+  setOpen,
+  id,
+}: ModalFormProps) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date());
   const [color, setColor] = useState<string | undefined>(undefined);
   const [firstReload, setFirstReload] = useState<boolean>(true);
 
   if (firstReload === true) {
-    setFirstReload(false)
+    setFirstReload(false);
     if (previousData) {
-      setName(previousData.name)
-      setDescription(previousData.description === undefined ? "" : previousData.description)
-      setDate(previousData.date === undefined ? "" : previousData.date)
-      setColor(previousData.color)
+      setName(previousData.name);
+      setDescription(
+        previousData.description === undefined ? "" : previousData.description
+      );
+      setDate(
+        previousData.date === undefined
+          ? new Date()
+          : new Date(previousData.date)
+      );
+      setColor(previousData.color);
     }
   }
 
+  useEffect(() => {
+    if (previousData) {
+      setName(previousData.name);
+      setDescription(
+        previousData.description === undefined ? "" : previousData.description
+      );
+      setDate(
+        previousData.date === undefined
+          ? new Date()
+          : new Date(previousData.date)
+      );
+      setColor(previousData.color);
+    }
+  }, [previousData]);
+
   const handleSubmit = () => {
     if (!name) return;
-    onCreate(name, description, date, color, collectionId, previousData?.id);
+    onCreate(
+      type,
+      name,
+      description,
+      date,
+      color,
+      collectionId,
+      previousData?.id
+    );
     setName("");
     setDescription("");
-    setDate("")
+    setDate(new Date());
     setColor(undefined);
   };
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      {open === undefined ? 
-        <Dialog.Trigger
-          className={
-            type !== "task"
-              ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
-              : previousData !== undefined ? "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-r float-left inline"
-          }
-        >
-          <img className="h-6" src={previousData !== undefined ? "/icons/modify.svg" : type === "task" ? "/icons/ajouter-tache.svg" : type === "collection" ? "/icons/ajouter-liste.svg" : "/icons/ajouter.svg"} />
+      {open === undefined ? (
+        <Dialog.Trigger id={id !== undefined ? id : ""}>
+          <Tooltip>
+            <TooltipTrigger
+              className={
+                type === "board"
+                  ? "bg-[#F0F0F0] dark:bg-gray-800"
+                  : type !== "task"
+                  ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+                  : previousData !== undefined
+                  ? "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded float-left inline"
+              }
+              style={
+                type === "board"
+                  ? {
+                      display: "inline-block",
+                      float: "left",
+                      height: "34px",
+                      textAlign: "center",
+                      lineHeight: "22px",
+                      padding: "0 8px 0 8px",
+                      margin: "1px 0px 0px 0px",
+                      border: "1px solid gray",
+                      borderBottom: "1px solid gray",
+                      borderTopLeftRadius: "6px",
+                      borderTopRightRadius: "6px",
+                      cursor: "pointer",
+                    }
+                  : undefined
+              }
+            >
+              <img
+                className={`h-6 ${type === "board" ? "dark:invert" : ""}`}
+                src={
+                  previousData !== undefined
+                    ? "/icons/modify.svg"
+                    : type === "task"
+                    ? "/icons/ajouter-tache.svg"
+                    : type === "collection"
+                    ? "/icons/ajouter-liste.svg"
+                    : "/icons/ajouter.svg"
+                }
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {t(
+                  type === "board"
+                    ? "Add_a_Tab"
+                    : type === "collection"
+                    ? "Add_a_List"
+                    : type === "task"
+                    ? "Add_a_Task"
+                    : "Error"
+                )}
+              </p>
+            </TooltipContent>
+          </Tooltip>
           {/*t(
             type === "task"
               ? "Add_a_Task"
@@ -57,13 +170,24 @@ export function ModalForm({ type, collectionId, onCreate, previousData, open, se
               : "Add_a_Tab"
           )*/}
         </Dialog.Trigger>
-      : ""}
+      ) : (
+        ""
+      )}
       <Dialog.Portal>
         <Dialog.Overlay className={`fixed inset-0 bg-black/50`} />
-        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg">
+        <Dialog.Content
+          aria-describedby={undefined}
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg"
+        >
           <Dialog.Title className="text-lg font-bold">
             {t(
-              type === "task"
+              previousData !== undefined
+                ? type === "task"
+                  ? "Modify_a_Task"
+                  : type === "collection"
+                  ? "Modify_a_List"
+                  : "Modify_a_Tab"
+                : type === "task"
                 ? "Add_a_Task"
                 : type === "collection"
                 ? "Add_a_List"
@@ -72,19 +196,17 @@ export function ModalForm({ type, collectionId, onCreate, previousData, open, se
           </Dialog.Title>
 
           <div className="mt-4">
-            <label className="block text-sm">{t("Name")}</label>
-            <input
+            <Label>{t("Name")}</Label>
+            <Input
               type="text"
-              className="w-full border p-2 rounded"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
           {type === "task" && (
             <div className="mt-4">
-              <label className="block text-sm">{t("Description")}</label>
-              <textarea
-                className="w-full border p-2 rounded"
+              <Label>{t("Description")}</Label>
+              <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -92,23 +214,39 @@ export function ModalForm({ type, collectionId, onCreate, previousData, open, se
           )}
           {type === "task" && (
             <div className="mt-4">
-              <label className="block text-sm">{t("Date")}</label>
-              <input
+              <Label>{t("Date")}</Label>
+              {/* <input
                 type="datetime-local"
                 className="w-full border p-2 rounded"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+              /> */}
+              <DatePicker
+                oneTap
+                style={{ width: "100%" }}
+                format="dd/MM/yyyy HH:mm"
+                placement="topStart"
+                value={date}
+                onChange={(e) => setDate(e === null ? new Date() : e)}
               />
             </div>
           )}
 
-          {/* Color pour collection uniquement */}
+          {type === "collection" || type === "board" && (
+            <div className="mt-4">
+              <Label>{t("Color")}</Label>
+              <Input
+                type="color"
+                value={color ? color : "#000000"}
+                onChange={(e) => setColor(e.target.value)}
+              />
+            </div>
+          )}
           {type === "collection" && (
             <div className="mt-4">
-              <label className="block text-sm">{t("Color")}</label>
-              <input
+              <Label>{t("Color")}</Label>
+              <Input
                 type="color"
-                className="w-full border h-10 p-2 rounded"
                 value={color ? color : "#000000"}
                 onChange={(e) => setColor(e.target.value)}
               />
@@ -116,20 +254,25 @@ export function ModalForm({ type, collectionId, onCreate, previousData, open, se
           )}
 
           <div className="mt-4 flex justify-end space-x-2">
-            <Dialog.Close className="bg-gray-300 px-4 py-2 rounded">
-              {t("Cancel")}
+            <Dialog.Close>
+              <Button variant={"secondary"}>{t("Cancel")}</Button>
             </Dialog.Close>
-            <Dialog.Close
-              onClick={handleSubmit}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              {t(
-                type === "task"
-                  ? "Add_the_Task"
-                  : type === "collection"
-                  ? "Add_the_List"
-                  : "Add_the_Tab"
-              )}
+            <Dialog.Close>
+              <Button onClick={handleSubmit}>
+                {t(
+                  previousData !== undefined
+                    ? type === "task"
+                      ? "Modify_the_Task"
+                      : type === "collection"
+                      ? "Modify_the_List"
+                      : "Modify_the_Tab"
+                    : type === "task"
+                    ? "Add_a_Task"
+                    : type === "collection"
+                    ? "Add_a_List"
+                    : "Add_a_Tab"
+                )}
+              </Button>
             </Dialog.Close>
           </div>
         </Dialog.Content>

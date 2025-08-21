@@ -1,10 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./lib/i18n"
+import { LoadApp } from "./LoadApp";
+import { LoadingProvider } from "./Hooks/useLoadingScreen";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <LoadingProvider >
+      <LoadApp />
+    </LoadingProvider>
+  </React.StrictMode>
 );
