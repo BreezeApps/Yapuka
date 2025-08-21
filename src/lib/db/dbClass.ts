@@ -6,7 +6,7 @@ import { copyFile, rename } from '@tauri-apps/plugin-fs';
 import { Board } from "../types/Board";
 import { Collection } from "../types/Collection";
 import { Task } from "../types/Task";
-import { setupOptions } from "../setupOptions";
+import { setupOptions } from "./setupOptions";
 import { getDbPath } from "./dbManager";
 import { Migrations } from "./migrations";
 
@@ -91,8 +91,8 @@ export class DatabaseService {
 
   async createDbBase(): Promise<void> {
     await setupOptions(this.db!)
-    await this.createBoard({ id: 0, name: "Premiere Onglet" });
-    await this.createBoard({ id: 0, name: "Deuxieme Onglet" });
+    await this.createBoard({ id: 0, name: "Premier Onglet", color: "" });
+    await this.createBoard({ id: 0, name: "Deuxieme Onglet", color: "" });
     await this.createCollection({ id: 0, board_id: 1, names: "Premiere Liste", color: "" })
     await this.createCollection({ id: 0, board_id: 1, names: "Deuxieme Liste", color: "" })
     await this.createTask({ id: 0, collection_id: 1, names: "Premiere Tache", due_date: new Date(), status: "pending", task_order: 0, descriptions: "Ceci est la premiere tache" })
@@ -123,7 +123,7 @@ export class DatabaseService {
 
   /* ==================== BOARDS ==================== */
   async createBoard(board: Board): Promise<void> {
-    await this.db?.execute("INSERT INTO boards (name) VALUES (?);", [board.name]);
+    await this.db?.execute("INSERT INTO boards (name, color) VALUES (?, ?);", [board.name, board.color]);
   }
 
   async updateBoard(board: Board): Promise<void> {

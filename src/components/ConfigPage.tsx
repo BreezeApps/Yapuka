@@ -169,7 +169,7 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
                 {t("GoPlugin")}
               </button>*/}
               <Input value={dbPath} disabled={true} />
-              <Button onClick={() => chooseDbFolder({ reloadDb })}>{t("data_file")}</Button>
+              <Button onClick={() => chooseDbFolder({ reloadDb, dbService })}>{t("data_file")}</Button>
             </div>
             <div id="backup-dir" className="flex space-x-4">
               <Button

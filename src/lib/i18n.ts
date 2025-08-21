@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import LanguageDetector from 'i18next-browser-languagedetector'
 
 import enTranslation from "./locales/en-US.json";
 import frTranslation from "./locales/fr-FR.json";
@@ -7,6 +8,7 @@ import deTranslation from "./locales/de.json";
 import esTranslation from "./locales/es.json";
 
 i18n
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources: {
@@ -15,11 +17,15 @@ i18n
       'de': { translation: deTranslation },
       'es': { translation: esTranslation },
     },
-    lng: "fr-FR", // Langue par défaut
+    lng: "fr-FR",
     supportedLngs: ["fr-FR", "en-US", "de", "es"],
     load: "all",
-    fallbackLng: "en",
+    fallbackLng: "en-US",
     saveMissing: true,
+    detection: {
+      order: ["localStorage", "navigator", "htmlTag"],
+      caches: ["localStorage"],
+    },
     interpolation: { escapeValue: false },
   });
 
@@ -68,13 +74,13 @@ export function getRelativeTime(targetDate: Date) {
 
 export function getLanguages() {
   const languages = Object.keys(i18n.options.resources || {});
-  let response: { key: number; value: string; label: string; }[] = []
-  languages.forEach(lang => {
-    let name = i18n.t("Language_Name", { lng: lang })
-    let lan = { key: response.length + 1 , value: lang, label: name }
-    response.push(lan)
-  });
-  return response
+  const displayNames = new Intl.DisplayNames([i18n.language], { type: "language" });
+
+  return languages.map((lang, index) => ({
+    key: index + 1,
+    value: lang,
+    label: displayNames.of(lang) || lang,
+  }));
 }
 
 export function changeLanguage(language: string) {

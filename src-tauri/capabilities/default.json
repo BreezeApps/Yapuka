@@ -27,6 +27,7 @@
     "fs:allow-app-write",
     "fs:allow-appconfig-write",
     "fs:allow-copy-file",
-    "process:allow-restart"
+    "process:allow-restart",
+    "process:allow-exit"
   ]
 }

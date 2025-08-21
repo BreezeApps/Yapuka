@@ -1,9 +1,9 @@
 {
-  "Language_Name": "Deutsch",
   "theme": "Thema",
   "light_theme": "Klar",
   "dark_theme": "Dunkel",
   "system_theme": "System",
+  "loading_db": "Chargement de la base Yapuka...",
   "Add_a_List": "Fügen Sie eine Liste hinzu",
   "Add_the_List": "Fügen Sie die Liste hinzu",
   "New_List": "Erstellen Sie eine neue Liste",

@@ -8,6 +8,8 @@ import { t } from "i18next";
 import { getDate, getRelativeTime } from "../lib/i18n";
 import { Checkbox } from "./ui/checkbox";
 import { useLoadingScreen } from "@/Hooks/useLoadingScreen";
+import { Board } from "@/lib/types/Board";
+import { getTextColor } from "@/lib/utils";
 
 export function ListContainer({
   dbService,
@@ -32,9 +34,10 @@ export function ListContainer({
   setDescription: (description: string) => void;
   setDuedate: (description: string) => void;
 }) {
-  const [board, setBoard] = useState<{ id: number; name: string }>({
+  const [board, setBoard] = useState<Board>({
     id: 0,
     name: "",
+    color: ""
   });
   const [collections, setCollections] = useState<
     { id: number; board_id: number; names: string; color: string | null }[]
@@ -48,21 +51,21 @@ export function ListContainer({
     const initDatabase = async () => {
       try {
         showLoading("Chargement de la bdd");
-        let tempboard = null
+        let tempboard = null;
         let i = 0;
         while (tempboard === null || i >= 100) {
-          tempboard = await dbService.getBoardById(boardId)
+          tempboard = await dbService.getBoardById(boardId);
           if (tempboard === null) {
             tempboard = await dbService.getBoardById(1);
           }
         }
         const allTasks = await dbService.getTasksByBoard(tempboard.id);
         const collections = await dbService.getCollectionsByBoard(tempboard.id);
-        setBoard(tempboard ? tempboard : { id: 0, name: "" });
-        
+        setBoard(tempboard ? tempboard : { id: 0, name: "", color: "" });
+
         setCollections(collections);
         setTasks(allTasks);
-        
+
         if ((await dbService.getOptionByKey("notification")) === "true") {
           startTaskMonitoring(allTasks);
         }
@@ -174,23 +177,19 @@ export function ListContainer({
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">
-        {board.name}{" "}
+    <div className="p-6 h-full" style={{ background: board.color === null ? "" : board.color }}>
         <ModalForm
           id="three-step"
           type="collection"
           onCreate={handleCreateCollection}
         />
-      </h1>
       {Array.isArray(collections) &&
         collections
           .filter((collection) => collection.board_id === board.id)
           .map((collection) => {
-            const list =
-              Array.isArray(tasks)
-                ? tasks.filter((task) => task.collection_id === collection.id)
-                : [];
+            const list = Array.isArray(tasks)
+              ? tasks.filter((task) => task.collection_id === collection.id)
+              : [];
             return (
               <div
                 id="five-step"
@@ -213,14 +212,12 @@ export function ListContainer({
                         : "",
                   }}
                 >
-                  {collection?.names}
-                  <div className="overflow-hidden">
-                    <ModalForm
-                      type="task"
-                      collectionId={collection?.id.toString()}
-                      onCreate={handleCreateTask}
-                    />
-                  </div>
+                  <ModalForm
+                    type="task"
+                    collectionId={collection?.id.toString()}
+                    onCreate={handleCreateTask}
+                  />
+                  <span className="pl-4" style={{ color: getTextColor(collection?.color !== null ? collection.color : "#d1d5dc") }}>{collection?.names}</span>
                 </h3>
                 <ReactSortable
                   list={list}

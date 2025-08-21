@@ -29,13 +29,16 @@ import { changeLanguage } from "./lib/i18n";
 function App({
   dbService,
   reloadDb,
+  currentBoard,
+  setCurrentBoard
 }: {
   dbService: DatabaseService;
   reloadDb: () => Promise<void>;
+  currentBoard: number;
+  setCurrentBoard: (id: number) => void
 }) {
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [runBoarding, setRunBoarding] = useState<boolean>(false);
-  const [currentBoard, setCurrentBoard] = useState<number>(1);
   const [reloadList, setReloadList] = useState<boolean>(false);
   const [firstReload, setFirstReload] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -71,9 +74,14 @@ function App({
 
   const handleCreateBoard = async (
     _type: "board" | "collection" | "task",
-    name: string
+    name: string,
+    _description?: string,
+    _date?: Date,
+    color?: string | null,
+    _collection_id?: string,
+    _id?: number
   ) => {
-    await dbService?.createBoard({ id: 0, name: name });
+    await dbService?.createBoard({ id: 0, name: name, color: color === undefined ? null : color });
     setReloadList(true);
   };
 
@@ -82,7 +90,7 @@ function App({
     name: string,
     description?: string | undefined,
     date?: Date | undefined,
-    color?: string | undefined,
+    color?: string | null,
     _collection_id?: string | undefined,
     id?: number | undefined
   ) => {
@@ -90,6 +98,7 @@ function App({
       await dbService?.updateBoard({
         id: id === undefined ? 0 : id,
         name: name,
+        color: color === undefined ? "0" : color
       });
     } else if (type === "collection") {
       await dbService?.updateCollection({
@@ -320,6 +329,10 @@ function App({
         await dbService?.updateOption("notification", "true");
       }
     }
+    async function initBoard() {
+      setCurrentBoard(parseInt((await dbService.getOptionByKey("lastOpenBoard")) ?? "1"))
+    }
+    initBoard()
     handleNotificationPermission();
   }, []);
 
@@ -332,7 +345,7 @@ function App({
         localStorage.theme = theme ?? "system";
       }
       const lang = await dbService.getOptionByKey("lang");
-      changeLanguage(lang ?? "en_US");
+      changeLanguage(lang ?? "en-US");
     };
     const initBoards = async () => {
       setAllBoards((await dbService?.getAllBoards()) ?? []);
@@ -403,7 +416,7 @@ function App({
         open={showModal}
         setOpen={setShowModal}
       />
-      <div className="mt-13 w-full bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white">
+      <div style={{ height: "calc(100vh - 52px)" }} className="mt-13 w-full dark:bg-gray-800 text-gray-900 dark:text-white">
         <ListContainer
           dbService={dbService}
           boardId={currentBoard}
@@ -430,7 +443,7 @@ function App({
         <p>
           <strong>{t("Duedate")} :</strong>
           <br></br>
-          <span className="capitalize">{dueDate}</span>
+          <span className="">{dueDate}</span>
         </p>
       </div>
       <ContextMenu
@@ -438,12 +451,12 @@ function App({
         handleCollectionItemClick={handleCollectionItemClick}
         handleTaskItemClick={handleTaskItemClick}
       />
-      <img
+      {/* <img
         src="/CC_BY-NC-SA.png"
         alt="Creative Commons BY-NC-SA"
         className="absolute bottom-0 right-0 z-50"
         width="100"
-      />
+      /> */}
     </div>
   );
 }

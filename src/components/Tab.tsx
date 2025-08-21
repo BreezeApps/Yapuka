@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import { ModalForm } from "./Modal/ModalForm";
 import { DatabaseService } from "../lib/db/dbClass";
+import { Board } from "@/lib/types/Board";
 
 type props = {
   dbService: DatabaseService
   currentBoard: number;
   setCurrentBoard: (id: number) => void;
   handleCreateBoard: (
-    type: "board" | "collection" | "task",
-    name: string
+    _type: "board" | "collection" | "task",
+    name: string,
+    _description?: string,
+    _date?: Date,
+    color?: string,
+    _collection_id?: string,
+    _id?: number
   ) => void;
   reloadList?: boolean;
   setReloadList: (reload: boolean) => void;
@@ -26,8 +32,8 @@ export function Tabs({
   setShowConfig,
   reloadList,
 }: props) {
-  const [allBoards, setAllBoards] = useState<{ id: number; name: string }[]>([
-    { id: 0, name: "test" },
+  const [allBoards, setAllBoards] = useState<Board[]>([
+    { id: 0, name: "test", color: "0" },
   ]);
 
   useEffect(() => {
@@ -63,17 +69,19 @@ export function Tabs({
                 border: "1px solid gray",
                 borderBottom:
                   currentBoard === board.id
-                    ? "1px solid var(--color-gray-800)"
+                    ? "0px solid var(--color-gray-800)"
                     : "1px solid var(--color-gray-950)",
                 borderTopLeftRadius: "6px",
                 borderTopRightRadius: "6px",
                 cursor: "pointer",
+                background: board.color === null ? "" : board.color
               }}
-              className={`text-black dark:text-white ${
+              /* ${
                 currentBoard === board.id
                   ? "bg-white dark:bg-gray-800"
                   : "bg-[#F0F0F0] dark:bg-gray-950"
-              }`}
+              } */
+              className={`text-black dark:text-white`}
             >
               {board.name}
             </button>

@@ -1,8 +1,9 @@
 import { open } from "@tauri-apps/plugin-dialog";
-import { writeTextFile, readTextFile, copyFile } from "@tauri-apps/plugin-fs";
+import { writeTextFile, readTextFile, copyFile, exists } from "@tauri-apps/plugin-fs";
 import { BaseDirectory, join, appConfigDir } from "@tauri-apps/api/path";
+import { DatabaseService } from "./dbClass";
 
-export async function chooseDbFolder({ reloadDb }: { reloadDb: () => Promise<void> }): Promise<string | null> {
+export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => Promise<void>, dbService: DatabaseService }): Promise<string | null> {
   const prevPath = await getDbPath()
   const folder = await open({
     directory: true,
@@ -13,6 +14,8 @@ export async function chooseDbFolder({ reloadDb }: { reloadDb: () => Promise<voi
 
   if (!folder) return null;
 
+  await dbService.close()
+
   // Sauvegarder le chemin dans la config interne
   await writeTextFile(
     "db_config.json",
@@ -20,7 +23,9 @@ export async function chooseDbFolder({ reloadDb }: { reloadDb: () => Promise<voi
     { baseDir: BaseDirectory.AppConfig }
   );
 
-  await copyFile(prevPath, await join(folder, "yapuka.db"));
+  if(!await exists(await join(folder, "yapuka.db"))) {
+    await copyFile(prevPath, await join(folder, "yapuka.db"));
+  }
 
   await reloadDb()
 

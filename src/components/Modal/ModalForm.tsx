@@ -8,6 +8,8 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { Tooltip, TooltipContent } from "../ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 type ModalFormProps = {
   type: "task" | "collection" | "board";
@@ -102,48 +104,64 @@ export function ModalForm({
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {open === undefined ? (
-        <Dialog.Trigger
-          id={id !== undefined ? id : ""}
-          className={
-            type === "board"
-              ? "bg-[#F0F0F0] dark:bg-gray-800"
-              : type !== "task"
-              ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
-              : previousData !== undefined
-              ? "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-              : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded float-left inline"
-          }
-          style={
-            type === "board"
-              ? {
-                  display: "inline-block",
-                  float: "left",
-                  height: "34px",
-                  textAlign: "center",
-                  lineHeight: "22px",
-                  padding: "0 8px 0 8px",
-                  margin: "1px 0px 0px 0px",
-                  border: "1px solid gray",
-                  borderBottom: "1px solid gray",
-                  borderTopLeftRadius: "6px",
-                  borderTopRightRadius: "6px",
-                  cursor: "pointer",
+        <Dialog.Trigger id={id !== undefined ? id : ""}>
+          <Tooltip>
+            <TooltipTrigger
+              className={
+                type === "board"
+                  ? "bg-[#F0F0F0] dark:bg-gray-800"
+                  : type !== "task"
+                  ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+                  : previousData !== undefined
+                  ? "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded float-left inline"
+              }
+              style={
+                type === "board"
+                  ? {
+                      display: "inline-block",
+                      float: "left",
+                      height: "34px",
+                      textAlign: "center",
+                      lineHeight: "22px",
+                      padding: "0 8px 0 8px",
+                      margin: "1px 0px 0px 0px",
+                      border: "1px solid gray",
+                      borderBottom: "1px solid gray",
+                      borderTopLeftRadius: "6px",
+                      borderTopRightRadius: "6px",
+                      cursor: "pointer",
+                    }
+                  : undefined
+              }
+            >
+              <img
+                className={`h-6 ${type === "board" ? "dark:invert" : ""}`}
+                src={
+                  previousData !== undefined
+                    ? "/icons/modify.svg"
+                    : type === "task"
+                    ? "/icons/ajouter-tache.svg"
+                    : type === "collection"
+                    ? "/icons/ajouter-liste.svg"
+                    : "/icons/ajouter.svg"
                 }
-              : undefined
-          }
-        >
-          <img
-            className={`h-6 ${type === "board" ? "dark:invert" : ""}`}
-            src={
-              previousData !== undefined
-                ? "/icons/modify.svg"
-                : type === "task"
-                ? "/icons/ajouter-tache.svg"
-                : type === "collection"
-                ? "/icons/ajouter-liste.svg"
-                : "/icons/ajouter.svg"
-            }
-          />
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {t(
+                  type === "board"
+                    ? "Add_a_Tab"
+                    : type === "collection"
+                    ? "Add_a_List"
+                    : type === "task"
+                    ? "Add_a_Task"
+                    : "Error"
+                )}
+              </p>
+            </TooltipContent>
+          </Tooltip>
           {/*t(
             type === "task"
               ? "Add_a_Task"
@@ -206,7 +224,7 @@ export function ModalForm({
               <DatePicker
                 oneTap
                 style={{ width: "100%" }}
-                format="MM/dd/yyyy HH:mm"
+                format="dd/MM/yyyy HH:mm"
                 placement="topStart"
                 value={date}
                 onChange={(e) => setDate(e === null ? new Date() : e)}
@@ -214,7 +232,16 @@ export function ModalForm({
             </div>
           )}
 
-          {/* Color pour collection uniquement */}
+          {type === "collection" || type === "board" && (
+            <div className="mt-4">
+              <Label>{t("Color")}</Label>
+              <Input
+                type="color"
+                value={color ? color : "#000000"}
+                onChange={(e) => setColor(e.target.value)}
+              />
+            </div>
+          )}
           {type === "collection" && (
             <div className="mt-4">
               <Label>{t("Color")}</Label>
@@ -233,11 +260,17 @@ export function ModalForm({
             <Dialog.Close>
               <Button onClick={handleSubmit}>
                 {t(
-                  type === "task"
-                    ? "Add_the_Task"
+                  previousData !== undefined
+                    ? type === "task"
+                      ? "Modify_the_Task"
+                      : type === "collection"
+                      ? "Modify_the_List"
+                      : "Modify_the_Tab"
+                    : type === "task"
+                    ? "Add_a_Task"
                     : type === "collection"
-                    ? "Add_the_List"
-                    : "Add_the_Tab"
+                    ? "Add_a_List"
+                    : "Add_a_Tab"
                 )}
               </Button>
             </Dialog.Close>

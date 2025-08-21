@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { Migration } from "../types/Migrations";
-import { setupOptions } from "../setupOptions";
+import { setupOptions } from "./setupOptions";
 
 export class Migrations {
   private db: Database;
@@ -20,7 +20,7 @@ export class Migrations {
           "CREATE TABLE IF NOT EXISTS options (id INTEGER PRIMARY KEY, key TEXT UNIQUE NOT NULL, value TEXT NOT NULL);"
         );
         await db.execute(
-            "CREATE TABLE IF NOT EXISTS boards (id INTEGER PRIMARY KEY, name TEXT NOT NULL);"
+            "CREATE TABLE IF NOT EXISTS boards (id INTEGER PRIMARY KEY, name TEXT NOT NULL, color TEXT);"
         );
         await db.execute(
             "CREATE TABLE IF NOT EXISTS collections (id INTEGER PRIMARY KEY, board_id INTEGER, names TEXT NOT NULL, color TEXT, FOREIGN KEY (board_id) REFERENCES boards(id) ON UPDATE CASCADE ON DELETE CASCADE);"

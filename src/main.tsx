@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./lib/i18n"
 import { LoadApp } from "./LoadApp";
 import { LoadingProvider } from "./Hooks/useLoadingScreen";
 

@@ -1,6 +1,7 @@
 type Board = {
     id: number,
-    name: string 
+    name: string,
+    color: string | null
 }
 
 export type { Board };

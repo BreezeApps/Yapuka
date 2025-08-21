@@ -50,6 +50,13 @@ export async function setupOptions(db: Database) {
       console.log("Error createOptions firstStart");
     }
   }
+  if ((await getOptionByKey("lastOpenBoard", db)) === null) {
+    try {
+      await createOption("lastOpenBoard", "0", db);
+    } catch {
+      console.log("Error createOptions firstStart");
+    }
+  }
 }
 
 async function createOption(
