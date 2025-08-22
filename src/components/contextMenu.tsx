@@ -1,6 +1,8 @@
 import { Item, Menu } from "react-contexify";
 import { useTranslation } from "react-i18next";
 
+/* The `ContextMenu` function is a React functional component that defines a context menu with
+different options for boards, collections, and tasks. */
 function ContextMenu({ handleBoardItemClick, handleCollectionItemClick, handleTaskItemClick } : { handleBoardItemClick: (e: any) => void; handleCollectionItemClick: (e: any) => void, handleTaskItemClick: (e: any) => void }) {
   const { t } = useTranslation();
   return (

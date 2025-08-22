@@ -7,6 +7,10 @@ interface State {
   steps: Step[];
 }
 
+/**
+ * The `OnBoarding` function in TypeScript React sets up a guided tour using Joyride with customizable
+ * steps and callbacks.
+ */
 export function OnBoarding({
   dbService,
   run,

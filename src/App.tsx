@@ -26,6 +26,18 @@ import ContextMenu from "./components/contextMenu";
 import { OnBoarding } from "./components/OnBoarding";
 import { changeLanguage } from "./lib/i18n";
 
+/**
+ * The `App` function in this TypeScript React component manages the state and functionality for task
+ * management, including handling board, collection, and task operations, displaying menus,
+ * and managing modals and context menus.
+ * @param e - The `App` component you provided is quite extensive and includes various functionalities
+ * related to managing boards, collections, and tasks. The parameters passed to the `App` component are
+ * as follows:
+ * @param {number} boardId - The `boardId` parameter is used to identify a specific board within the
+ * application. It is a number that represents the unique identifier of a board. This identifier is
+ * used to perform operations related to that specific board, such as updating its information,
+ * deleting it, or displaying its content.
+ */
 function App({
   dbService,
   reloadDb,

@@ -6,6 +6,13 @@ import { DatabaseService } from "./dbClass";
 
 const config = await load("config.json")
 
+/**
+ * This function allows the user to choose a folder to store a database, updating the
+ * configuration and reloading the database if necessary.
+ * @returns The function `chooseDbFolder` returns a `Promise` that resolves to a `string` representing
+ * the selected folder path where the database will be stored. If the user cancels the folder selection
+ * or an error occurs during the process, it returns `null`.
+ */
 export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => Promise<void>, dbService: DatabaseService }): Promise<string | null> {
   const prevPath = await getDbPath()
   const folder = await open({
@@ -31,6 +38,14 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
   return folder as string;
 }
 
+/**
+ * This function retrieves the database folder path, creates it if it doesn't exist, and
+ * returns the path.
+ * @returns The `getDbFolder` function returns a Promise that resolves to a string. The function first
+ * checks if the `dbFolder` value is null or undefined in the configuration. If it is, it sets the
+ * `dbFolder` value to the result of `appConfigDir()`, saves the configuration, and creates a database
+ * file named "yapuka.yapdb" in the app's configuration directory
+ */
 export async function getDbFolder(): Promise<string> {
   const dbFolder = await config.get("dbFolder");
   if(dbFolder === null || dbFolder === undefined) {
@@ -46,6 +61,12 @@ export async function getDbFolder(): Promise<string> {
   return dbFolder as string
 }
 
+/**
+ * The function `getDbPath` returns the path to a database file named "yapuka.yapdb" within a specified
+ * folder.
+ * @returns The function `getDbPath` is returning a Promise that resolves to the path of the database
+ * file "yapuka.yapdb" within the folder obtained from the `getDbFolder` function.
+ */
 export async function getDbPath(): Promise<string> {
   const folder = await getDbFolder();
   return await join(folder, "yapuka.yapdb");

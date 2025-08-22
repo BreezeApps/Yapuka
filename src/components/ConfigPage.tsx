@@ -22,6 +22,11 @@ type props = {
   reloadDb: () => Promise<void>;
 };
 
+/**
+ * The `ConfigPage` function handles configuration settings, including theme
+ * selection, language selection, and advanced settings like database path, backup creation, and backup
+ * import.
+ */
 export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
   const [checkedSync, setCheckedSync] = useState(false);
   const [dbPath, setDbPath] = useState("");

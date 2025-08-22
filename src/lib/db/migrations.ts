@@ -2,6 +2,8 @@ import Database from "@tauri-apps/plugin-sql";
 import { Migration } from "../types/Migrations";
 import { setupOptions } from "./setupOptions";
 
+/* The `Migrations` class manages database migrations and versioning, including running
+migrations and updating database options. */
 export class Migrations {
   private db: Database;
 

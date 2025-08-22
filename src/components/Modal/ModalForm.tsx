@@ -37,6 +37,8 @@ type ModalFormProps = {
   id?: string;
 };
 
+/* The above code is a React component for a modal form. It is used to create or modify
+items such as tasks, lists, or tabs within a collection. */
 export function ModalForm({
   type,
   collectionId,

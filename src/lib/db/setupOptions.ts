@@ -1,5 +1,9 @@
 import Database from "@tauri-apps/plugin-sql";
 
+/**
+ * The function `setupOptions` checks and creates default options in a database if they do not already
+ * exist.
+ */
 export async function setupOptions(db: Database) {
   if ((await getOptionByKey("version", db)) === null) {
     try {

@@ -92,6 +92,10 @@ function createTableRow(task: Task) {
   );
 };
 
+/**
+ * The `BoardPDF` component generates a PDF document displaying a board with its collections and tasks
+ * in a structured format.
+ */
 export const BoardPDF = ({ boardName, collections, tasks }: { boardName: string, collections: Collection[] | undefined, tasks: Task[] | undefined }) => (
   <Document author='Yapuka' subject='Onglet PDF' title={boardName}>
     <Page size="A4" style={styles.page}>

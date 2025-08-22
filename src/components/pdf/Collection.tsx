@@ -91,6 +91,10 @@ function createTableRow(task: Task) {
   );
 };
 
+/**
+ * The CollectionPDF component generates a PDF document displaying a collection name and a list of
+ * tasks in a table format.
+ */
 export const CollectionPDF = ({ collectionName, tasks }: { collectionName: string, tasks: Task[] | undefined }) => (
   <Document author='Yapuka' subject='List PDF' title={collectionName}>
     <Page size="A4" style={styles.page}>
@@ -108,4 +112,3 @@ export const CollectionPDF = ({ collectionName, tasks }: { collectionName: strin
     </Page>
   </Document>
 );
-

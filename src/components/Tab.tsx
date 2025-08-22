@@ -22,6 +22,10 @@ type props = {
   setShowConfig: (show: boolean) => void;
 };
 
+/**
+ * The Tabs component renders a list of boards with options for context menu, board
+ * selection, and configuration settings.
+ */
 export function Tabs({
   dbService,
   currentBoard,

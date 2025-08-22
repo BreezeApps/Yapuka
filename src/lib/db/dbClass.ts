@@ -10,6 +10,8 @@ import { setupOptions } from "./setupOptions";
 import { getDbPath } from "./dbManager";
 import { Migrations } from "./migrations";
 
+/* The DatabaseService class provides methods for interacting with a database, including
+creating, updating, and retrieving data related to boards, collections, and tasks. */
 export class DatabaseService {
   private db: Database | undefined;
 

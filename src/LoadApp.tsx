@@ -10,6 +10,13 @@ import { exit } from "@tauri-apps/plugin-process";
 import { load } from "@tauri-apps/plugin-store";
 import { saveWindowState, restoreState, StateFlags } from "@tauri-apps/plugin-window-state"
 
+/**
+ * The `LoadApp` function in TypeScript React initializes a database service, manages the current board
+ * state, and handles window close events.
+ * @returns The `LoadApp` function returns either `null` if `dbService` is falsy, or it returns the
+ * `App` component wrapped in an `ErrorBoundary` component with the props `dbService`, `reloadDb`,
+ * `currentBoard`, and `setCurrentBoard`.
+ */
 export function LoadApp() {
   const [dbService, setDbService] = useState<DatabaseService | null>(null);
   const [currentBoard, setCurrentBoard] = useState<number>(1);
