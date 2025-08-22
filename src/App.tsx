@@ -431,7 +431,7 @@ function App({
         />
       </div>
       <div
-        className={`p-4 rounded-2xl fixed top-0 right-0 bg-[#cecece] dark:bg-gray-400 ${
+        className={`p-4 rounded-2xl fixed top-0 right-0 bg-[#cecece] dark:bg-gray-600 ${
           showTaskInfo === true ? "" : "hidden"
         }`}
       >

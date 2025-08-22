@@ -7,6 +7,8 @@ import "./lib/i18n";
 import { t } from "i18next";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
+import { load } from "@tauri-apps/plugin-store";
+import { saveWindowState, restoreState, StateFlags } from "@tauri-apps/plugin-window-state"
 
 export function LoadApp() {
   const [dbService, setDbService] = useState<DatabaseService | null>(null);
@@ -15,6 +17,7 @@ export function LoadApp() {
 
   async function initDatabase() {
     showLoading(t("loading_db"));
+    restoreState("", StateFlags.ALL)
 
     if (dbService !== null) {
       await dbService.close();
@@ -22,15 +25,20 @@ export function LoadApp() {
 
     const service = await DatabaseService.create();
     setDbService(service);
-    setCurrentBoard(parseInt(await service.getOptionByKey("lastOpenBoard") ?? "1"))
+    const config = await load("config.json")
+    setCurrentBoard(parseInt(await config.get("lastOpenBoard") ?? "1"))
 
     hideLoading();
   }
 
-  getCurrentWindow().onCloseRequested(async (event) => {
-    event.preventDefault();
-    await dbService?.updateOption("lastOpenBoard", currentBoard.toString())
+  getCurrentWindow().onCloseRequested(async () => {
+    const config = await load("config.json", { autoSave: true, defaults: { dbFolder: "", lastOpenBoard: "1" } })
+    await config.set("lastOpenBoard", currentBoard.toString())
+    await config.save()
+    await config.close()
+    saveWindowState(StateFlags.ALL);
     await dbService?.close()
+    /* event.preventDefault(); */
     exit()
   });
 

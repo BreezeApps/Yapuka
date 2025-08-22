@@ -1,7 +1,10 @@
 import { open } from "@tauri-apps/plugin-dialog";
-import { writeTextFile, readTextFile, copyFile, exists } from "@tauri-apps/plugin-fs";
-import { BaseDirectory, join, appConfigDir } from "@tauri-apps/api/path";
+import {copyFile, exists, create } from "@tauri-apps/plugin-fs";
+import { join, appConfigDir, BaseDirectory } from "@tauri-apps/api/path";
+import { load } from "@tauri-apps/plugin-store"
 import { DatabaseService } from "./dbClass";
+
+const config = await load("config.json")
 
 export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => Promise<void>, dbService: DatabaseService }): Promise<string | null> {
   const prevPath = await getDbPath()
@@ -16,15 +19,11 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
 
   await dbService.close()
 
-  // Sauvegarder le chemin dans la config interne
-  await writeTextFile(
-    "db_config.json",
-    JSON.stringify({ dbFolder: folder }),
-    { baseDir: BaseDirectory.AppConfig }
-  );
+  await config.set("dbFolder", folder)
+  await config.save()
 
-  if(!await exists(await join(folder, "yapuka.db"))) {
-    await copyFile(prevPath, await join(folder, "yapuka.db"));
+  if(!await exists(await join(folder, "yapuka.yapdb"))) {
+    await copyFile(prevPath, await join(folder, "yapuka.yapdb"));
   }
 
   await reloadDb()
@@ -33,21 +32,21 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
 }
 
 export async function getDbFolder(): Promise<string> {
-  try {
-    const configContent = await readTextFile("db_config.json", { baseDir: BaseDirectory.AppConfig });
-    const { dbFolder } = JSON.parse(configContent);
-    return dbFolder;
-  } catch {
-    await writeTextFile(
-      "db_config.json",
-      JSON.stringify({ dbFolder: await appConfigDir() }),
-      { baseDir: 13 } // AppData sur Windows, ~/.config sur Linux
-    );
-    return await appConfigDir();
+  const dbFolder = await config.get("dbFolder");
+  if(dbFolder === null || dbFolder === undefined) {
+    await config.set("dbFolder", await appConfigDir())
+    await config.save()
+    try {
+      await create("yapuka.yapdb", { baseDir: BaseDirectory.AppConfig })
+    } catch (error) {
+      console.warn("Db already exist")
+    }
+    return (await appConfigDir());
   }
+  return dbFolder as string
 }
 
 export async function getDbPath(): Promise<string> {
   const folder = await getDbFolder();
-  return await join(folder, "yapuka.db");
+  return await join(folder, "yapuka.yapdb");
 }
