@@ -10,7 +10,7 @@
 **Yapuka** est une application développée en **Tauri** qui permet de créer et gérer simplement des listes de tâches. L’application est disponible pour Windows et Linux.
 
 ## 📥 Installation
-Pour utiliser l'application, rendez-vous directement sur [https://breezeapps.github.io/Yapuka/](https://breezeapps.github.io/Yapuka/) ou sur [Github Release](https://github.com/BreezeApps/Yapuka/releases/latest) pour télécharger la version adaptée à votre système.
+Pour utiliser l'application, rendez-vous directement sur [https://breezeapps.marvideo.fr/yapuka/](https://breezeapps.marvideo.fr/yapuka/) ou sur [Github Release](https://github.com/BreezeApps/Yapuka/releases/latest) pour télécharger la version adaptée à votre système.
 
 ## 🤝 Contribuer
 Nous accueillons les contributions ! Suivez les étapes ci-dessous pour mettre en place le projet en local, explorer le code et proposer des améliorations.
