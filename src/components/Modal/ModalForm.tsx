@@ -1,7 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DatePicker } from "rsuite";
+import { CustomProvider, DatePicker } from "rsuite";
 
 import "rsuite/dist/rsuite-no-reset.min.css";
 import { Button } from "../ui/button";
@@ -37,6 +37,8 @@ type ModalFormProps = {
   id?: string;
 };
 
+/* The above code is a React component for a modal form. It is used to create or modify
+items such as tasks, lists, or tabs within a collection. */
 export function ModalForm({
   type,
   collectionId,
@@ -177,7 +179,7 @@ export function ModalForm({
         <Dialog.Overlay className={`fixed inset-0 bg-black/50`} />
         <Dialog.Content
           aria-describedby={undefined}
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg"
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
         >
           <Dialog.Title className="text-lg font-bold">
             {t(
@@ -221,27 +223,30 @@ export function ModalForm({
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
               /> */}
-              <DatePicker
-                oneTap
-                style={{ width: "100%" }}
-                format="dd/MM/yyyy HH:mm"
-                placement="topStart"
-                value={date}
-                onChange={(e) => setDate(e === null ? new Date() : e)}
-              />
+              <CustomProvider theme={localStorage.getItem("theme") as "light" | "dark" | undefined} >
+                <DatePicker
+                  oneTap
+                  style={{ width: "100%" }}
+                  format="dd/MM/yyyy HH:mm"
+                  placement="topStart"
+                  value={date}
+                  onChange={(e) => setDate(e === null ? new Date() : e)}
+                />
+              </CustomProvider>
             </div>
           )}
 
-          {type === "collection" || type === "board" && (
-            <div className="mt-4">
-              <Label>{t("Color")}</Label>
-              <Input
-                type="color"
-                value={color ? color : "#000000"}
-                onChange={(e) => setColor(e.target.value)}
-              />
-            </div>
-          )}
+          {type === "collection" ||
+            (type === "board" && (
+              <div className="mt-4">
+                <Label>{t("Color")}</Label>
+                <Input
+                  type="color"
+                  value={color ? color : "#000000"}
+                  onChange={(e) => setColor(e.target.value)}
+                />
+              </div>
+            ))}
           {type === "collection" && (
             <div className="mt-4">
               <Label>{t("Color")}</Label>

@@ -7,12 +7,16 @@ interface State {
   steps: Step[];
 }
 
+/**
+ * The `OnBoarding` function in sets up a guided tour using Joyride with customizable
+ * steps and callbacks.
+ */
 export function OnBoarding({
   dbService,
   run,
   setRun,
 }: {
-  dbService: DatabaseService
+  dbService: DatabaseService;
   run: boolean;
   setRun: (run: boolean) => void;
 }) {
@@ -58,14 +62,13 @@ export function OnBoarding({
     ],
   });
 
-
   const handleJoyrideCallback = async (data: CallBackProps) => {
     const { status } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
     if (finishedStatuses.includes(status)) {
       setRun(false);
-      await dbService.updateOption("firstStart", "false")
+      await dbService.updateOption("firstStart", "false");
     }
     // console.log(type, data);
   };
@@ -91,18 +94,22 @@ export function OnBoarding({
           open: t("Open"),
         }}
         styles={{
-        buttonNext:{
+          buttonNext: {
             backgroundColor: "#4f46e5",
             color: "white",
-        },
-        buttonBack:{
+          },
+          buttonBack: {
             borderRadius: "4px",
             backgroundColor: "#4f46e5",
             color: "white",
-        },
-          options: {
-            zIndex: 10000,
           },
+          options: {
+            /* zIndex: 10000, */
+          },
+          spotlight: {
+            background: 'rgba(255, 255, 255, 0.01)',
+            border: "5px solid black"
+          }
         }}
       />
     </>

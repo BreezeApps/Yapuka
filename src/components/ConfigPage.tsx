@@ -3,23 +3,33 @@ import { changeLanguage, getCurrentLanguage, getLanguages } from "../lib/i18n";
 import { useEffect, useState } from "react";
 import { DatabaseService } from "../lib/db/dbClass";
 import { message } from "@tauri-apps/plugin-dialog";
-import FeatureComingSoon from "./FeatureComingSoon";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { chooseDbFolder, getDbPath } from "@/lib/db/dbManager";
 
 type props = {
-  dbService: DatabaseService
+  dbService: DatabaseService;
   show: boolean;
   setShow: (show: boolean) => void;
-  reloadDb: () => Promise<void>
+  reloadDb: () => Promise<void>;
 };
 
+/**
+ * The `ConfigPage` function handles configuration settings, including theme
+ * selection, language selection, and advanced settings like database path, backup creation, and backup
+ * import.
+ */
 export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
   const [checkedSync, setCheckedSync] = useState(false);
-  const [dbPath, setDbPath] = useState("")
+  const [dbPath, setDbPath] = useState("");
   const [urlSync, setUrlSync] = useState<string | null>("");
   const [firstReload, setFirstReload] = useState<boolean>(true);
   const { t } = useTranslation();
@@ -37,7 +47,7 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
     if (!firstReload) return;
     setFirstReload(false);
     async function firstload() {
-      setDbPath(await getDbPath())
+      setDbPath(await getDbPath());
       setCheckedSync(
         (await dbService.getOptionByKey("syncActive")) === "true" ? true : false
       );
@@ -62,9 +72,9 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
       hidden={!show}
       className={`z-[49] top-0 h-full w-full absolute bg-black/50`}
     >
-      <Button onClick={() => setShow(false)} variant={"ghost"}>
+      {/* <Button onClick={() => setShow(false)} variant={"ghost"}>
         <img className="h-6 ml-2" src="/icons/fermer.svg" />
-      </Button>
+      </Button> */}
       {/* <button
         className={`absolute text-2xl ml-2`}
         onClick={() => setShow(false)}
@@ -84,9 +94,15 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="theme">{t("theme")}</Label>
-            <Select onValueChange={(value) => {changeTheme(value); dbService.updateOption("theme", value)}} defaultValue={localStorage.theme}>
+            <Select
+              onValueChange={(value) => {
+                changeTheme(value);
+                dbService.updateOption("theme", value);
+              }}
+              defaultValue={localStorage.theme}
+            >
               <SelectTrigger>
-                <SelectValue placeholder={"Theme"}/>
+                <SelectValue placeholder={"Theme"} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="light">{t("light_theme")}</SelectItem>
@@ -96,64 +112,32 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label
-              htmlFor="language"
+            <Label htmlFor="language">{t("Language")}</Label>
+            <Select
+              onValueChange={(value) => {
+                changeLanguage(value);
+                dbService.updateOption("lang", value);
+              }}
+              defaultValue={getCurrentLanguage()}
             >
-              {t("Language")}
-            </Label>
-            <Select onValueChange={(value) => {changeLanguage(value); dbService.updateOption("lang", value) }} defaultValue={getCurrentLanguage()}>
               <SelectTrigger>
                 <SelectValue placeholder={"Languages"} />
               </SelectTrigger>
               <SelectContent>
                 {languages.map((lang) => (
-                <SelectItem key={lang.key} value={lang.value}>
-                  {lang.label}
-                </SelectItem>
-              ))}
+                  <SelectItem key={lang.key} value={lang.value}>
+                    {lang.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
             {t("Feature_Toggles")}
           </h2>
-          <FeatureComingSoon message={t("Future_Function")}>
-            <div className="space-y-2 overflow-hidden">
-              <Label
-                htmlFor="Test"
-              >
-                Activer Sync PHP
-              </Label>
-              <Input
-                type="checkbox"
-                checked={checkedSync}
-                onChange={(e) => {
-                  message(t("Future_Function"), { kind: "warning" });
-                  e.target.checked = false;
-                  // setCheckedSync(e.target.checked);
-                }}
-                name="Test"
-                id="tt"
-              />
-              <Label
-                htmlFor="url"
-              >
-                PHP Sync URL
-              </Label>
-              <Input
-                disabled={!checkedSync}
-                placeholder="https://example.com/"
-                value={urlSync === null ? "" : urlSync}
-                onChange={(e) => setUrlSync(e.target.value)}
-                type="text"
-                name="url"
-                id="url"
-              />
-            </div>
-          </FeatureComingSoon>
-        </div>
+        </div> */}
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
             {t("Advanced_Settings")}
@@ -169,7 +153,9 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
                 {t("GoPlugin")}
               </button>*/}
               <Input value={dbPath} disabled={true} />
-              <Button onClick={() => chooseDbFolder({ reloadDb, dbService })}>{t("data_file")}</Button>
+              <Button onClick={() => chooseDbFolder({ reloadDb, dbService })}>
+                {t("data_file")}
+              </Button>
             </div>
             <div id="backup-dir" className="flex space-x-4">
               <Button
@@ -237,6 +223,9 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
             </div>
           </div>
         </div>
+        <Button onClick={() => setShow(false)} style={{ position: "static" }}>
+          {t("Close")}
+        </Button>
       </form>
     </div>
   );

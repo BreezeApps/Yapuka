@@ -5,6 +5,8 @@ type LoadingScreenProps = {
   message?: string;
 };
 
+/* This code defines a React functional component called `LoadingScreen` that displays a loading
+animation with a spinning circle and a text message with animated dots. */
 export function LoadingScreen({ message = "Chargement de Yapuka..." }: LoadingScreenProps) {
   const [dots, setDots] = useState("");
 

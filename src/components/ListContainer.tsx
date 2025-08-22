@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { DatabaseService } from "../lib/db/dbClass";
 import { ModalForm } from "./Modal/ModalForm";
 import { ReactSortable } from "react-sortablejs";
-import { startTaskMonitoring } from "../lib/notify";
 import { Task } from "../lib/types/Task";
 import { t } from "i18next";
 import { getDate, getRelativeTime } from "../lib/i18n";
@@ -11,6 +10,10 @@ import { useLoadingScreen } from "@/Hooks/useLoadingScreen";
 import { Board } from "@/lib/types/Board";
 import { getTextColor } from "@/lib/utils";
 
+/**
+ * The ListContainer component manages the display and interaction of collections
+ * and tasks within a board, allowing for tasks to be created, updated, and marked as done.
+ */
 export function ListContainer({
   dbService,
   boardId,
@@ -45,8 +48,6 @@ export function ListContainer({
   const [tasks, setTasks] = useState<Task[]>([]);
   const { showLoading, hideLoading } = useLoadingScreen();
 
-  //const webService = new WebService("http://192.168.1.38/yapuka/api/")
-
   useEffect(() => {
     const initDatabase = async () => {
       try {
@@ -65,10 +66,6 @@ export function ListContainer({
 
         setCollections(collections);
         setTasks(allTasks);
-
-        if ((await dbService.getOptionByKey("notification")) === "true") {
-          startTaskMonitoring(allTasks);
-        }
       } catch (error) {
         alert("Erreur : " + error);
         console.error(

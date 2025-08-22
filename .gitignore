@@ -16,6 +16,7 @@ pnpm-lock.yaml
 # Rust build artifacts
 /target/
 **/*.rs.bk
+src-tauri/gen/
 
 # Environment variables
 .env*

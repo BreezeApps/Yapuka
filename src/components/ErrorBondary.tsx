@@ -5,6 +5,8 @@ type ErrorBoundaryState = {
   error?: Error;
 };
 
+/* The above class is an ErrorBoundary component in that catches errors in its child
+components and displays an error message with an option to reload the application. */
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
   constructor(props: any) {
     super(props);

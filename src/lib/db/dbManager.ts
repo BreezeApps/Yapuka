@@ -1,9 +1,17 @@
 import { open } from "@tauri-apps/plugin-dialog";
-import { writeTextFile, readTextFile, copyFile, exists } from "@tauri-apps/plugin-fs";
-import { BaseDirectory, join, appConfigDir } from "@tauri-apps/api/path";
+import {copyFile, exists, create } from "@tauri-apps/plugin-fs";
+import { join, appConfigDir, BaseDirectory } from "@tauri-apps/api/path";
+import { load } from "@tauri-apps/plugin-store"
 import { DatabaseService } from "./dbClass";
-
+/**
+ * This function allows the user to choose a folder to store a database, updating the
+ * configuration and reloading the database if necessary.
+ * @returns The function `chooseDbFolder` returns a `Promise` that resolves to a `string` representing
+ * the selected folder path where the database will be stored. If the user cancels the folder selection
+ * or an error occurs during the process, it returns `null`.
+ */
 export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => Promise<void>, dbService: DatabaseService }): Promise<string | null> {
+  const config = await load("config.json")
   const prevPath = await getDbPath()
   const folder = await open({
     directory: true,
@@ -16,15 +24,11 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
 
   await dbService.close()
 
-  // Sauvegarder le chemin dans la config interne
-  await writeTextFile(
-    "db_config.json",
-    JSON.stringify({ dbFolder: folder }),
-    { baseDir: BaseDirectory.AppConfig }
-  );
+  await config.set("dbFolder", folder)
+  await config.save()
 
-  if(!await exists(await join(folder, "yapuka.db"))) {
-    await copyFile(prevPath, await join(folder, "yapuka.db"));
+  if(!await exists(await join(folder, "yapuka.yapdb"))) {
+    await copyFile(prevPath, await join(folder, "yapuka.yapdb"));
   }
 
   await reloadDb()
@@ -32,22 +36,37 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
   return folder as string;
 }
 
+/**
+ * This function retrieves the database folder path, creates it if it doesn't exist, and
+ * returns the path.
+ * @returns The `getDbFolder` function returns a Promise that resolves to a string. The function first
+ * checks if the `dbFolder` value is null or undefined in the configuration. If it is, it sets the
+ * `dbFolder` value to the result of `appConfigDir()`, saves the configuration, and creates a database
+ * file named "yapuka.yapdb" in the app's configuration directory
+ */
 export async function getDbFolder(): Promise<string> {
-  try {
-    const configContent = await readTextFile("db_config.json", { baseDir: BaseDirectory.AppConfig });
-    const { dbFolder } = JSON.parse(configContent);
-    return dbFolder;
-  } catch {
-    await writeTextFile(
-      "db_config.json",
-      JSON.stringify({ dbFolder: await appConfigDir() }),
-      { baseDir: 13 } // AppData sur Windows, ~/.config sur Linux
-    );
-    return await appConfigDir();
+  const config = await load("config.json")
+  const dbFolder = await config.get("dbFolder");
+  if(dbFolder === null || dbFolder === undefined) {
+    await config.set("dbFolder", await appConfigDir())
+    await config.save()
+    try {
+      await create("yapuka.yapdb", { baseDir: BaseDirectory.AppConfig })
+    } catch (error) {
+      console.warn("Db already exist")
+    }
+    return (await appConfigDir());
   }
+  return dbFolder as string
 }
 
+/**
+ * The function `getDbPath` returns the path to a database file named "yapuka.yapdb" within a specified
+ * folder.
+ * @returns The function `getDbPath` is returning a Promise that resolves to the path of the database
+ * file "yapuka.yapdb" within the folder obtained from the `getDbFolder` function.
+ */
 export async function getDbPath(): Promise<string> {
   const folder = await getDbFolder();
-  return await join(folder, "yapuka.db");
+  return await join(folder, "yapuka.yapdb");
 }

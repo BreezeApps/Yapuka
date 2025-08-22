@@ -47,6 +47,10 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button"
 
+  if(variant === "default" || variant === null || variant === undefined && localStorage.getItem("theme") === "dark") {
+    variant = "secondary"
+  }
+
   return (
     <Comp
       data-slot="button"
