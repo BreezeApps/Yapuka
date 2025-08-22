@@ -223,7 +223,7 @@ export function ConfigPage({ dbService, show, setShow, reloadDb }: props) {
             </div>
           </div>
         </div>
-        <Button onClick={() => setShow(false)}>
+        <Button onClick={() => setShow(false)} style={{ position: "static" }}>
           {t("Close")}
         </Button>
       </form>

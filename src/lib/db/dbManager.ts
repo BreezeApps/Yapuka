@@ -3,9 +3,6 @@ import {copyFile, exists, create } from "@tauri-apps/plugin-fs";
 import { join, appConfigDir, BaseDirectory } from "@tauri-apps/api/path";
 import { load } from "@tauri-apps/plugin-store"
 import { DatabaseService } from "./dbClass";
-
-const config = await load("config.json")
-
 /**
  * This function allows the user to choose a folder to store a database, updating the
  * configuration and reloading the database if necessary.
@@ -14,6 +11,7 @@ const config = await load("config.json")
  * or an error occurs during the process, it returns `null`.
  */
 export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => Promise<void>, dbService: DatabaseService }): Promise<string | null> {
+  const config = await load("config.json")
   const prevPath = await getDbPath()
   const folder = await open({
     directory: true,
@@ -47,6 +45,7 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
  * file named "yapuka.yapdb" in the app's configuration directory
  */
 export async function getDbFolder(): Promise<string> {
+  const config = await load("config.json")
   const dbFolder = await config.get("dbFolder");
   if(dbFolder === null || dbFolder === undefined) {
     await config.set("dbFolder", await appConfigDir())
