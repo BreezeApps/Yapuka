@@ -27,8 +27,8 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
   await config.set("dbFolder", folder)
   await config.save()
 
-  if(!await exists(await join(folder, "yapuka.yapdb"))) {
-    await copyFile(prevPath, await join(folder, "yapuka.yapdb"));
+  if(!await exists(await join(folder, "Yfokon.yfdb"))) {
+    await copyFile(prevPath, await join(folder, "Yfokon.yfdb"));
   }
 
   await reloadDb()
@@ -42,7 +42,7 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
  * @returns The `getDbFolder` function returns a Promise that resolves to a string. The function first
  * checks if the `dbFolder` value is null or undefined in the configuration. If it is, it sets the
  * `dbFolder` value to the result of `appConfigDir()`, saves the configuration, and creates a database
- * file named "yapuka.yapdb" in the app's configuration directory
+ * file named "Yfokon.yfdb" in the app's configuration directory
  */
 export async function getDbFolder(): Promise<string> {
   const config = await load("config.json")
@@ -51,7 +51,7 @@ export async function getDbFolder(): Promise<string> {
     await config.set("dbFolder", await appConfigDir())
     await config.save()
     try {
-      await create("yapuka.yapdb", { baseDir: BaseDirectory.AppConfig })
+      await create("Yfokon.yfdb", { baseDir: BaseDirectory.AppConfig })
     } catch (error) {
       console.warn("Db already exist")
     }
@@ -68,5 +68,5 @@ export async function getDbFolder(): Promise<string> {
  */
 export async function getDbPath(): Promise<string> {
   const folder = await getDbFolder();
-  return await join(folder, "yapuka.yapdb");
+  return await join(folder, "Yfokon.yfdb");
 }

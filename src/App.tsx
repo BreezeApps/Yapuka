@@ -5,7 +5,6 @@ import { ListContainer } from "./components/ListContainer";
 import { ModalForm } from "./components/Modal/ModalForm";
 import { DatabaseService } from "./lib/db/dbClass";
 import ErrorBoundary from "./components/ErrorBondary";
-// import { checkForAppUpdates } from "./lib/checkForUpdate";
 import * as path from "@tauri-apps/api/path";
 import { Tabs } from "./components/Tab";
 import {
@@ -338,7 +337,6 @@ function App({
 
   useEffect(() => {
     async function handleNotificationPermission() {
-      // await checkForAppUpdates(true);
       let permissionGranted = await isPermissionGranted();
       if (!permissionGranted) {
         const permission = await requestPermission();

@@ -14,5 +14,5 @@ fn main() {
         .plugin(tauri_plugin_http::init())
         .run(tauri::generate_context!())
         .expect("error while running Tauri application");
-    yapuka_lib::run()
+    yfokon_lib::run()
 }

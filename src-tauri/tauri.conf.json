@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Yapuka",
-  "version": "0.8.0",
-  "identifier": "fr.breezeapps.yapuka",
+  "productName": "Yfokon",
+  "version": "0.6.0",
+  "identifier": "fr.breezeapps.yfokon",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
@@ -18,7 +18,7 @@
         "windows": {
           "installMode": "passive"
         },
-        "endpoints": ["https://github.com/BreezeApps/Yapuka/releases/latest/download/latest.json"],
+        "endpoints": ["https://github.com/BreezeApps/Yfokon/releases/latest/download/latest.json"],
         "dialog": true,
         "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ1QkFCNDI4OUE2QTYyNjMKUldSalltcWFLTFM2MVhrTTR4ZkZZZFhZWWVlMVN6b2J0dUw0b05IS3NhSVlHbHpTbER4dWFpaUsK"
       }
@@ -27,7 +27,7 @@
     "windows": [
       {
         "devtools": true,
-        "title": "Yapuka",
+        "title": "Yfokon",
         "width": 800,
         "height": 600
       }
@@ -48,7 +48,7 @@
     ],
     "category": "Utility",
     "shortDescription": "Gestionnaire de tâches moderne et rapide.",
-    "longDescription": "Yapuka est une application open-source permettant de gérer facilement ses tâches avec une interface moderne et fluide.",
+    "longDescription": "Yfokon est une application open-source permettant de gérer facilement ses tâches avec une interface moderne et fluide.",
     "linux": {
       "deb": {
         "depends": ["libwebkit2gtk-4.0-37", "libgtk-3-0"]
