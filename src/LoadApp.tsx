@@ -9,7 +9,6 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
 import { load } from "@tauri-apps/plugin-store";
 import { saveWindowState, restoreState, StateFlags } from "@tauri-apps/plugin-window-state"
-import { checkForAppUpdates } from "./lib/checkForUpdate";
 
 /**
  * The `LoadApp` function in TypeScript React initializes a database service, manages the current board
@@ -31,7 +30,7 @@ export function LoadApp() {
       await dbService.close();
     }
 
-    await checkForAppUpdates(true)
+    /* await checkForAppUpdates(true) */
 
     const service = await DatabaseService.create();
     setDbService(service);

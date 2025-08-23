@@ -1,6 +1,6 @@
 import { check } from "@tauri-apps/plugin-updater";
 import { ask, message } from "@tauri-apps/plugin-dialog";
-import { relaunch } from "@tauri-apps/plugin-process";
+import { openUrl } from "@tauri-apps/plugin-opener"
 
 /**
  * The function `checkForAppUpdates` checks for available updates for an application and prompts the
@@ -23,8 +23,7 @@ export async function checkForAppUpdates(onUserClick: boolean) {
         }
       );
       if (yes) {
-        await update.downloadAndInstall();
-        await relaunch();
+        await openUrl("https://github.com/BreezeApps/Yfokon/releases/latest")
       }
     } else if (onUserClick) {
       await message("You are on the latest version. Stay awesome!", {
