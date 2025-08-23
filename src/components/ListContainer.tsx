@@ -40,7 +40,7 @@ export function ListContainer({
   const [board, setBoard] = useState<Board>({
     id: 0,
     name: "",
-    color: ""
+    color: "",
   });
   const [collections, setCollections] = useState<
     { id: number; board_id: number; names: string; color: string | null }[]
@@ -174,61 +174,78 @@ export function ListContainer({
   }
 
   return (
-    <div className="p-6 h-full" style={{ background: board.color === null ? "" : board.color }}>
-        <ModalForm
-          id="three-step"
-          type="collection"
-          onCreate={handleCreateCollection}
-        />
-      {Array.isArray(collections) &&
-        collections
-          .filter((collection) => collection.board_id === board.id)
-          .map((collection) => {
-            const list = Array.isArray(tasks)
-              ? tasks.filter((task) => task.collection_id === collection.id)
-              : [];
-            return (
-              <div
-                id="five-step"
-                key={collection?.id}
-                className="relative flex-col rounded-lg bg-gray-300 dark:bg-blue-950 shadow-sm border border-slate-200 dark:border-blue-700 min-w-[240px] gap-1 p-1.5 list float-left inline m-3"
-              >
-                <h3
-                  onContextMenu={(e) => {
-                    contextMenuCollection(e, collection.id);
-                  }}
-                  className={`rounded capitalize text-center p-2 font-bold ${
-                    collection?.color === null
-                      ? "bg-[#d1d5dc] dark:bg-blue-900"
-                      : ""
-                  }`}
-                  style={{
-                    backgroundColor:
-                      collection?.color !== null
-                        ? collection?.color.toString()
-                        : "",
-                  }}
+    <div
+      style={{ background: board.color === null ? "" : board.color }}
+      className="h-full"
+    >
+      <ModalForm
+        id="three-step"
+        type="collection"
+        onCreate={handleCreateCollection}
+        classname="pl-6 pt-3"
+      />
+      <div className="p-6 pt-0 pl-12 h-fit">
+        {Array.isArray(collections) &&
+          collections
+            .filter((collection) => collection.board_id === board.id)
+            .map((collection) => {
+              const list = Array.isArray(tasks)
+                ? tasks.filter((task) => task.collection_id === collection.id)
+                : [];
+              return (
+                <div
+                  id="five-step"
+                  key={collection?.id}
+                  className="relative flex-col rounded-lg bg-gray-300 dark:bg-blue-950 shadow-sm border border-slate-200 dark:border-blue-700 min-w-[240px] gap-1 p-1.5 list float-left inline m-3"
                 >
-                  <span className="pr-4 text-2xl" style={{ color: getTextColor(collection?.color !== null ? collection.color : "#d1d5dc") }}>{collection?.names}</span>
-                  <ModalForm
-                    type="task"
-                    collectionId={collection?.id.toString()}
-                    onCreate={handleCreateTask}
-                  />
-                </h3>
-                <ReactSortable
-                  list={list}
-                  setList={(newList) =>
-                    handleSetList(
-                      collection?.id === undefined ? 0 : collection?.id,
-                      newList
-                    )
-                  }
-                  group="shared"
-                  animation={200}
-                  forceFallback={true}
-                >
-                  {/* {list.map((task) => (
+                  <h3
+                    onContextMenu={(e) => {
+                      contextMenuCollection(e, collection.id);
+                    }}
+                    className={`rounded capitalize text-center p-2 font-bold ${
+                      collection?.color === null
+                        ? "bg-[#d1d5dc] dark:bg-blue-900"
+                        : ""
+                    }`}
+                    style={{
+                      backgroundColor:
+                        collection?.color !== null
+                          ? collection?.color.toString()
+                          : "",
+                    }}
+                  >
+                    <span
+                      className="pr-4 text-2xl"
+                      style={{
+                        color: getTextColor(
+                          collection?.color !== null
+                            ? collection.color
+                            : "#d1d5dc"
+                        ),
+                      }}
+                    >
+                      {collection?.names}
+                    </span>
+                    <ModalForm
+                      type="task"
+                      collectionId={collection?.id.toString()}
+                      onCreate={handleCreateTask}
+                    />
+                  </h3>
+                  <ReactSortable
+                    list={list}
+                    setList={(newList) =>
+                      handleSetList(
+                        collection?.id === undefined ? 0 : collection?.id,
+                        newList
+                      )
+                    }
+                    group="shared"
+                    animation={200}
+                    delay={100}
+                    forceFallback={true}
+                  >
+                    {/* {list.map((task) => (
                 <InfoModal
                   key={task.id}
                   id="seven-step"
@@ -237,67 +254,56 @@ export function ListContainer({
                   contextMenuTask={contextMenuTask}
                 />
               ))} */}
-                  {Array.isArray(list) &&
-                    list.map((task) => (
-                      <div
-                        key={task.id}
-                        id={"seven-step"}
-                        role="button"
-                        className={`${
-                          task.status === "done"
-                            ? "bg-gray-200 dark:bg-blue-950 text-slate-500 dark:text-blue-400"
-                            : "bg-gray-300 dark:bg-blue-950 text-slate-800 dark:text-white"
-                        } flex w-full h-6 items-center rounded-md transition-all hover:bg-slate-100 dark:hover:bg-blue-600 focus:bg-slate-100 active:bg-slate-100`}
-                        onContextMenu={(e) => {
-                          contextMenuTask(e, task.id);
-                        }}
-                        onMouseOver={() => {
-                          setDescription(
-                            task.descriptions === null ? "" : task.descriptions
-                          );
-                          const dateText =
-                            task.due_date !== null
-                              ? `${getRelativeTime(task.due_date)} (${getDate(
-                                  task.due_date
-                                )})`
-                              : t("NoDue");
-                          setDuedate(dateText);
-                          setShowTaskInfo(true);
-                        }}
-                        onMouseOut={() => {
-                          setShowTaskInfo(false);
-                        }}
-                      >
-                        {/* {task.names}
-                  <input
-                    type="checkbox"
-                    checked={task.status === "done"}
-                    onChange={(e) => {
-                      checkedDoneTask(task, e.target.checked);
-                    }}
-                    name="Test"
-                    id="tt"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  /> */}
-                        <Checkbox
-                          checked={task.status === "done"}
-                          onChange={(e) => {
-                            checkedDoneTask(
-                              task,
-                              e.currentTarget.value === "on"
-                            );
+                    {Array.isArray(list) &&
+                      list.map((task) => (
+                        <div
+                          key={task.id}
+                          id={"seven-step"}
+                          /* role="button" */
+                          className={`${
+                            task.status === "done"
+                              ? "bg-gray-200 dark:bg-blue-950 text-slate-500 dark:text-blue-400"
+                              : "bg-gray-300 dark:bg-blue-950 text-slate-800 dark:text-white"
+                          } flex w-full h-6 items-center rounded-md transition-all hover:bg-slate-100 dark:hover:bg-blue-600 focus:bg-slate-100 active:bg-slate-100`}
+                          onContextMenu={(e) => {
+                            contextMenuTask(e, task.id);
                           }}
-                        />
-                        {task.names}
-                        {/*<button className="inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
-                        <img src="/icons/modify.svg" className="w-6 h-6" alt="" />
-                    </button>*/}
-                      </div>
-                    ))}
-                </ReactSortable>
-              </div>
-            );
-          })}
+                          onMouseOver={() => {
+                            setDescription(
+                              task.descriptions === null
+                                ? ""
+                                : task.descriptions
+                            );
+                            const dateText =
+                              task.due_date !== null
+                                ? `${getRelativeTime(task.due_date)} (${getDate(
+                                    task.due_date
+                                  )})`
+                                : t("NoDue");
+                            setDuedate(dateText);
+                            setShowTaskInfo(true);
+                          }}
+                          onMouseOut={() => {
+                            setShowTaskInfo(false);
+                          }}
+                        >
+                          <Checkbox
+                            checked={task.status === "done"}
+                            onCheckedChange={async (e) => {
+                              await checkedDoneTask(
+                                task,
+                                e === "indeterminate" ? false : e
+                              );
+                            }}
+                          />
+                          <span className="pl-2">{task.names}</span>
+                        </div>
+                      ))}
+                  </ReactSortable>
+                </div>
+              );
+            })}
+      </div>
     </div>
   );
 }

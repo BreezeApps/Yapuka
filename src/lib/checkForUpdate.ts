@@ -5,15 +5,12 @@ import { relaunch } from "@tauri-apps/plugin-process";
 /**
  * The function `checkForAppUpdates` checks for available updates for an application and prompts the
  * user to update if one is available.
- * @param {boolean} onUserClick - The `onUserClick` parameter in the `checkForAppUpdates` function is a
- * boolean value that indicates whether the user has clicked on something in the application. It is
- * used to determine the flow of the update process based on user interaction.
  */
 export async function checkForAppUpdates(onUserClick: boolean) {
   const update = await check();
-  if (!update?.available) {
+  if (!update) {
     console.log("No update available");
-  } else if (update?.available) {
+  } else if (update) {
     console.log("Update available!", update.version, update.body);
     const yes = await ask(
       `Update to ${update.version} is available!\n\nRelease notes: ${update.body}`,

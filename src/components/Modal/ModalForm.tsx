@@ -34,6 +34,7 @@ type ModalFormProps = {
   open?: boolean;
   setOpen?: (open: boolean) => void;
   id?: string;
+  classname?: string;
 };
 
 /* The above code is a React component for a modal form. It is used to create or modify
@@ -46,6 +47,7 @@ export function ModalForm({
   open,
   setOpen,
   id,
+  classname,
 }: ModalFormProps) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
@@ -102,21 +104,23 @@ export function ModalForm({
     setColor(undefined);
   };
 
+  const finalClassname = `${
+    type === "board"
+      ? "bg-[#F0F0F0] dark:bg-gray-800"
+      : type !== "task"
+      ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+      : previousData !== undefined
+      ? "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+      : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-0.5 px-1 rounded float-left inline"
+  }`;
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {open === undefined ? (
-        <Dialog.Trigger id={id !== undefined ? id : ""}>
+        <Dialog.Trigger id={id !== undefined ? id : ""} className={classname}>
           <Tooltip>
             <TooltipTrigger
-              className={
-                type === "board"
-                  ? "bg-[#F0F0F0] dark:bg-gray-800"
-                  : type !== "task"
-                  ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
-                  : previousData !== undefined
-                  ? "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                  : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-0.5 px-1 rounded float-left inline"
-              }
+              className={finalClassname}
               style={
                 type === "board"
                   ? {
@@ -137,7 +141,9 @@ export function ModalForm({
               }
             >
               <img
-                className={`${type === "board" ? "dark:invert" : ""} ${type === "task" ? "h-5" : "h-6"}`}
+                className={`${type === "board" ? "dark:invert" : ""} ${
+                  type === "task" ? "h-5" : "h-6"
+                }`}
                 src={
                   previousData !== undefined
                     ? "/icons/modify.svg"
@@ -222,7 +228,11 @@ export function ModalForm({
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
               /> */}
-              <CustomProvider theme={localStorage.getItem("theme") as "light" | "dark" | undefined} >
+              <CustomProvider
+                theme={
+                  localStorage.getItem("theme") as "light" | "dark" | undefined
+                }
+              >
                 <DatePicker
                   oneTap
                   style={{ width: "100%" }}

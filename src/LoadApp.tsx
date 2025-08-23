@@ -24,7 +24,7 @@ export function LoadApp() {
 
   async function initDatabase() {
     showLoading(t("loading_db"));
-    restoreState("", StateFlags.ALL)
+    restoreState("main", StateFlags.ALL)
 
     if (dbService !== null) {
       await dbService.close();
@@ -38,14 +38,14 @@ export function LoadApp() {
     hideLoading();
   }
 
-  getCurrentWindow().onCloseRequested(async () => {
-    const config = await load("config.json", { autoSave: true, defaults: { dbFolder: "", lastOpenBoard: "1" } })
+  getCurrentWindow().onCloseRequested(async (event) => {
+    event.preventDefault();
+    const config = await load("config.json")
     await config.set("lastOpenBoard", currentBoard.toString())
     await config.save()
     await config.close()
-    saveWindowState(StateFlags.ALL);
+    await saveWindowState(StateFlags.ALL);
     await dbService?.close()
-    /* event.preventDefault(); */
     exit()
   });
 
@@ -60,6 +60,7 @@ export function LoadApp() {
   return (
     <ErrorBoundary>
       <App dbService={dbService} reloadDb={initDatabase} currentBoard={currentBoard} setCurrentBoard={setCurrentBoard} />
+      <h1>{currentBoard}</h1>
     </ErrorBoundary>
   );
 }

@@ -77,6 +77,11 @@ function App({
   const [dueDate, setDueDate] = useState<string>("");
   const { show } = useContextMenu();
 
+  async function reloadDatabase() {
+    await reloadDb()
+    setReloadList(true)
+  }
+
   document.documentElement.classList.toggle(
     "dark",
     localStorage.theme === "dark" ||
@@ -94,6 +99,8 @@ function App({
     _id?: number
   ) => {
     await dbService?.createBoard({ id: 0, name: name, color: color === undefined ? null : color });
+    const allBoards = await dbService.getAllBoards()
+    setCurrentBoard(allBoards[allBoards.length - 1].id)
     setReloadList(true);
   };
 
@@ -395,7 +402,7 @@ function App({
       />
       <ErrorBoundary>
         <ConfigPage
-          reloadDb={reloadDb}
+          reloadDb={reloadDatabase}
           dbService={dbService}
           show={showConfig}
           setShow={setShowConfig}
@@ -428,7 +435,7 @@ function App({
         open={showModal}
         setOpen={setShowModal}
       />
-      <div style={{ height: "calc(100vh - 51px)" }} className="mt-13 w-full dark:bg-gray-900 text-gray-900 dark:text-white">
+      <div style={{ height: "calc(100vh - 51px)" }} className="mt-12 w-full dark:bg-gray-900 text-gray-900 dark:text-white">
         <ListContainer
           dbService={dbService}
           boardId={currentBoard}
