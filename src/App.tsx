@@ -5,7 +5,6 @@ import { ListContainer } from "./components/ListContainer";
 import { ModalForm } from "./components/Modal/ModalForm";
 import { DatabaseService } from "./lib/db/dbClass";
 import ErrorBoundary from "./components/ErrorBondary";
-// import { checkForAppUpdates } from "./lib/checkForUpdate";
 import * as path from "@tauri-apps/api/path";
 import { Tabs } from "./components/Tab";
 import {
@@ -77,6 +76,11 @@ function App({
   const [dueDate, setDueDate] = useState<string>("");
   const { show } = useContextMenu();
 
+  async function reloadDatabase() {
+    await reloadDb()
+    setReloadList(true)
+  }
+
   document.documentElement.classList.toggle(
     "dark",
     localStorage.theme === "dark" ||
@@ -94,6 +98,8 @@ function App({
     _id?: number
   ) => {
     await dbService?.createBoard({ id: 0, name: name, color: color === undefined ? null : color });
+    const allBoards = await dbService.getAllBoards()
+    setCurrentBoard(allBoards[allBoards.length - 1].id)
     setReloadList(true);
   };
 
@@ -331,7 +337,6 @@ function App({
 
   useEffect(() => {
     async function handleNotificationPermission() {
-      // await checkForAppUpdates(true);
       let permissionGranted = await isPermissionGranted();
       if (!permissionGranted) {
         const permission = await requestPermission();
@@ -395,7 +400,7 @@ function App({
       />
       <ErrorBoundary>
         <ConfigPage
-          reloadDb={reloadDb}
+          reloadDb={reloadDatabase}
           dbService={dbService}
           show={showConfig}
           setShow={setShowConfig}
@@ -408,7 +413,7 @@ function App({
       </ErrorBoundary>
       <div
         id="one-step"
-        className="fixed left-0 top-0 flex w-full justify-between pt-4 text-center shadow-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+        className="fixed left-0 top-0 flex w-full justify-between pt-4 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
       >
         <Tabs
           dbService={dbService}
@@ -428,7 +433,7 @@ function App({
         open={showModal}
         setOpen={setShowModal}
       />
-      <div style={{ height: "calc(100vh - 52px)" }} className="mt-13 w-full dark:bg-gray-800 text-gray-900 dark:text-white">
+      <div style={{ height: "calc(100vh - 51px)" }} className="mt-12 w-full dark:bg-gray-900 text-gray-900 dark:text-white">
         <ListContainer
           dbService={dbService}
           boardId={currentBoard}

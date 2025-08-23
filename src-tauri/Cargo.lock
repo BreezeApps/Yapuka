@@ -6582,7 +6582,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "yapuka"
+name = "yfokon"
 version = "0.1.0"
 dependencies = [
  "dirs-next",
