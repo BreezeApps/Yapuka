@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { ModalForm } from "./Modal/ModalForm";
 import { DatabaseService } from "../lib/db/dbClass";
 import { Board } from "@/lib/types/Board";
+import { getTextColor } from "@/lib/utils";
 
 type props = {
-  dbService: DatabaseService
+  dbService: DatabaseService;
   currentBoard: number;
   setCurrentBoard: (id: number) => void;
   handleCreateBoard: (
@@ -49,82 +50,58 @@ export function Tabs({
   return (
     <>
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center space-x-2">
-          {Array.isArray(allBoards) && allBoards.map((board) => (
-            <button
-              id="two_one-step"
-              key={board.id}
-              onContextMenu={(e) => {
-                contextMenu(e, board.id);
-              }}
-              onClick={() => {
-                setCurrentBoard(board.id);
-                setReloadList(true);
-              }}
-              style={{
-                display: "inline-block",
-                float: "left",
-                height: "34px",
-                minWidth: "80px",
-                textAlign: "center",
-                lineHeight: "22px",
-                padding: "0 8px 0 8px",
-                margin: "1px 0px 0px 0px",
-                border: "1px solid gray",
-                borderBottom:
-                  currentBoard === board.id
-                    ? "0px solid var(--color-gray-800)"
-                    : "1px solid var(--color-gray-950)",
-                borderTopLeftRadius: "6px",
-                borderTopRightRadius: "6px",
-                cursor: "pointer",
-                background: board.color === null ? "" : board.color
-              }}
-              /* ${
-                currentBoard === board.id
-                  ? "bg-white dark:bg-gray-800"
-                  : "bg-[#F0F0F0] dark:bg-gray-950"
-              } */
-              className={`text-black dark:text-white`}
-            >
-              {board.name}
-            </button>
-            /*<button
-              id="two_one-step"
-              key={board.id}
-              onContextMenu={(e) => {
-                contextMenu(e, board.id);
-              }}
-              onClick={() => {
-                setCurrentBoard(board.id);
-                setReloadList(true);
-              }}
-              style={{
-                display: "inline-block",
-                float: "left",
-                height: "34px",
-                minWidth: "80px",
-                textAlign: "center",
-                lineHeight: "22px",
-                padding: "0 8px 0 8px",
-                margin: "1px 0px 0px 0px",
-                border: "1px solid gray",
-                borderBottom:
-                  currentBoard === board.id
-                    ? "1px solid var(--color-gray-800)"
-                    : "1px solid var(--color-gray-950)",
-                borderTopLeftRadius: "6px",
-                borderTopRightRadius: "6px",
-                cursor: "pointer",
-              }}
-              className={`text-black dark:text-white ${currentBoard === board.id ? "bg-white dark:bg-gray-800" : "bg-[#F0F0F0] dark:bg-gray-950"}`}
-            >
-              {board.name}
-            </button> */
-          ))}
-          <ModalForm id="two-step" type="board" onCreate={handleCreateBoard} />
+        <div className="flex items-center flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-x-auto">
+            {Array.isArray(allBoards) &&
+              allBoards.map((board) => (
+                <button
+                  key={board.id}
+                  onContextMenu={(e) => contextMenu(e, board.id)}
+                  onClick={() => {
+                    setCurrentBoard(board.id);
+                    setReloadList(true);
+                  }}
+                  style={{
+                    height: "34px",
+                    minWidth: "80px", // largeur minimale
+                    maxWidth: "200px", // largeur max
+                    flex: "1 1 auto", // occupe l’espace dispo et peut se réduire
+                    textAlign: "center",
+                    lineHeight: "22px",
+                    padding: "0 8px",
+                    margin: "1px 0 0 0",
+                    border: "1px solid gray",
+                    borderBottom:
+                      currentBoard === board.id
+                        ? "0px solid var(--color-gray-800)"
+                        : "1px solid var(--color-gray-950)",
+                    borderTopLeftRadius: "6px",
+                    borderTopRightRadius: "6px",
+                    cursor: "pointer",
+                    background:
+                      board.color === null
+                        ? "var(--color-gray-900)"
+                        : board.color,
+                    color: getTextColor(
+                      board?.color !== null ? board.color : "#101828"
+                    ),
+                    whiteSpace: "nowrap", // évite le retour à la ligne
+                    overflow: "hidden",
+                    textOverflow: "ellipsis", // points de suspension si le texte est trop long
+                  }}
+                >
+                  {board.name}
+                </button>
+              ))}
+            <ModalForm
+              id="two-step"
+              type="board"
+              onCreate={handleCreateBoard}
+            />
+          </div>
         </div>
       </div>
+
       <span
         onClick={() => {
           setShowConfig(true);

@@ -8,8 +8,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Tooltip, TooltipContent } from "../ui/tooltip";
-import { TooltipTrigger } from "@radix-ui/react-tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 type ModalFormProps = {
   type: "task" | "collection" | "board";
@@ -116,7 +115,7 @@ export function ModalForm({
                   ? "rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
                   : previousData !== undefined
                   ? "inline-block ml-auto place-items-center rounded-md border border-transparent text-center text-sm transition-all text-slate-600 hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                  : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded float-left inline"
+                  : "bg-gray-200 hover:bg-gray-400 text-gray-800 py-0.5 px-1 rounded float-left inline"
               }
               style={
                 type === "board"
@@ -138,7 +137,7 @@ export function ModalForm({
               }
             >
               <img
-                className={`h-6 ${type === "board" ? "dark:invert" : ""}`}
+                className={`${type === "board" ? "dark:invert" : ""} ${type === "task" ? "h-5" : "h-6"}`}
                 src={
                   previousData !== undefined
                     ? "/icons/modify.svg"

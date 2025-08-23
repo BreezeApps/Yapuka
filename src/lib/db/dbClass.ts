@@ -129,7 +129,7 @@ export class DatabaseService {
   }
 
   async updateBoard(board: Board): Promise<void> {
-    await this.db?.execute("UPDATE boards SET name = ? WHERE id = ?;", [board.name, board.id]);
+    await this.db?.execute("UPDATE boards SET name = ?, color = ? WHERE id = ?;", [board.name, board.color, board.id]);
   }
 
   async removeBoard(id: number): Promise<void> {

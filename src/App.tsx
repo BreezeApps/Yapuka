@@ -408,7 +408,7 @@ function App({
       </ErrorBoundary>
       <div
         id="one-step"
-        className="fixed left-0 top-0 flex w-full justify-between pt-4 text-center shadow-lg bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+        className="fixed left-0 top-0 flex w-full justify-between pt-4 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
       >
         <Tabs
           dbService={dbService}
@@ -428,7 +428,7 @@ function App({
         open={showModal}
         setOpen={setShowModal}
       />
-      <div style={{ height: "calc(100vh - 52px)" }} className="mt-13 w-full dark:bg-gray-800 text-gray-900 dark:text-white">
+      <div style={{ height: "calc(100vh - 51px)" }} className="mt-13 w-full dark:bg-gray-900 text-gray-900 dark:text-white">
         <ListContainer
           dbService={dbService}
           boardId={currentBoard}

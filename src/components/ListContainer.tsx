@@ -209,12 +209,12 @@ export function ListContainer({
                         : "",
                   }}
                 >
+                  <span className="pr-4 text-2xl" style={{ color: getTextColor(collection?.color !== null ? collection.color : "#d1d5dc") }}>{collection?.names}</span>
                   <ModalForm
                     type="task"
                     collectionId={collection?.id.toString()}
                     onCreate={handleCreateTask}
                   />
-                  <span className="pl-4" style={{ color: getTextColor(collection?.color !== null ? collection.color : "#d1d5dc") }}>{collection?.names}</span>
                 </h3>
                 <ReactSortable
                   list={list}
