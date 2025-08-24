@@ -1,5 +1,5 @@
 # <p align="center">Gestionnaire de listes de tâches</p>
-# <p align="center">Yapuka</p>
+# <p align="center">Yfokon</p>
 
 ![Tauri](https://img.shields.io/badge/Tauri-47848F?style=flat-square&logo=tauri&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey?style=flat-square)
@@ -7,10 +7,10 @@
 ![Website](https://img.shields.io/badge/Website-https://breezeapps.marvideo.fr/Yapuka-0a0a0a?style=flat-square&logo=google-chrome&link=https://breezeapps.github.io/Yapuka/)
 ![GitHub Downloads](https://img.shields.io/github/downloads/BreezeApps/Yapuka/total?label=Number%20of%20downloads)
 
-**Yapuka** est une application développée en **Tauri** qui permet de créer et gérer simplement des listes de tâches. L’application est disponible pour Windows et Linux.
+**Yfokon** est une application développée en **Tauri** qui permet de créer et gérer simplement des listes de tâches. L’application est disponible pour Windows et Linux.
 
 ## 📥 Installation
-Pour utiliser l'application, rendez-vous directement sur [https://breezeapps.marvideo.fr/yapuka/](https://breezeapps.marvideo.fr/yapuka/) ou sur [Github Release](https://github.com/BreezeApps/Yapuka/releases/latest) pour télécharger la version adaptée à votre système.
+Pour utiliser l'application, rendez-vous directement sur [https://breezeapps.marvideo.fr/yfokon/](https://breezeapps.marvideo.fr/yfokon/) ou sur [Github Release](https://github.com/BreezeApps/Yfokon/releases/latest) pour télécharger la version adaptée à votre système.
 
 ## 🤝 Contribuer
 Nous accueillons les contributions ! Suivez les étapes ci-dessous pour mettre en place le projet en local, explorer le code et proposer des améliorations.
@@ -21,7 +21,7 @@ Et les [prerequis](https://tauri.app/v1/guides/getting-started/prerequisites/#se
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/BreezeApps/Yapuka.git
+git clone https://github.com/BreezeApps/Yfokon.git
 # Aller dans le répertoire du projet
 cd Yapuka
 # Installer les dépendances
@@ -53,8 +53,8 @@ Les builds seront créés dans le dossier `src-tauri/target/release/bundle`.
 
 ## 🚀 Fonctionnalités
 - **Gestion de listes de tâches :**
-- Sécurité : Yapuka est une application qui fonctionne sur votre ordinateur, pas sur un serveur externe. Pas d'inscription, pas de données en balade.
-- Simplicité : Yapuka se concentre sur les fonctions essentielles ; pas de gadget inutile.
+- Sécurité : Yfokon est une application qui fonctionne sur votre ordinateur, pas sur un serveur externe. Pas d'inscription, pas de données en balade.
+- Simplicité : Yfokon se concentre sur les fonctions essentielles ; pas de gadget inutile.
 - Yapuka permet de :
   - Créer, supprimer et mettre à jour des listes de tâches regroupées dans un onglet.
   - Créer, supprimer et mettre à jour les onglets.
@@ -73,12 +73,12 @@ Les builds seront créés dans le dossier `src-tauri/target/release/bundle`.
 - **Multi-plateforme :** Compatible avec Windows et Linux.
 
 ## 🖼️ Aperçu
-<img src="https://breezeapps.marvideo.fr/yapuka/assets/screenshots.png" width="1000"/>
+<img src="https://breezeapps.marvideo.fr/yfokon/assets/screenshots.png" width="1000"/>
 
 ## 🔗 Liens utiles
-- **Site web :** [https://breezeapps.marvideo.fr/yapuka/](https://breezeapps.marvideo.fr/yapuka/)
-- **Documentation :** [https://github.com/BreezeApps/Yapuka/wiki](https://github.com/BreezeApps/Yapuka/wiki)
-- **Communauté :** [https://github.com/BreezeApps/Yapuka/discussions](https://github.com/BreezeApps/Yapuka/discussions)
+- **Site web :** [https://breezeapps.marvideo.fr/yapuka/](https://breezeapps.marvideo.fr/yfokon/)
+- **Documentation :** [https://github.com/BreezeApps/Yfokon/wiki](https://github.com/BreezeApps/Yfokon/wiki)
+- **Communauté :** [https://github.com/BreezeApps/Yfokon/discussions](https://github.com/BreezeApps/Yfokon/discussions)
 
 ## 🛠️ Technologies utilisées
 ![TypeScriptTauri](https://img.shields.io/badge/TypeScript-white?style=flat-square&logo=typescript&logoColor=black)
