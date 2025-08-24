@@ -3,9 +3,9 @@
 
 ![Tauri](https://img.shields.io/badge/Tauri-47848F?style=flat-square&logo=tauri&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey?style=flat-square)
-![Release](https://img.shields.io/github/v/release/BreezeApps/Yapuka?style=flat-square)
-![Website](https://img.shields.io/badge/Website-https://breezeapps.marvideo.fr/Yapuka-0a0a0a?style=flat-square&logo=google-chrome&link=https://breezeapps.github.io/Yapuka/)
-![GitHub Downloads](https://img.shields.io/github/downloads/BreezeApps/Yapuka/total?label=Number%20of%20downloads)
+![Release](https://img.shields.io/github/v/release/BreezeApps/Yfokon?style=flat-square)
+![Website](https://img.shields.io/badge/Website-https://breezeapps.marvideo.fr/Yfokon-0a0a0a?style=flat-square&logo=google-chrome&link=https://breezeapps.github.io/Yfokon/)
+![GitHub Downloads](https://img.shields.io/github/downloads/BreezeApps/Yfokon/total?label=Number%20of%20downloads)
 
 **Yfokon** est une application développée en **Tauri** qui permet de créer et gérer simplement des listes de tâches. L’application est disponible pour Windows et Linux.
 
