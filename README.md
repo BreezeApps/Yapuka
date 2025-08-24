@@ -3,7 +3,7 @@
 
 ![Tauri](https://img.shields.io/badge/Tauri-47848F?style=flat-square&logo=tauri&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey?style=flat-square)
-![Release](https://img.shields.io/github/v/release/BreezeApps/Yfokon?style=flat-square)
+![Release](https://img.shields.io/github/v/release/BreezeApps/yfokon?style=flat-square)
 ![Website](https://img.shields.io/badge/Website-https://breezeapps.marvideo.fr/Yfokon-0a0a0a?style=flat-square&logo=google-chrome&link=https://breezeapps.github.io/Yfokon/)
 ![GitHub Downloads](https://img.shields.io/github/downloads/BreezeApps/Yfokon/total?label=Number%20of%20downloads)
 
@@ -23,7 +23,7 @@ Et les [prerequis](https://tauri.app/v1/guides/getting-started/prerequisites/#se
 # Cloner le dépôt
 git clone https://github.com/BreezeApps/Yfokon.git
 # Aller dans le répertoire du projet
-cd Yapuka
+cd Yfokon
 # Installer les dépendances
 pnpm install
 ```
@@ -55,7 +55,7 @@ Les builds seront créés dans le dossier `src-tauri/target/release/bundle`.
 - **Gestion de listes de tâches :**
 - Sécurité : Yfokon est une application qui fonctionne sur votre ordinateur, pas sur un serveur externe. Pas d'inscription, pas de données en balade.
 - Simplicité : Yfokon se concentre sur les fonctions essentielles ; pas de gadget inutile.
-- Yapuka permet de :
+- Yfokon permet de :
   - Créer, supprimer et mettre à jour des listes de tâches regroupées dans un onglet.
   - Créer, supprimer et mettre à jour les onglets.
   - Créer, supprimer et mettre à jour les tâches dans chaque liste.
@@ -69,14 +69,14 @@ Les builds seront créés dans le dossier `src-tauri/target/release/bundle`.
  Les données sont gérées dans une base de données au format SQLite. Vous pouvez :
     - Choisir l'emplacement de la base de données.
     - Sauvegarder la base de données.
-- Version : surveillance de l'existence d'une version plus récente de l'application Yapuka. Yapuka vous propose une mise à jour automatique de l'application directement depuis le site Github.
+- Version : surveillance de l'existence d'une version plus récente de l'application Yfokon. Yfokon vous propose une mise à jour automatique de l'application directement depuis le site Github.
 - **Multi-plateforme :** Compatible avec Windows et Linux.
 
 ## 🖼️ Aperçu
 <img src="https://breezeapps.marvideo.fr/yfokon/assets/screenshots.png" width="1000"/>
 
 ## 🔗 Liens utiles
-- **Site web :** [https://breezeapps.marvideo.fr/yapuka/](https://breezeapps.marvideo.fr/yfokon/)
+- **Site web :** [https://breezeapps.marvideo.fr/yfokon/](https://breezeapps.marvideo.fr/yfokon/)
 - **Documentation :** [https://github.com/BreezeApps/Yfokon/wiki](https://github.com/BreezeApps/Yfokon/wiki)
 - **Communauté :** [https://github.com/BreezeApps/Yfokon/discussions](https://github.com/BreezeApps/Yfokon/discussions)
 

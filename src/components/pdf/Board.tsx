@@ -97,7 +97,7 @@ function createTableRow(task: Task) {
  * in a structured format.
  */
 export const BoardPDF = ({ boardName, collections, tasks }: { boardName: string, collections: Collection[] | undefined, tasks: Task[] | undefined }) => (
-  <Document author='Yapuka' subject='Onglet PDF' title={boardName}>
+  <Document author='Yfokon' subject='Onglet PDF' title={boardName}>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
         <Text style={styles.title}>{boardName}</Text>

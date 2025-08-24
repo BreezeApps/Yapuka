@@ -63,8 +63,8 @@ export class DatabaseService {
       directory: false,
       filters: [
         {
-          name: "Yapuka DataBase",
-          extensions: ["yapdb"],
+          name: "Yfokon DataBase",
+          extensions: ["yfdb"],
         },
       ],
     });
