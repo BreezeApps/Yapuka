@@ -53,7 +53,11 @@ jobs:
             libjavascriptcoregtk-4.1-dev \
             libsoup-3.0-dev \
             libayatana-appindicator3-dev \
-            librsvg2-dev
+            librsvg2-dev \
+            patchelf \
+            desktop-file-utils \
+            file \
+            squashfs-tools
 
       - name: Fix execution rights
         run: chmod +x /home/runner/work/Yapuka/Yapuka/src-tauri/target/release/bundle/appimage/*.AppImage || true
