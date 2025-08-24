@@ -17,7 +17,7 @@ export async function chooseDbFolder({ reloadDb, dbService }: { reloadDb: () => 
     directory: true,
     multiple: false,
     defaultPath: await getDbFolder(),
-    title: "Choisissez où stocker votre base de données Yapuka",
+    title: "Choisissez où stocker votre base de données Yfokon",
   });
 
   if (!folder) return null;
@@ -61,10 +61,10 @@ export async function getDbFolder(): Promise<string> {
 }
 
 /**
- * The function `getDbPath` returns the path to a database file named "yapuka.yapdb" within a specified
+ * The function `getDbPath` returns the path to a database file named "Yfokon.yfdb" within a specified
  * folder.
  * @returns The function `getDbPath` is returning a Promise that resolves to the path of the database
- * file "yapuka.yapdb" within the folder obtained from the `getDbFolder` function.
+ * file "Yfokon.yfdb" within the folder obtained from the `getDbFolder` function.
  */
 export async function getDbPath(): Promise<string> {
   const folder = await getDbFolder();

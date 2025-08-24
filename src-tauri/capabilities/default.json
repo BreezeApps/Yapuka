@@ -29,6 +29,7 @@
     "fs:allow-copy-file",
     "process:allow-restart",
     "process:allow-exit",
-    "store:default"
+    "store:default",
+    "opener:allow-default-urls"
   ]
 }
