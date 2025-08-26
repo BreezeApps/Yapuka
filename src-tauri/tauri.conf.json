@@ -38,7 +38,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "rpm", "nsis", "msi", "app", "dmg"],
+    "targets": ["deb", "appimage", "rpm", "nsis", "msi", "app", "dmg"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -49,15 +49,24 @@
     "category": "Utility",
     "shortDescription": "Gestionnaire de tâches moderne et rapide.",
     "longDescription": "Yfokon est une application open-source permettant de gérer facilement ses tâches avec une interface moderne et fluide.",
-    "linux": {
-      "deb": {
-        "depends": ["libwebkit2gtk-4.0-37", "libgtk-3-0"]
-      }
-    },
     "externalBin": [],
     "copyright": "Copyright © 2025 BreezeApps",
     "license": "",
     "createUpdaterArtifacts": true,
+    "linux": {
+      "appimage": {
+        "bundleMediaFramework": false,
+        "files": {}
+      },
+      "deb": {
+        "files": {}
+      },
+      "rpm": {
+        "epoch": 0,
+        "files": {},
+        "release": "1"
+      }
+    },
     "windows": {
       "allowDowngrades": true,
       "certificateThumbprint": null,
