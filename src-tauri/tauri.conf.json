@@ -12,16 +12,7 @@
   "plugins": {
     "sql": {
       "preload": ["sqlite:tasks.db"]
-    },
-    "updater": {
-        "active": true,
-        "windows": {
-          "installMode": "passive"
-        },
-        "endpoints": ["https://github.com/BreezeApps/Yfokon/releases/latest/download/latest.json"],
-        "dialog": true,
-        "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQ1QkFCNDI4OUE2QTYyNjMKUldSalltcWFLTFM2MVhrTTR4ZkZZZFhZWWVlMVN6b2J0dUw0b05IS3NhSVlHbHpTbER4dWFpaUsK"
-      }
+    }
   },
   "app": {
     "windows": [
@@ -52,7 +43,6 @@
     "externalBin": [],
     "copyright": "Copyright © 2025 BreezeApps",
     "license": "",
-    "createUpdaterArtifacts": true,
     "linux": {
       "appimage": {
         "bundleMediaFramework": false,
